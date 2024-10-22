@@ -1,0 +1,32 @@
+form受け取り方
+※フィールド名(xxx,yyy,zzz)は、HTML側のnameと同じじゃないとだめ
+text : (@RequestParam("xxx") String hoge)
+radio : (@RequestParam("xxx") String hoge)
+checkbox : (@RequestParam("xxx") List<String> hoge)
+
+1次元配列の場合
+        for(String xxx : hoge.getXxx()){
+            System.out.println(xxx);
+        }
+または
+        hoge.getXxx().forEach(System.out::println);
+で全件表示。getXxx()は、クラスに@Dataをつけるとフィールド名に応じてLombokが自動で作ってくれる。
+
+連想配列の場合
+            hoge.getXxx().forEach((key, values) -> {
+                System.out.println(key + ": " + values);
+            });
+で取得。
+
+th:object="hoge"
+でJavaからobjectを受け取りたい場合、名前はpost時のフォームクラス名に依存する。
+自分で決めたい場合は@ModelAttribute("huga")で"huga"になる。
+bindingResult.hasErrors()で別のメソッド呼んだとしても(恐らく)上書きできないので注意。
+
+null配列
+
+String[] arr = null;
+Optional.ofNullable(arr)     // この時点で Optional<String[]>
+     .map(Arrays.stream)     // この時点で Optional<Stream<String>>
+     .orElse(Stream.empty()) // この時点で Stream<String>, 配列の中身のストリーム
+     .forEach(System.out::println);

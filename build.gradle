@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -47,4 +48,12 @@ tasks.named('test') {
 
 tasks.named('bootRun') {
 	sourceResources sourceSets.main
+}
+
+tasks.withType(JavaExec) {
+	jvmArgs '-Dfile.encoding=UTF-8'
+}
+
+bootRun {
+	jvmArgs '-Dfile.encoding=UTF-8'
 }

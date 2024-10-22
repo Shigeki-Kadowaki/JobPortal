@@ -5,11 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,23 +25,47 @@ public class MainController {
 
     //testMethod
     @PostMapping("/test")
-    public String test(@ModelAttribute DatesGetFormExample dates, Model model){
-        model.addAttribute("object",dates);
+    public String test(@ModelAttribute("form") @Validated Form form, BindingResult bindingResult, Model model){
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return showFormAgain(form,model);
+        }
         Date date = new Date();
-        if(dates.dates() == null){
-         System.out.println("Null");
+//        dates.getParentValue().forEach(System.out::println);
+        System.out.println("parentValue:");
+        for(String parentValue : form.getParentValue()){
+            System.out.println(parentValue);
+        }
+        form.getParentValue().forEach(System.out::println);
+        System.out.println("ChildValue:");
+        if(Objects.nonNull(form.getChild())){
+            form.getChild().forEach((key, values) -> {
+                System.out.println(key + ": " + values);
+            });
+        }
+        else{
+            System.out.println("checkbox is null");
         }
         System.out.println("success" + date.getTime());
-
-        return "/index";
-    }
-
-    //ホームアクセス
-    @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("message", "Welcome to Thymeleaf??");
         return "index";
     }
+
+    @GetMapping("/")
+    public String showFormAgain(@ModelAttribute("form") Form form, Model model){
+        return "index";
+    }
+//    @PostMapping("/validatedTest")
+//    public String vT(@Validated Form form,BindingResult bindingResult,Model model){
+//        if(bindingResult.hasErrors()){
+//            return showIndex(form, model);
+//        }
+//        return "index";
+//    }
+//    //ホームアクセス
+//
+//    public String showIndex(@ModelAttribute("form") Form form, Model model) {
+//        return "index";
+//    }
 
     //学生マイページ
     @GetMapping("/student")

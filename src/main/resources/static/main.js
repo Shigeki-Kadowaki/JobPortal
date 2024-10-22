@@ -11,7 +11,7 @@ function addOADate(selectedDate) {
            OADateHeader.innerHTML=`${selectedDate} の公欠授業を選択`;
            var OADateBody=document.createElement('div');
            OADateBody.className="card-body";
-           var text=`<input type="hidden" name="selectedDates" value="${selectedDate}">`;
+           var text=`<input type="hidden" name="selectedDates[]" value="${selectedDate}">`;
            for (let index = 1; index < 6; index++) {
             text+=`
             <input type="checkbox" class="btn-check" id="${selectedDate}` + index + `" name="periods[${selectedDate}][]" value="` + index + `" autocomplete="off">
