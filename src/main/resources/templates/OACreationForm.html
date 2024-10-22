@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<!--    <script th:src="@{/script/main.js}"></script>-->
+    <script th:src="@{/main.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+    <a type="button" th:href="@{/index}" class="button">戻る</a><br>
+    <form th:action="@{/student/OACreationForm}" th:method="post">
+        <div class="form-group mt-3" id="officialAbsenceDetail">
+            <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
+            <div aria-label="Basic radio toggle button group" class="btn-group" id="reasonAbsence" role="group">
+                <input autocomplete="off" checked class="btn-check" id="jobSearch" name="reasonForAbsence" type="radio">
+                <label class="btn btn-outline-primary" for="jobSearch">就活</label>
+                <input autocomplete="off" class="btn-check" id="seminar" name="reasonForAbsence" type="radio">
+                <label class="btn btn-outline-primary" for="seminar">セミナー、合同説明会</label>
+                <input autocomplete="off" class="btn-check" id="bereavement" name="reasonForAbsence" type="radio">
+                <label class="btn btn-outline-primary" for="bereavement">忌引</label>
+                <input autocomplete="off" class="btn-check" id="attendanceBan" name="reasonForAbsence" type="radio">
+                <label class="btn btn-outline-primary" for="attendanceBan">出席停止</label>
+                <input autocomplete="off" class="btn-check" id="other" name="reasonForAbsence" type="radio">
+                <label class="btn btn-outline-primary" for="other">その他</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="jobSearchDetail mt-3" id="jobSearchDetail">
+                <h3>活動内容</h3>
+                <input checked class="form-check-input" id="briefing" name="jobSearchDetailRadio" type="radio" value="briefing">
+                <label class="form-check-label" for="briefing">
+                    説明会
+                </label>
+                <input class="form-check-input" id="test" name="jobSearchDetailRadio" type="radio" value="test">
+                <label class="form-check-label" for="test">
+                    試験
+                </label>
+                <input class="form-check-input" id="visit" name="jobSearchDetailRadio" type="radio" value="visit">
+                <label class="form-check-label" for="visit">
+                    訪問
+                </label>
+                <input class="form-check-input" id="jobOther" name="jobSearchDetailRadio" type="radio" value="jobOther">
+                <label class="form-check-label" for="jobOther">
+                    その他
+                </label>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="destination">訪問先(企業名)</label></h3>
+                    <input class="form-control"
+                           id="destination"
+                           placeholder="訪問先(企業名)"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="address">所在地</label></h3>
+                    <input class="form-control"
+                           id="address"
+                           placeholder="所在地"
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="form-group mt-3">
+            <h3>公欠日時</h3>
+            <label class="form-label mt-3" for="date">公欠日を選択:</label>
+            <input type="date" id="date" name="OADate" onchange="addOADate(this.value)" required>
+            <div id="OADates"></div>
+            <br><br>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a th:href="@{/student}" class="btn btn-danger">中止</a>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">作成</button>
+            </div>
+        </div>
+    </form>
+</section>
+<!--<a th:href="@{/tasks/creationForm}" class="btn btn-primary">作成</a>-->
+<div class="card">
+    <div class="card-header"></div>
+    <div class="card-body"></div>
+</div>
+</body>
+</html>

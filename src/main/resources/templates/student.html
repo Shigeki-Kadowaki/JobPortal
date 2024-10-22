@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <a th:href="@{/student/OACreationForm}">新規公欠届作成</a><br>
+        <a th:href="@{/student/OABox}">提出済み公欠届</a>
+    </section>
+</body>
+</html>
