@@ -29,20 +29,7 @@ public class MainController {
             return "index";
         }
 //        Date date = new Date();
-////        dates.getParentValue().forEach(System.out::println);
 
-//        System.out.println("Parent Values:");
-//        form.getParentValue().forEach(System.out::println);
-//
-//        // 2. child の全てのキーと値を取り出す
-//        if(form.getChild() == null){
-//            System.out.println("null");
-//        }else{
-//            System.out.println("\nChild Values:");
-//            form.getChild().forEach((key, values) -> {
-//                System.out.println(key + ": " + values);
-//            });
-//        }
 
 //        System.out.println("success" + date.getTime());
         return "index";
@@ -71,12 +58,7 @@ public class MainController {
         return "/student";
     }
 
-//    @GetMapping("/student/OACreationForm")
-//    public String showIndex(@ModelAttribute("oAMainForm") OAMainForm form) {
-//        // JobSearchOAFormの初期化
-//        form.setJobForm(new JobSearchOAForm());
-//        return "/student/OACreationForm"; // ビュー名
-//    }
+
 
     //公欠届提出
     @PostMapping("/student/OACreationForm")
