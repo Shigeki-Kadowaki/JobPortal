@@ -1,26 +1,24 @@
 package com.jobportal.JobPortal.Controller;
 
-import com.jobportal.JobPortal.Service.OAMainEntity;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
-public record OAMainForm (
+@Data
+public class OAMainForm {
         @NotBlank
-        @Pattern(regexp = "JobSearch | seminear | breavement | attendanceBan | other")
-        String reason,
-        List<OADates> date,
+        @Pattern(regexp = "jobSearchForm|seminarForm|bereavementForm|attendanceBanForm|otherForm")
+        String reasonForAbsence;
+        List<String> OADates;
+        Map<String, List<String>> OAPeriods;
 
-        JobSearchOAForm jobForm,
-        BereavementOAForm bereaveForm,
-        AttendanceBanOAForm banForm,
-        OtherOAForm otherForm
-){
-    //TODO:toEntityメソッド作成
-//    public OAMainEntity toEntity(OAMainForm form){
-//
-//    }
+        @Valid
+        JobSearchOAForm jobForm;
+//        BereavementOAForm bereaveForm;
+//        AttendanceBanOAForm banForm;
+//        OtherOAForm otherForm;
 }

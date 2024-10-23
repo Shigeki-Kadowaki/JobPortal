@@ -3,7 +3,7 @@ form受け取り方
 text : (@RequestParam("xxx") String hoge)
 radio : (@RequestParam("xxx") String hoge)
 checkbox : (@RequestParam("xxx") List<String> hoge)
-連想配列 : (Map<String, List<String>)
+連想配列 : (Map<String, List<String>> hoge)
 
 1次元配列の場合
         for(String xxx : hoge.getXxx()){
@@ -18,16 +18,41 @@ checkbox : (@RequestParam("xxx") List<String> hoge)
                 System.out.println(key + ": " + values);
             });
 で表示。
+ただし、バインド先がレコードだとうまくいかない。@Dataつけたクラスで受け取る。
 
 th:object="hoge"
 でJavaからobjectを受け取りたい場合、名前はpost時のフォームクラス名に依存する。
 自分で決めたい場合は@ModelAttribute("huga")で"huga"になる。
 bindingResult.hasErrors()で別のメソッド呼んだとしても(恐らく)上書きできないので注意。
 
-null配列
+ネストクラスに対してバインドしたい場合
+public class Hoge(){
+    Huga huga;
+}
+public class Huga(){
+ String childValue
+}
 
-String[] arr = null;
-Optional.ofNullable(arr)     // この時点で Optional<String[]>
-     .map(Arrays.stream)     // この時点で Optional<Stream<String>>
-     .orElse(Stream.empty()) // この時点で Stream<String>, 配列の中身のストリーム
-     .forEach(System.out::println);
+HTMLでname="huga.chldValue"とするとできる。
+https://zenn.dev/peishim/articles/5b3f4f83dc5122
+
+ネストクラスでは、なぜか@Validatedが機能しない。
+public class Hoge(){
+    @NotNull
+    Huga huga;
+}
+public class Huga(){
+    @NotNull
+    String childValue
+}
+
+と思ってたけど、こうすると機能する
+public class Hoge(){
+    @Valid
+    Huga huga;
+}
+public class Huga(){
+    @NotNull
+    String childValue
+}
+https://riptutorial.com/spring/example/30721/-valid-usage-to-validate-nested-pojos
