@@ -1,23 +1,17 @@
 package com.jobportal.JobPortal.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobportal.JobPortal.Service.MainService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -29,21 +23,81 @@ public class MainController {
 
     //testMethod
     @PostMapping("/test")
-    public String test(@ModelAttribute("form") @Validated Form form, BindingResult bindingResult, Model model){
+    public String test(@Validated @ModelAttribute("form") Form form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showFormAgain(form,model);
+            return "index";
+        }
+//        Date date = new Date();
+////        dates.getParentValue().forEach(System.out::println);
+
+//        System.out.println("Parent Values:");
+//        form.getParentValue().forEach(System.out::println);
+//
+//        // 2. child の全てのキーと値を取り出す
+//        if(form.getChild() == null){
+//            System.out.println("null");
+//        }else{
+//            System.out.println("\nChild Values:");
+//            form.getChild().forEach((key, values) -> {
+//                System.out.println(key + ": " + values);
+//            });
+//        }
+
+//        System.out.println("success" + date.getTime());
+        return "index";
+    }
+
+    @PostMapping("/test2")
+    public String test2(@ModelAttribute Test form){
+//        if(bindingResult.hasErrors()){
+//            System.out.println("error");
+//            return showFormAgain();
+//        }
+        System.out.println(form.text());
+        return "/index";
+    }
+    @GetMapping("/")
+    public String showFormAgain(@ModelAttribute("form") Form form){
+        return "index";
+    }
+    @GetMapping("/index")
+    public String returnIndex(@ModelAttribute("form") Form form){
+        return "index";
+    }
+    //学生マイページ
+    @GetMapping("/student")
+    public String student(){
+        return "/student";
+    }
+
+//    @GetMapping("/student/OACreationForm")
+//    public String showIndex(@ModelAttribute("oAMainForm") OAMainForm form) {
+//        // JobSearchOAFormの初期化
+//        form.setJobForm(new JobSearchOAForm());
+//        return "/student/OACreationForm"; // ビュー名
+//    }
+
+    //公欠届提出
+    @PostMapping("/student/OACreationForm")
+    public String postOAForm(@Valid @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            bindingResult.getAllErrors().forEach(error -> {
+                System.out.println(error.getDefaultMessage());
+            });
+            System.out.println("error");
+            return showOACreationForm(form);
         }
         Date date = new Date();
-//        dates.getParentValue().forEach(System.out::println);
-        System.out.println("parentValue:");
-        for(String parentValue : form.getParentValue()){
-            System.out.println(parentValue);
+        if(Objects.nonNull(form.getOADates())){
+
+            form.getOADates().forEach(System.out::println);
         }
-        form.getParentValue().forEach(System.out::println);
-        System.out.println("ChildValue:");
-        if(Objects.nonNull(form.getChild())){
-            form.getChild().forEach((key, values) -> {
+        else {
+            System.out.println("dates is null");
+        }
+        if(Objects.nonNull(form.getOAPeriods())){
+            form.getOAPeriods().forEach((key, values) -> {
                 System.out.println(key + ": " + values);
             });
         }
@@ -51,42 +105,6 @@ public class MainController {
             System.out.println("checkbox is null");
         }
         System.out.println("success" + date.getTime());
-        return "index";
-    }
-
-    @GetMapping("/")
-    public String showFormAgain(@ModelAttribute("form") Form form, Model model){
-        return "index";
-    }
-//    @PostMapping("/validatedTest")
-//    public String vT(@Validated Form form,BindingResult bindingResult,Model model){
-//        if(bindingResult.hasErrors()){
-//            return showIndex(form, model);
-//        }
-//        return "index";
-//    }
-//    //ホームアクセス
-//
-//    public String showIndex(@ModelAttribute("form") Form form, Model model) {
-//        return "index";
-//    }
-
-    //学生マイページ
-    @GetMapping("/student")
-    public String student(){
-        return "student";
-    }
-
-    //新規公欠届提出ページ
-    @GetMapping("/student/OACreationForm")
-    public String OACreationForm(){
-
-        return "OACreationForm";
-    }
-
-    //公欠届提出
-    @PostMapping("/student/OACreationForm")
-    public String postOAForm(@RequestParam("ReasonForAbsence") List<String> reason){
 //        return switch (mainForm.reason()) {
 //            case "jobSearch" -> postJobSearchOA(mainForm);
 //            case "seminar" -> postSeminarOA(mainForm);
@@ -94,42 +112,49 @@ public class MainController {
 //            case "other" -> postOtherOA(mainForm);
 //            default -> null;
 //        };
-        System.out.println(reason);
-        return "/student/OACreationForm";
-    }
-    public String postJobSearchOA(OAMainForm mainForm){
-        var jobForm = mainForm.jobForm();
-        System.out.println(jobForm.detail() + "です");
-//        service.insertJobSearchForm;
-        return "redirect:/student/OABox";
+        System.out.println(form.getReasonForAbsence());
+        System.out.println("a");
+        System.out.println(form.getJobForm().getCompanyName());
+        System.out.println("a");
+        return "redirect:/student/OACreationForm";
     }
 
-    public String postSeminarOA(OAMainForm mainForm){
-        var jobForm = mainForm.jobForm();
-        System.out.println(jobForm.detail() + "です");
-//        service.insertJobSearchForm;
-        return "redirect:/student/OABox";
+    @GetMapping("/student/OACreationForm")
+    private String showOACreationForm(@ModelAttribute("oAMainForm") OAMainForm form) {
+        if (form.getJobForm() == null) {
+            form.setJobForm(new JobSearchOAForm());
+        }
+        return "OACreationForm";
     }
+//    public String postJobSearchOA(OAMainForm mainForm){
+//        var jobForm = mainForm.getJobForm();
+//        System.out.println(jobForm.detail() + "です");
+////        service.insertJobSearchForm;
+//        return "redirect:/student/OABox";
+//    }
+//
+//    public String postSeminarOA(OAMainForm mainForm){
+//        var jobForm = mainForm.getJobForm();
+//        System.out.println(jobForm.detail() + "です");
+////        service.insertJobSearchForm;
+//        return "redirect:/student/OABox";
+//    }
+//
+//    public String postBereavementOA(OAMainForm mainForm){
+//        var jobForm = mainForm.getJobForm();
+//        System.out.println(jobForm.detail() + "です");
+////        service.insertJobSearchForm;
+//        return "redirect:/student/OABox";
+//    }
+//
+//    public String postOtherOA(OAMainForm mainForm){
+//        var jobForm = mainForm.getJobForm();
+//        System.out.println(jobForm.detail() + "です");
+////        service.insertJobSearchForm;
+//        return "redirect:/student/OABox";
+//    }
 
-    public String postBereavementOA(OAMainForm mainForm){
-        var jobForm = mainForm.jobForm();
-        System.out.println(jobForm.detail() + "です");
-//        service.insertJobSearchForm;
-        return "redirect:/student/OABox";
-    }
 
-    public String postOtherOA(OAMainForm mainForm){
-        var jobForm = mainForm.jobForm();
-        System.out.println(jobForm.detail() + "です");
-//        service.insertJobSearchForm;
-        return "redirect:/student/OABox";
-    }
-
-    @GetMapping("/index")
-    public String returnIndex(Model model){
-        model.addAttribute("message", "indexアクセス");
-        return "index";
-    }
 
     //提出済み公欠届BOX
     @GetMapping("/student/OABox")
