@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 public class Form {
     private List<String> parentValue;
-    private Map<String, @NotNull List<String>> child;
+    private Map<String, List<String>> child;
     @NotBlank
     private String text;
     public Form(){}

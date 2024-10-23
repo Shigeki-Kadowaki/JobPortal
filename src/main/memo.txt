@@ -3,6 +3,7 @@ form受け取り方
 text : (@RequestParam("xxx") String hoge)
 radio : (@RequestParam("xxx") String hoge)
 checkbox : (@RequestParam("xxx") List<String> hoge)
+連想配列 : (Map<String, List<String>)
 
 1次元配列の場合
         for(String xxx : hoge.getXxx()){
@@ -16,7 +17,7 @@ checkbox : (@RequestParam("xxx") List<String> hoge)
             hoge.getXxx().forEach((key, values) -> {
                 System.out.println(key + ": " + values);
             });
-で取得。
+で表示。
 
 th:object="hoge"
 でJavaからobjectを受け取りたい場合、名前はpost時のフォームクラス名に依存する。
