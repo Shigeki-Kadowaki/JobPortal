@@ -27,11 +27,11 @@ public class MainController {
     public SmartValidator validator;
 
     @GetMapping("/")
-    public String showFormAgain(@ModelAttribute("validateTest") validateTest validateTest){
+    public String showFormAgain(){
         return "index";
     }
-    @GetMapping("/test")
-    public String returnIndex(@ModelAttribute("validateTest") validateTest validateTest){
+    @GetMapping("/index")
+    public String returnIndex(){
         return "index";
     }
 
@@ -181,5 +181,8 @@ public class MainController {
 //    public String getAllOA(){
 //        return "OABox";
 //    }
+
+
+
 
 }
