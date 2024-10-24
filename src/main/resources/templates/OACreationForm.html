@@ -32,120 +32,120 @@
             <div class="form-group mt-3">
                 <h3>活動内容</h3>
                 <label class="form-check-label" for="briefing">
-                <input checked class="form-check-input" id="briefing" name="jobForm.detail" type="radio" value="briefing">
+                <input checked class="form-check-input" id="briefing" name="detail" type="radio" value="briefing">
                     説明会
                 </label>
                 <label class="form-check-label" for="test">
-                <input class="form-check-input" id="test" name="jobForm.detail" type="radio" value="test">
+                <input class="form-check-input" id="test" name="detail" type="radio" value="test">
                     試験
                 </label>
                 <label class="form-check-label" for="visit">
-                <input class="form-check-input" id="visit" name="jobForm.detail" type="radio" value="visit">
+                <input class="form-check-input" id="visit" name="detail" type="radio" value="visit">
                     訪問
                 </label>
                 <label class="form-check-label" for="jobOther">
-                <input class="form-check-input" id="jobOther" name="jobForm.detail" type="radio" value="jobOther">
+                <input class="form-check-input" id="jobOther" name="detail" type="radio" value="jobOther">
                     その他
                 </label>
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="companyName">訪問先(企業名)</label></h3>
-                <span th:errors="*{jobForm.companyName}"></span>
+                <span th:errors="*{companyName}"></span>
                 <input type="text"
                        class="form-control"
                        id="companyName"
-                       name="jobForm.companyName"
+                       name="companyName"
                        placeholder="訪問先(企業名)"
-                       th:value="*{jobForm.companyName}"
+                       th:value="*{companyName}"
                 >
 
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="address">所在地</label></h3>
-                <span th:errors="*{jobForm.address}"></span>
+                <span th:errors="*{address}"></span>
                 <input class="form-control"
                        id="address"
-                       name="jobForm.address"
+                       name="address"
                        placeholder="所在地"
-                       th:value="*{jobForm.address}"
+                       th:value="*{address}"
                 >
             </div>
         </div>
         <div id="seminarForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="seminarName">セミナー・合説名</label></h3>
-                <span th:errors="*{seminarForm.seminarName}"></span>
+                <span th:errors="*{seminarName}"></span>
                 <input class="form-control"
                        id="seminarName"
-                       name="seminarForm.seminarName"
+                       name="seminarName"
                        placeholder="合説・セミナー名"
-                       th:value="*{seminarForm.seminarName}"
+                       th:value="*{seminarName}"
                 >
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="location">実施場所</label></h3>
-                <span th:errors="*{seminarForm.location}"></span>
+                <span th:errors="*{location}"></span>
                 <input class="form-control"
                        id="location"
-                       name="seminarForm.location"
+                       name="location"
                        placeholder="実施場所"
-                       th:value="*{seminarForm.location}"
+                       th:value="*{location}"
                 >
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="venueName">会場名</label></h3>
-                <span th:errors="*{seminarForm.venueName}"></span>
+                <span th:errors="*{venueName}"></span>
                 <input class="form-control"
                        id="venueName"
-                       name="seminarForm.venueName"
+                       name="venueName"
                        placeholder="会場名"
-                       th:value="*{seminarForm.venueName}"
+                       th:value="*{venueName}"
                 >
             </div>
         </div>
         <div id="bereavementForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="deceasedName">亡くなった方</label></h3>
-                <span th:errors="*{bereavementForm.deceasedName}"></span>
+                <span th:errors="*{deceasedName}"></span>
                 <input class="form-control"
                        id="deceasedName"
-                       name="bereavementForm.deceasedName"
+                       name="deceasedName"
                        placeholder="亡くなった方"
-                       th:value="*{bereavementForm.deceasedName}"
+                       th:value="*{deceasedName}"
                 >
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="relationship">続柄</label></h3>
-                <span th:errors="*{bereavementForm.relationship}"></span>
+                <span th:errors="*{relationship}"></span>
                 <input class="form-control"
                        id="relationship"
-                       name="bereavementForm.relationship"
+                       name="relationship"
                        placeholder="続柄"
-                       th:value="*{bereavementForm.relationship}"
+                       th:value="*{relationship}"
                 >
             </div>
         </div>
         <div id="attendanceBanForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="banReason">停止理由(病名)</label></h3>
-                <span th:errors="*{banForm.reason}"></span>
+                <span th:errors="*{banReason}"></span>
                 <input class="form-control"
                        id="banReason"
-                       name="banForm.reason"
+                       name="banReason"
                        placeholder="停止理由(病名)"
-                       th:value="*{banForm.reason}"
+                       th:value="*{banReason}"
                 >
             </div>
         </div>
         <div id="otherForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="reason">理由</label></h3>
-                <span th:errors="*{otherForm.reason}"></span>
+                <span th:errors="*{otherReason}"></span>
                 <input class="form-control"
                        id="reason"
-                       name="otherForm.reason"
+                       name="otherReason"
                        placeholder="理由"
-                       th:value="*{otherForm.reason}"
+                       th:value="*{otherReason}"
                 >
             </div>
         </div>
