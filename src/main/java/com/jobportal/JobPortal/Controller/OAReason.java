@@ -1,9 +1,9 @@
 package com.jobportal.JobPortal.Controller;
 
 public enum OAReason {
-    jobSearch,
-    seminar,
-    bereavement,
-    attendanceBan,
-    other
+    jobSearchForm,
+    seminarForm,
+    bereavementForm,
+    attendanceBanForm,
+    otherForm
 }

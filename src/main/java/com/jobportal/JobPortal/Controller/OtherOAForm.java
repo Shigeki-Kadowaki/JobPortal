@@ -2,10 +2,14 @@ package com.jobportal.JobPortal.Controller;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
-public record OtherOAForm(
+@Data
+public class OtherOAForm {
+
+        private final String name = "other";
+
         @NotBlank(message = "必須項目です")
-        @Size(max = 256, message = "256文字以内で入力してください")
-        String reason
-) {
+        @Size(max = 64, message = "64文字以内で入力してください")
+         private String reason;
 }

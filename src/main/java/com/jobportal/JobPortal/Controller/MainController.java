@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Date;
-import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,35 +20,13 @@ public class MainController {
     @Autowired
     private MainService service;
 
-    //testMethod
-    @PostMapping("/test")
-    public String test(@Validated @ModelAttribute("form") Form form, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            System.out.println("error");
-            return "index";
-        }
-//        Date date = new Date();
 
-
-//        System.out.println("success" + date.getTime());
-        return "index";
-    }
-
-    @PostMapping("/test2")
-    public String test2(@ModelAttribute Test form){
-//        if(bindingResult.hasErrors()){
-//            System.out.println("error");
-//            return showFormAgain();
-//        }
-        System.out.println(form.text());
-        return "/index";
-    }
     @GetMapping("/")
-    public String showFormAgain(@ModelAttribute("form") Form form){
+    public String showFormAgain(){
         return "index";
     }
     @GetMapping("/index")
-    public String returnIndex(@ModelAttribute("form") Form form){
+    public String returnIndex(){
         return "index";
     }
     //学生マイページ
@@ -64,41 +41,20 @@ public class MainController {
     @PostMapping("/student/OACreationForm")
     public String postOAForm(@Valid @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
-            bindingResult.getAllErrors().forEach(error -> {
-                System.out.println(error.getDefaultMessage());
-            });
             System.out.println("error");
-            return showOACreationForm(form);
+            return "/OACreationForm";
         }
         Date date = new Date();
-        if(Objects.nonNull(form.getOADates())){
-
-            form.getOADates().forEach(System.out::println);
-        }
-        else {
-            System.out.println("dates is null");
-        }
-        if(Objects.nonNull(form.getOAPeriods())){
-            form.getOAPeriods().forEach((key, values) -> {
-                System.out.println(key + ": " + values);
-            });
-        }
-        else{
-            System.out.println("checkbox is null");
-        }
         System.out.println("success" + date.getTime());
-//        return switch (mainForm.reason()) {
-//            case "jobSearch" -> postJobSearchOA(mainForm);
-//            case "seminar" -> postSeminarOA(mainForm);
-//            case "bereavement" -> postBereavementOA(mainForm);
-//            case "other" -> postOtherOA(mainForm);
-//            default -> null;
-//        };
-        System.out.println(form.getReasonForAbsence());
-        System.out.println("a");
-        System.out.println(form.getJobForm().getCompanyName());
-        System.out.println("a");
-        return "redirect:/student/OACreationForm";
+
+        return switch (form.getReasonForAbsence()) {
+            case "jobSearchForm" -> postJobSearchOA(form.getJobForm());
+            case "seminarForm" -> postSeminarOA(form.getSeminarForm());
+            case "bereavementForm" -> postBereavementOA(form.getBereavementForm());
+            case "attendanceBanForm" -> postAttendanceBanOA(form.getBanForm());
+            case "otherForm" -> postOtherOA(form.getOtherForm());
+            default -> null;
+        };
     }
 
     @GetMapping("/student/OACreationForm")
@@ -108,33 +64,31 @@ public class MainController {
         }
         return "OACreationForm";
     }
-//    public String postJobSearchOA(OAMainForm mainForm){
-//        var jobForm = mainForm.getJobForm();
-//        System.out.println(jobForm.detail() + "です");
-////        service.insertJobSearchForm;
-//        return "redirect:/student/OABox";
-//    }
-//
-//    public String postSeminarOA(OAMainForm mainForm){
-//        var jobForm = mainForm.getJobForm();
-//        System.out.println(jobForm.detail() + "です");
-////        service.insertJobSearchForm;
-//        return "redirect:/student/OABox";
-//    }
-//
-//    public String postBereavementOA(OAMainForm mainForm){
-//        var jobForm = mainForm.getJobForm();
-//        System.out.println(jobForm.detail() + "です");
-////        service.insertJobSearchForm;
-//        return "redirect:/student/OABox";
-//    }
-//
-//    public String postOtherOA(OAMainForm mainForm){
-//        var jobForm = mainForm.getJobForm();
-//        System.out.println(jobForm.detail() + "です");
-////        service.insertJobSearchForm;
-//        return "redirect:/student/OABox";
-//    }
+
+    public String postJobSearchOA(@Validated JobSearchOAForm form){
+        System.out.println(form.getName());
+        return "redirect:/student/OACreationForm";
+    }
+
+    public String postSeminarOA(@Validated SeminarOAForm form){
+        System.out.println(form.getName());
+        return "redirect:/student/OACreationForm";
+    }
+
+    public String postBereavementOA(@Validated BereavementOAForm form){
+        System.out.println(form.getName());
+        return "redirect:/student/OACreationForm";
+    }
+
+    public String postAttendanceBanOA(@Validated AttendanceBanOAForm form){
+        System.out.println(form.getName());
+        return "redirect:/student/OACreationForm";
+    }
+
+    public String postOtherOA(@Validated OtherOAForm form){
+        System.out.println(form.getName());
+        return "redirect:/student/OACreationForm";
+    }
 
 
 

@@ -2,6 +2,7 @@ package com.jobportal.JobPortal.Controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -12,13 +13,21 @@ import java.util.Map;
 public class OAMainForm {
         @NotBlank
         @Pattern(regexp = "jobSearchForm|seminarForm|bereavementForm|attendanceBanForm|otherForm")
-        String reasonForAbsence;
-        List<String> OADates;
-        Map<String, List<String>> OAPeriods;
+        private String reasonForAbsence;
+//        private List<String> OADates;
+
+        @NotEmpty
+        @Valid
+        private Map<@NotBlank String,@NotEmpty List<@NotBlank String>> OAPeriods;
 
         @Valid
-        JobSearchOAForm jobForm;
-//        BereavementOAForm bereaveForm;
-//        AttendanceBanOAForm banForm;
-//        OtherOAForm otherForm;
+        private JobSearchOAForm jobForm;
+        @Valid
+        private SeminarOAForm seminarForm;
+        @Valid
+        private BereavementOAForm bereavementForm;
+        @Valid
+        private AttendanceBanOAForm banForm;
+        @Valid
+        private OtherOAForm otherForm;
 }

@@ -3,7 +3,6 @@ package com.jobportal.JobPortal.Service;
 import com.jobportal.JobPortal.Controller.*;
 
 import java.util.Date;
-import java.util.List;
 
 public record OAMainEntity(
         int id,
@@ -11,7 +10,6 @@ public record OAMainEntity(
         Date submissionDate,
         OAStatus status,
         OAReason reason,
-        List<OADates> date,
 
         JobSearchOAForm jobForm,
         BereavementOAForm bereaveForm,

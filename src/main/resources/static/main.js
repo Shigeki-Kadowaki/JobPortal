@@ -41,17 +41,32 @@ function formatDate(date, sep="") {
   return `${yyyy}${sep}${mm}${sep}${dd}`;
 }
 
-let prevSelected = "jobSearchForm";
-window.addEventListener('load',()=>{
-    let formRadio = document.querySelectorAll('.btn-check');
+let prevSelected = "firstLoad";
+window.addEventListener('DOMContentLoaded',()=>{
+    let formRadio = document.getElementsByName('reasonForAbsence');
 //    let radioCheckID = document.getElementById('reasonAbsence');
     formRadio.forEach((target)=>{
         target.addEventListener('change',()=>{
+          console.log(prevSelected);
           document.getElementById(prevSelected).style.display='none';
           document.getElementById(target.value).style.display='block';
+
           prevSelected=target.value;
         });
+        if(target.checked){
+        prevSelected=target.value;
+        }
     });
-
+    if(prevSelected==="firstLoad"){
+        document.getElementById("jobSearch").checked = true;
+        prevSelected="jobSearchForm";
+    }
+    document.getElementById('jobSearchForm').style.display='none';
+    document.getElementById('seminarForm').style.display='none';
+    document.getElementById('bereavementForm').style.display='none';
+    document.getElementById('attendanceBanForm').style.display='none';
+    document.getElementById('otherForm').style.display='none';
+    document.getElementById(prevSelected).style.display='block';
+    console.log(prevSelected);
     console.log("load");
 })
