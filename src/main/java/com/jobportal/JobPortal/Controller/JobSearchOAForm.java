@@ -7,6 +7,9 @@ import lombok.Data;
 
 @Data
 public class JobSearchOAForm{
+
+        private final String name = "jobSearch";
+
         @NotBlank(message = "必須項目です")
         @Pattern(regexp = "briefing|test|visit|other")
         private String detail;

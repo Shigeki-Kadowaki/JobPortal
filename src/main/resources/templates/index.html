@@ -17,7 +17,7 @@
         <a th:href="@{/student}" class="button">学生用ページ</a><br>
         <a th:href="@{/teacher}" class="button">先生用ページ</a>
         <h1 th:text="${message}">Hello, World!</h1>
-        <form th:action="@{/test}" method="post" th:object="${form}">
+<!--        <form th:action="@{/test}" method="post">-->
 <!--            <input type="text" name="text" id="text" th:value="${value}">-->
 <!--            <div class="form-group mt-3">-->
 <!--                <h3>公欠日時</h3>-->
@@ -33,8 +33,8 @@
 <!--            <label><input type="checkbox" id="b-1" name="child[exaB][]" value="b-1">pushB-1</label>-->
 <!--            <label><input type="checkbox" id="b-2" name="child[exaB][]" value="b-2">pushB-2</label>-->
 <!--            <span th:errors="*{child}"></span>-->
-            <input type="text" name="text">
-            <span th:errors="*{text}"></span>
+<!--            <input type="text" name="text">-->
+<!--            <span th:errors="*{text}"></span>-->
 <!--            <button type="submit" class="btn btn-primary">作成</button>-->
 <!--        </form>-->
 <!--        <form th:action="@{/validatedTest}" method="post" th:object="${form}">-->
@@ -42,7 +42,7 @@
 <!--            <span th:errors="*{text}"></span>-->
 <!--            <input type="text" name="text" th:value="*{text}">-->
             <button type="submit" class="btn btn-primary">送信</button>
-        </form>
+<!--        </form>-->
     </section>
 </body>
 </html>

@@ -16,15 +16,15 @@
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
 <!--            <span th:errors="*{reasonForAbsence}"></span>-->
             <div aria-label="Basic radio toggle button group" class="btn-group" id="reasonAbsence" role="group">
-                <input autocomplete="off" checked class="btn-check" id="jobSearch" name="reasonForAbsence" type="radio" value="jobSearchForm">
+                <input autocomplete="off" checked class="btn-check" id="jobSearch" name="reasonForAbsence" type="radio" value="jobSearchForm" th:checked="*{reasonForAbsence} == 'jobSearchForm'">
                 <label class="btn btn-outline-primary" for="jobSearch">就活</label>
-                <input autocomplete="off" class="btn-check" id="seminar" name="reasonForAbsence" type="radio" value="seminarForm">
+                <input autocomplete="off" class="btn-check" id="seminar" name="reasonForAbsence" type="radio" value="seminarForm" th:checked="*{reasonForAbsence} == 'seminarForm'">
                 <label class="btn btn-outline-primary" for="seminar">セミナー、合同説明会</label>
-                <input autocomplete="off" class="btn-check" id="bereavement" name="reasonForAbsence" type="radio" value="bereavementForm">
+                <input autocomplete="off" class="btn-check" id="bereavement" name="reasonForAbsence" type="radio" value="bereavementForm" th:checked="*{reasonForAbsence} == 'bereavementForm'">
                 <label class="btn btn-outline-primary" for="bereavement">忌引</label>
-                <input autocomplete="off" class="btn-check" id="attendanceBan" name="reasonForAbsence" type="radio" value="attendanceBanForm">
+                <input autocomplete="off" class="btn-check" id="attendanceBan" name="reasonForAbsence" type="radio" value="attendanceBanForm" th:checked="*{reasonForAbsence} == 'attendanceBanForm'">
                 <label class="btn btn-outline-primary" for="attendanceBan">出席停止</label>
-                <input autocomplete="off" class="btn-check" id="other" name="reasonForAbsence" type="radio" value="otherForm">
+                <input autocomplete="off" class="btn-check" id="other" name="reasonForAbsence" type="radio" value="otherForm" th:checked="*{reasonForAbsence} == 'otherForm'">
                 <label class="btn btn-outline-primary" for="other">その他</label>
             </div>
         </div>
@@ -50,90 +50,109 @@
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="companyName">訪問先(企業名)</label></h3>
+                <span th:errors="*{jobForm.companyName}"></span>
                 <input type="text"
                        class="form-control"
                        id="companyName"
                        name="jobForm.companyName"
                        placeholder="訪問先(企業名)"
+                       th:value="*{jobForm.companyName}"
                 >
-                <span th:errors="*{jobForm.companyName}"></span>
+
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="address">所在地</label></h3>
+                <span th:errors="*{jobForm.address}"></span>
                 <input class="form-control"
                        id="address"
                        name="jobForm.address"
                        placeholder="所在地"
+                       th:value="*{jobForm.address}"
                 >
             </div>
         </div>
         <div id="seminarForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="seminarName">セミナー・合説名</label></h3>
+                <span th:errors="*{seminarForm.seminarName}"></span>
                 <input class="form-control"
                        id="seminarName"
-                       name="jobForm.seminarName"
+                       name="seminarForm.seminarName"
                        placeholder="合説・セミナー名"
+                       th:value="*{seminarForm.seminarName}"
                 >
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="location">実施場所</label></h3>
+                <span th:errors="*{seminarForm.location}"></span>
                 <input class="form-control"
                        id="location"
-                       name="location"
+                       name="seminarForm.location"
                        placeholder="実施場所"
+                       th:value="*{seminarForm.location}"
                 >
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="venueName">会場名</label></h3>
+                <span th:errors="*{seminarForm.venueName}"></span>
                 <input class="form-control"
                        id="venueName"
-                       name="venueName"
+                       name="seminarForm.venueName"
                        placeholder="会場名"
+                       th:value="*{seminarForm.venueName}"
                 >
             </div>
         </div>
         <div id="bereavementForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="deceasedName">亡くなった方</label></h3>
+                <span th:errors="*{bereavementForm.deceasedName}"></span>
                 <input class="form-control"
                        id="deceasedName"
-                       name="deceasedName"
+                       name="bereavementForm.deceasedName"
                        placeholder="亡くなった方"
+                       th:value="*{bereavementForm.deceasedName}"
                 >
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="relationship">続柄</label></h3>
+                <span th:errors="*{bereavementForm.relationship}"></span>
                 <input class="form-control"
                        id="relationship"
-                       name="relationship"
+                       name="bereavementForm.relationship"
                        placeholder="続柄"
+                       th:value="*{bereavementForm.relationship}"
                 >
             </div>
         </div>
         <div id="attendanceBanForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="banReason">停止理由(病名)</label></h3>
+                <span th:errors="*{banForm.reason}"></span>
                 <input class="form-control"
                        id="banReason"
-                       name="banReason"
+                       name="banForm.reason"
                        placeholder="停止理由(病名)"
+                       th:value="*{banForm.reason}"
                 >
             </div>
         </div>
         <div id="otherForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="reason">理由</label></h3>
+                <span th:errors="*{otherForm.reason}"></span>
                 <input class="form-control"
                        id="reason"
-                       name="reason"
+                       name="otherForm.reason"
                        placeholder="理由"
+                       th:value="*{otherForm.reason}"
                 >
             </div>
         </div>
         <div id="OADatesForm">
             <div class="form-group mt-3">
                 <h3>公欠日時</h3>
+                <span th:errors="*{OAPeriods}"></span>
                 <label class="form-label mt-3" for="date">公欠日を選択:</label>
                 <input class="form-control" type="text" id="date" name="OADate" onchange="addOADate(this.value.replaceAll('/',''))" readonly>
                 <div id="OADates"></div>
