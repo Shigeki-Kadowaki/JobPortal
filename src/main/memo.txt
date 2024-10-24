@@ -57,4 +57,14 @@ public class Huga(){
 }
 https://riptutorial.com/spring/example/30721/-valid-usage-to-validate-nested-pojos
 
-memo2
+
+任意のタイミングで任意のグループでバリデーションを行いたい場合
+Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+Set<ConstraintViolation> violations = validator.validate(targetEntity, new Class[]{group1.class, group2.class});
+
+https://stackoverflow.com/questions/39209644/smartvalidator-manually-calling-validate-with-groups
+
+なお、ネストクラスではうまく機能しなかった。
+https://terasolunaorg.github.io/guideline/1.0.2.RELEASE/ja/ArchitectureInDetail/Validation.html#bean
+の、5.5.2.1.2. ネストしたBeanの単項目チェック
+を見るとネストクラスでもいけるっぽい。
