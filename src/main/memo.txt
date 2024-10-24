@@ -56,3 +56,5 @@ public class Huga(){
     String childValue
 }
 https://riptutorial.com/spring/example/30721/-valid-usage-to-validate-nested-pojos
+
+memo
