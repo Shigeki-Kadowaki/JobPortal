@@ -57,4 +57,4 @@ public class Huga(){
 }
 https://riptutorial.com/spring/example/30721/-valid-usage-to-validate-nested-pojos
 
-memo
+memo2
