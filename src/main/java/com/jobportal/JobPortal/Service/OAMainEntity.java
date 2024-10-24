@@ -9,11 +9,11 @@ public record OAMainEntity(
         Date OAdate,
         Date submissionDate,
         OAStatus status,
-        OAReason reason,
+        OAReason reason
 
-        JobSearchOAForm jobForm,
-        BereavementOAForm bereaveForm,
-        AttendanceBanOAForm banForm,
-        OtherOAForm otherForm
+//        JobSearchOAForm jobForm,
+//        BereavementOAForm bereaveForm,
+//        AttendanceBanOAForm banForm,
+//        OtherOAForm otherForm
 ) {
 }

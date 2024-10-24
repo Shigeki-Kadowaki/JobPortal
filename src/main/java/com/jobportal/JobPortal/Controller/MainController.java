@@ -5,8 +5,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +22,10 @@ public class MainController {
 
 
     @GetMapping("/")
-    public String showFormAgain(){
+    public String showFormAgain(Model model){
         return "index";
     }
-    @GetMapping("/index")
-    public String returnIndex(){
-        return "index";
-    }
+
     //学生マイページ
     @GetMapping("/student")
     public String student(){
@@ -47,48 +44,44 @@ public class MainController {
         Date date = new Date();
         System.out.println("success" + date.getTime());
 
-        return switch (form.getReasonForAbsence()) {
-            case "jobSearchForm" -> postJobSearchOA(form.getJobForm());
-            case "seminarForm" -> postSeminarOA(form.getSeminarForm());
-            case "bereavementForm" -> postBereavementOA(form.getBereavementForm());
-            case "attendanceBanForm" -> postAttendanceBanOA(form.getBanForm());
-            case "otherForm" -> postOtherOA(form.getOtherForm());
-            default -> null;
-        };
+
+        return "redirect/student/OACreationForm";
+    }
+
+    @PostMapping("/student/OACreationForm")
+    public String postOAForm(@Valid @ModelAttribute("oAMainForm") a form, BindingResult bindingResult){
+        return "redirect/student/OACreationForm";
     }
 
     @GetMapping("/student/OACreationForm")
     private String showOACreationForm(@ModelAttribute("oAMainForm") OAMainForm form) {
-        if (form.getJobForm() == null) {
-            form.setJobForm(new JobSearchOAForm());
-        }
         return "OACreationForm";
     }
 
-    public String postJobSearchOA(@Validated JobSearchOAForm form){
-        System.out.println(form.getName());
-        return "redirect:/student/OACreationForm";
-    }
-
-    public String postSeminarOA(@Validated SeminarOAForm form){
-        System.out.println(form.getName());
-        return "redirect:/student/OACreationForm";
-    }
-
-    public String postBereavementOA(@Validated BereavementOAForm form){
-        System.out.println(form.getName());
-        return "redirect:/student/OACreationForm";
-    }
-
-    public String postAttendanceBanOA(@Validated AttendanceBanOAForm form){
-        System.out.println(form.getName());
-        return "redirect:/student/OACreationForm";
-    }
-
-    public String postOtherOA(@Validated OtherOAForm form){
-        System.out.println(form.getName());
-        return "redirect:/student/OACreationForm";
-    }
+//    public String postJobSearchOA(@Validated JobSearchOAForm form){
+//        System.out.println(form.getName());
+//        return "redirect:/student/OACreationForm";
+//    }
+//
+//    public String postSeminarOA(@Validated SeminarOAForm form){
+//        System.out.println(form.getName());
+//        return "redirect:/student/OACreationForm";
+//    }
+//
+//    public String postBereavementOA(@Validated BereavementOAForm form){
+//        System.out.println(form.getName());
+//        return "redirect:/student/OACreationForm";
+//    }
+//
+//    public String postAttendanceBanOA(@Validated AttendanceBanOAForm form){
+//        System.out.println(form.getName());
+//        return "redirect:/student/OACreationForm";
+//    }
+//
+//    public String postOtherOA(@Validated OtherOAForm form){
+//        System.out.println(form.getName());
+//        return "redirect:/student/OACreationForm";
+//    }
 
 
 
@@ -97,5 +90,8 @@ public class MainController {
     public String getAllOA(){
         return "OABox";
     }
+
+
+
 
 }
