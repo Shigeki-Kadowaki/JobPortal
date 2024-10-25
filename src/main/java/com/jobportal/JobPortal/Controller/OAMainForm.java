@@ -47,8 +47,8 @@ public class OAMainForm {
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
         private String relationship;
 //出席停止部分
-        @NotBlank(message = "必須項目です",groups = banGroup.class)
-        @Size(max = 256, message = "256文字以内で入力してください",groups = banGroup.class)
+        @NotBlank(message = "必須項目です",groups = attendanceBanGroup.class)
+        @Size(max = 256, message = "256文字以内で入力してください",groups = attendanceBanGroup.class)
         private String BanReason;
 //その他部分
         @NotBlank(message = "必須項目です",groups = otherGroup.class)

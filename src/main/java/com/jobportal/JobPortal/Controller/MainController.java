@@ -121,7 +121,7 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/OACreationForm";
+        return "redirect:/student/OACreationForm";
     }
     //就活公欠届提出
     @PostMapping(value = "/student/OACreationForm", params = "seminarForm")
@@ -132,7 +132,7 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/OACreationForm";
+        return "redirect:/student/OACreationForm";
     }
     //忌引公欠届提出
     @PostMapping(value = "/student/OACreationForm", params = "bereavementForm")
@@ -143,18 +143,18 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/OACreationForm";
+        return "redirect:/student/OACreationForm";
     }
     //出席停止公欠届提出
-    @PostMapping(value = "/student/OACreationForm", params = "banForm")
-    public String postBanForm(@Validated(banGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+    @PostMapping(value = "/student/OACreationForm", params = "attendanceBanForm")
+    public String postBanForm(@Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/OACreationForm";
+        return "redirect:/student/OACreationForm";
     }
     //その他公欠届提出
     @PostMapping(value = "/student/OACreationForm", params = "otherForm")
@@ -165,7 +165,7 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/OACreationForm";
+        return "redirect:/student/OACreationForm";
     }
 
 
