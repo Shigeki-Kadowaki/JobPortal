@@ -28,7 +28,7 @@
                 <label class="btn btn-outline-primary" for="other">その他</label>
             </div>
         </div>
-        <div id="jobSearchForm">
+        <div class="jobSearchForm">
             <div class="form-group mt-3">
                 <h3>活動内容</h3>
                 <label class="form-check-label" for="briefing">
@@ -71,7 +71,7 @@
                 >
             </div>
         </div>
-        <div id="seminarForm" style="display:none">
+        <div class="seminarForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="seminarName">セミナー・合説名</label></h3>
                 <span th:errors="*{seminarName}"></span>
@@ -103,7 +103,7 @@
                 >
             </div>
         </div>
-        <div id="bereavementForm" style="display:none">
+        <div class="bereavementForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="deceasedName">亡くなった方</label></h3>
                 <span th:errors="*{deceasedName}"></span>
@@ -125,7 +125,7 @@
                 >
             </div>
         </div>
-        <div id="attendanceBanForm" style="display:none">
+        <div class="attendanceBanForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="banReason">停止理由(病名)</label></h3>
                 <span th:errors="*{banReason}"></span>
@@ -137,7 +137,7 @@
                 >
             </div>
         </div>
-        <div id="otherForm" style="display:none">
+        <div class="otherForm" style="display:none">
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="reason">理由</label></h3>
                 <span th:errors="*{otherReason}"></span>
@@ -149,7 +149,7 @@
                 >
             </div>
         </div>
-        <div id="OADatesForm">
+        <div class="OADatesForm">
             <div class="form-group mt-3">
                 <h3>公欠日時</h3>
                 <span th:errors="*{OAPeriods}"></span>
@@ -182,9 +182,36 @@
 
         <div class="d-flex justify-content-between">
             <a th:href="@{/student}" class="btn btn-danger">中止</a>
-            <div class="text-end">
-                <button type="submit" class="btn btn-primary">作成</button>
+            <div class="jobSearchForm">
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary" name="jobSearchForm">就活</button>
+                </div>
             </div>
+            <div class="seminarForm" style="display:none">
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary" name="seminarForm">セミナー</button>
+                </div>
+            </div>
+            <div class="bereavementForm" style="display:none">
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary" name="bereavementForm">忌引</button>
+                </div>
+            </div>
+            <div class="attendanceBanForm" style="display:none">
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary" name="attendanceBanForm">停止</button>
+                </div>
+            </div>
+            <div class="otherForm" style="display:none">
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary" name="otherForm">その他</button>
+                </div>
+            </div>
+
+
+
+
+
         </div>
     </form>
 </section>

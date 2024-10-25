@@ -48,8 +48,10 @@ window.addEventListener('DOMContentLoaded',()=>{
     formRadio.forEach((target)=>{
         target.addEventListener('change',()=>{
           console.log(prevSelected);
-          document.getElementById(prevSelected).style.display='none';
-          document.getElementById(target.value).style.display='block';
+          document.getElementsByClassName(prevSelected)[0].style.display='none';
+          document.getElementsByClassName(target.value)[0].style.display='block';
+          document.getElementsByClassName(prevSelected)[1].style.display='none';
+          document.getElementsByClassName(target.value)[1].style.display='block';
 
           prevSelected=target.value;
         });
@@ -61,12 +63,23 @@ window.addEventListener('DOMContentLoaded',()=>{
         document.getElementById("jobSearch").checked = true;
         prevSelected="jobSearchForm";
     }
-    document.getElementById('jobSearchForm').style.display='none';
-    document.getElementById('seminarForm').style.display='none';
-    document.getElementById('bereavementForm').style.display='none';
-    document.getElementById('attendanceBanForm').style.display='none';
-    document.getElementById('otherForm').style.display='none';
-    document.getElementById(prevSelected).style.display='block';
+//    document.getElementById('jobSearchForm').style.display='none';
+//    document.getElementById('seminarForm').style.display='none';
+//    document.getElementById('bereavementForm').style.display='none';
+//    document.getElementById('attendanceBanForm').style.display='none';
+//    document.getElementById('otherForm').style.display='none';
+    document.getElementsByClassName('jobSearchForm')[0].style.display='none';
+    document.getElementsByClassName('seminarForm')[0].style.display='none';
+    document.getElementsByClassName('bereavementForm')[0].style.display='none';
+    document.getElementsByClassName('attendanceBanForm')[0].style.display='none';
+    document.getElementsByClassName('otherForm')[0].style.display='none';
+    document.getElementsByClassName(prevSelected)[0].style.display='block';
+    document.getElementsByClassName('jobSearchForm')[1].style.display='none';
+    document.getElementsByClassName('seminarForm')[1].style.display='none';
+    document.getElementsByClassName('bereavementForm')[1].style.display='none';
+    document.getElementsByClassName('attendanceBanForm')[1].style.display='none';
+    document.getElementsByClassName('otherForm')[1].style.display='none';
+    document.getElementsByClassName(prevSelected)[1].style.display='block';
     console.log(prevSelected);
     console.log("load");
 })

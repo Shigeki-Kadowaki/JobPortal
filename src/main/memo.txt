@@ -68,3 +68,6 @@ https://stackoverflow.com/questions/39209644/smartvalidator-manually-calling-val
 https://terasolunaorg.github.io/guideline/1.0.2.RELEASE/ja/ArchitectureInDetail/Validation.html#bean
 の、5.5.2.1.2. ネストしたBeanの単項目チェック
 を見るとネストクラスでもいけるっぽい。
+
+いろいろ試したけどネストクラスのgroupのvalidationがうまくいかなかったので、いっこのFormに全部フィールドまとめてgroupでvalidationチェックすることにした。
+(余力があれば)ネストクラスでもgroupでvalidationチェックしたい。
