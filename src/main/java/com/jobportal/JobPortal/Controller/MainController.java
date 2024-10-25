@@ -9,13 +9,17 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.SmartValidator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Date;
 import java.util.Set;
+import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,49 +31,38 @@ public class MainController {
     public SmartValidator validator;
 
     @GetMapping("/")
-    public String showFormAgain(){
+    public String showFormAgain(@ModelAttribute validateTest validateTest){
         return "index";
     }
     @GetMapping("/index")
-    public String returnIndex(){
+    public String returnIndex(@ModelAttribute validateTest validateTest){
         return "index";
     }
 
-    @PostMapping(value="/test", params="button1")
-    public String test(@ModelAttribute("validateTest") validateTest validateTest, BindingResult bindingResult) {
-        BindingResult bd;
-        System.out.println("success??");
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<validateTest>> violations = validator.validate(validateTest, a.class);
-        for (ConstraintViolation<validateTest> violation : violations) {
-            bindingResult.rejectValue(violation.getPropertyPath().toString(), "", violation.getMessage());
-        }
-        if (bindingResult.hasErrors()) {
-            showErrorDetails(violations);
-            return "index";
-        } else {
-            System.out.println("bindingResult1 is success");
-            return "index";
-        }
-    }
-
-    @PostMapping(value="/test", params="button2")
-    public String test2(@ModelAttribute("validateTest") validateTest validatetest, BindingResult bindingResult) {
-        BindingResult bd;
-        System.out.println("success??");
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<validateTest>> violations = validator.validate(validatetest, b.class);
-        for (ConstraintViolation<validateTest> violation : violations) {
-            bindingResult.rejectValue(violation.getPropertyPath().toString(), "", violation.getMessage());
-        }
-        if (bindingResult.hasErrors()) {
-            showErrorDetails(violations);
-            return "index";
-        } else {
-            System.out.println("bindingResult2 is success");
-            return "index";
-        }
-    }
+//    @PostMapping(value="/test", params="button1")
+//    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validateTest, BindingResult bindingResult, Model model) {
+//        System.out.println("success??");
+//        if(bindingResult.hasErrors()){
+//            System.out.println("error");
+//            return "index";
+//        }else {
+//            System.out.println(validateTest.getText1());
+//            System.out.println("successa");
+//            return "redirect:/index";
+//        }
+//    }
+//
+//    @PostMapping(value="/test", params="button2")
+//    public String test2(@ModelAttribute("validateTest") @Validated({btext.class}) validateTest validatetest, BindingResult bindingResult, Model model) {
+//        System.out.println("success??");
+//        if(bindingResult.hasErrors()){
+//            System.out.println("error");
+//            return "index";
+//        }else {
+//            System.out.println("successb");
+//            return "redirect:/index";
+//        }
+//    }
 
     private static <T> void showErrorDetails(
             Set<ConstraintViolation<T>> constraintViolations) {
@@ -112,75 +105,77 @@ public class MainController {
     }
 
 
+    @GetMapping("/student/OACreationForm")
+    public String getForm(@ModelAttribute("oAMainForm") OAMainForm form){
+        return "OACreationForm";
+    }
 
 
 
-    //公欠届提出
-//    @PostMapping("/student/OACreationForm")
-//    public String postOAForm(@Validated() @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-//        if(bindingResult.hasErrors()){
-//            System.out.println("error");
-//            return "/OACreationForm";
-//        }
-//        Date date = new Date();
-//        System.out.println("success" + date.getTime());
-//
-////        return switch (form.getReasonForAbsence()) {
-////            case "jobSearchForm" -> postJobSearchOA(form.getJobForm());
-////            case "seminarForm" -> postSeminarOA(form.getSeminarForm());
-////            case "bereavementForm" -> postBereavementOA(form.getBereavementForm());
-////            case "attendanceBanForm" -> postAttendanceBanOA(form.getBanForm());
-////            case "otherForm" -> postOtherOA(form.getOtherForm());
-////            default -> null;
-////        };
-//        return "/OACreationForm";
-//    }
+    //就活公欠届提出
+    @PostMapping(value = "/student/OACreationForm", params = "jobSearchForm")
+    public String postJobForm(@Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "OACreationForm";
+        }
+        Date date = new Date();
+        System.out.println("success" + date.getTime());
+        return "redirect:/OACreationForm";
+    }
+    //就活公欠届提出
+    @PostMapping(value = "/student/OACreationForm", params = "seminarForm")
+    public String postSeminarForm(@Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "OACreationForm";
+        }
+        Date date = new Date();
+        System.out.println("success" + date.getTime());
+        return "redirect:/OACreationForm";
+    }
+    //忌引公欠届提出
+    @PostMapping(value = "/student/OACreationForm", params = "bereavementForm")
+    public String postBereavementForm(@Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "OACreationForm";
+        }
+        Date date = new Date();
+        System.out.println("success" + date.getTime());
+        return "redirect:/OACreationForm";
+    }
+    //出席停止公欠届提出
+    @PostMapping(value = "/student/OACreationForm", params = "banForm")
+    public String postBanForm(@Validated(banGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "OACreationForm";
+        }
+        Date date = new Date();
+        System.out.println("success" + date.getTime());
+        return "redirect:/OACreationForm";
+    }
+    //その他公欠届提出
+    @PostMapping(value = "/student/OACreationForm", params = "otherForm")
+    public String postOtherForm(@Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "OACreationForm";
+        }
+        Date date = new Date();
+        System.out.println("success" + date.getTime());
+        return "redirect:/OACreationForm";
+    }
 
-//    @GetMapping("/student/OACreationForm")
-//    private String showOACreationForm(@ModelAttribute("oAMainForm") OAMainForm form) {
-//        if (form.getJobForm() == null) {
-//            form.setJobForm(new JobSearchOAForm());
-//        }
-//        return "OACreationForm";
-//    }
-//
-//    @PostMapping("/student/OACreationForm/jobSearch")
-//    public String postJobSearchOA(@Validated JobSearchOAForm form){
-//        System.out.println(form.getName());
-//        return "redirect:/student/OACreationForm";
-//    }
-//
-//    @PostMapping("/student/OACreationForm/seminar")
-//    public String postSeminarOA(@Validated SeminarOAForm form){
-//        System.out.println(form.getName());
-//        return "redirect:/student/OACreationForm";
-//    }
-//
-//    @PostMapping("/student/OACreationForm/bereavement")
-//    public String postBereavementOA(@Validated BereavementOAForm form){
-//        System.out.println(form.getName());
-//        return "redirect:/student/OACreationForm";
-//    }
-//
-//    @PostMapping("/student/OACreationForm")
-//    public String postAttendanceBanOA(@Validated AttendanceBanOAForm form){
-//        System.out.println(form.getName());
-//        return "redirect:/student/OACreationForm";
-//    }
-//
-//    @PostMapping("/student/OACreationForm")
-//    public String postOtherOA(@Validated OtherOAForm form){
-//        System.out.println(form.getName());
-//        return "redirect:/student/OACreationForm";
-//    }
-//
-//
-//
-//    //提出済み公欠届BOX
-//    @GetMapping("/student/OABox")
-//    public String getAllOA(){
-//        return "OABox";
-//    }
+
+
+
+    //提出済み公欠届BOX
+    @GetMapping("/student/OABox")
+    public String getAllOA(){
+        return "OABox";
+    }
 
 
 

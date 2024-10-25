@@ -9,7 +9,6 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>JobPortal</title>
-    <script th:src="@{/main.js}"></script>
 </head>
 <body>
     <section layout:fragment="content">
@@ -43,10 +42,12 @@
 <!--            <span th:errors="${validateTest.test.text}"></span>-->
 
 
-            <span th:errors="*{test}"></span>
-            <input type="text" name="test" th:value="*{test}"><br>
-            <span th:errors="*{test2}"></span>
-            <input type="text" name="test2" th:value="*{test2}">
+            <span th:errors="*{defaultText}"></span>
+            <input type="text" name="defaultText" th:value="*{defaultText}"><br>
+            <span th:errors="*{text1}"></span>
+            <input type="text" name="text1" th:value="*{text1}"><br>
+            <span th:errors="*{text2}"></span>
+            <input type="text" name="text2" th:value="*{text2}">
             <button type="submit" class="btn btn-primary" name="button1">送信a</button>
             <button type="submit" class="btn btn-primary" name="button2">送信b</button>
         </form>
