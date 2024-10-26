@@ -1,20 +1,22 @@
 package com.jobportal.JobPortal.Repository;
 
-import com.jobportal.JobPortal.Service.OAMainEntity;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
+import com.jobportal.JobPortal.Controller.exampleForm;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.apache.ibatis.annotations.*;
 
 @Repository
-@Mapper
-public interface MainRepository {
+public interface MainRepository extends JpaRepository<exampleForm, Integer> {
 
-    @Insert("""
-            
-            INSERT INTO
-            
-            
-            """)
-    void insert(@Param("entity") OAMainEntity entity) ;
+//    @Insert("""
+//
+//
+//
+//
+//            """)
+//    void insert(@Param("entity") OAMainEntity entity) ;
+
+//    @Insert("insert into example(title, body) values (#{form.title}, #{form.body}) ")
+//    void insert(@Param("form") exampleForm form);
 }
+
+

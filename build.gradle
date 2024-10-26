@@ -29,7 +29,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
+//	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -42,7 +42,6 @@ dependencies {
 	implementation group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '3.2.1'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'org.postgresql:postgresql'
-
 }
 
 tasks.named('test') {
@@ -51,12 +50,4 @@ tasks.named('test') {
 
 tasks.named('bootRun') {
 	sourceResources sourceSets.main
-}
-
-tasks.withType(JavaExec) {
-	jvmArgs '-Dfile.encoding=UTF-8'
-}
-
-bootRun {
-	jvmArgs '-Dfile.encoding=UTF-8'
 }
