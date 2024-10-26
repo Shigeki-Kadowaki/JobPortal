@@ -1,8 +1,7 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.MainService;
-import constants.VG.a;
-import constants.VG.b;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -11,24 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.SmartValidator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
-import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 
 @Controller
 @RequiredArgsConstructor
 public class MainController {
 
     @Autowired
-    private MainService service;
-    @Autowired
-    public SmartValidator validator;
+    private final MainService service;
 
     @GetMapping("/")
     public String showFormAgain(@ModelAttribute validateTest validateTest){
@@ -39,30 +35,35 @@ public class MainController {
         return "index";
     }
 
-//    @PostMapping(value="/test", params="button1")
-//    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validateTest, BindingResult bindingResult, Model model) {
-//        System.out.println("success??");
-//        if(bindingResult.hasErrors()){
-//            System.out.println("error");
-//            return "index";
-//        }else {
-//            System.out.println(validateTest.getText1());
-//            System.out.println("successa");
-//            return "redirect:/index";
-//        }
-//    }
-//
-//    @PostMapping(value="/test", params="button2")
-//    public String test2(@ModelAttribute("validateTest") @Validated({btext.class}) validateTest validatetest, BindingResult bindingResult, Model model) {
-//        System.out.println("success??");
-//        if(bindingResult.hasErrors()){
-//            System.out.println("error");
-//            return "index";
-//        }else {
-//            System.out.println("successb");
-//            return "redirect:/index";
-//        }
-//    }
+    @PostMapping(value="/test", params="button1")
+    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
+        System.out.println("success??");
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<List<validateTestChild>>> violations = validator.validate(validatetest.getList1(), atext.class);
+        if(!violations.isEmpty()){
+            System.out.println("error");
+            showErrorDetails(violations);
+            return "index";
+        }else {
+            System.out.println("successa");
+            return "redirect:/index";
+        }
+    }
+
+    @PostMapping(value="/test", params="button2")
+    public String test2(@ModelAttribute("validateTest") @Validated({btext.class}) validateTest validatetest, BindingResult bindingResult, Model model) {
+        System.out.println("success??");
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<List<validateTestChild>>> violations = validator.validate(validatetest.getList1(), btext.class);
+        if(!violations.isEmpty()){
+            System.out.println("error");
+            showErrorDetails(violations);
+            return "index";
+        }else {
+            System.out.println("successb");
+            return "redirect:/index";
+        }
+    }
 
     private static <T> void showErrorDetails(
             Set<ConstraintViolation<T>> constraintViolations) {

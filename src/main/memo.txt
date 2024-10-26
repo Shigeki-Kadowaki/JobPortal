@@ -20,10 +20,9 @@ checkbox : (@RequestParam("xxx") List<String> hoge)
 で表示。
 ただし、バインド先がレコードだとうまくいかない。@Dataつけたクラスで受け取る。
 
-th:object="hoge"
+th:object="${hoge}"
 でJavaからobjectを受け取りたい場合、名前はpost時のフォームクラス名に依存する。
 自分で決めたい場合は@ModelAttribute("huga")で"huga"になる。
-bindingResult.hasErrors()で別のメソッド呼んだとしても(恐らく)上書きできないので注意。
 
 ネストクラスに対してバインドしたい場合
 public class Hoge(){
@@ -56,6 +55,8 @@ public class Huga(){
     String childValue
 }
 https://riptutorial.com/spring/example/30721/-valid-usage-to-validate-nested-pojos
+
+配列には@NotEmptyをつかう。
 
 
 任意のタイミングで任意のグループでバリデーションを行いたい場合

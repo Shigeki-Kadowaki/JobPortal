@@ -42,12 +42,14 @@
 <!--            <span th:errors="${validateTest.test.text}"></span>-->
 
 
-            <span th:errors="*{defaultText}"></span>
-            <input type="text" name="defaultText" th:value="*{defaultText}"><br>
-            <span th:errors="*{text1}"></span>
-            <input type="text" name="text1" th:value="*{text1}"><br>
-            <span th:errors="*{text2}"></span>
-            <input type="text" name="text2" th:value="*{text2}">
+<!--            <span th:errors="*{defaultText}"></span>-->
+<!--            <input type="text" name="defaultText" th:value="*{defaultText}"><br>-->
+            <span th:errors="*{list1[0].text1}"></span>
+            <span th:errors="*{list1[0]}"></span>
+            <span th:errors="*{list1[1]}"></span>
+            <input type="text" name="list1[0].text1" th:value="*{list1[0].text1}"><br>
+            <span th:errors="*{list1[1].text2}"></span>
+            <input type="text" name="list1[1].text2" th:value="*{list1[1].text2}"><br><br><br>
             <button type="submit" class="btn btn-primary" name="button1">送信a</button>
             <button type="submit" class="btn btn-primary" name="button2">送信b</button>
         </form>

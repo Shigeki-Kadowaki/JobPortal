@@ -1,17 +1,18 @@
 package com.jobportal.JobPortal.Service;
 
-import com.jobportal.JobPortal.Controller.*;
-
-import java.util.Date;
+import java.time.LocalDate;
 
 public record OAMainEntity(
-        int id,
-        Date OAdate,
-        Date submissionDate,
+        Long id,
+        Long studentId,
+        LocalDate submissionDate,
+        boolean jobSearchFlag,
+        boolean teacherCheck,
+        Boolean careerCheck,
         OAStatus status,
         OAReason reason
 
-//        JobSearchOAForm jobForm,
+//        JobSearchEntity jobSearchEntity
 //        BereavementOAForm bereaveForm,
 //        AttendanceBanOAForm banForm,
 //        OtherOAForm otherForm
