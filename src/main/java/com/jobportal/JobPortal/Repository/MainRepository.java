@@ -17,7 +17,7 @@ public interface MainRepository {
 //            """)
 //    void insert(@Param("entity") OAMainEntity entity) ;
 
-    @Insert("INSERT INTO test (title, body) VALUES ('test', 'test'); ")
+    @Insert("INSERT INTO test (title, body) VALUES (#{form.title},#{form.body} ); ")
     void insert(@Param("form") exampleForm form);
 }
 

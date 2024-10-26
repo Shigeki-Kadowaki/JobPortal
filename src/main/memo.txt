@@ -72,3 +72,11 @@ https://terasolunaorg.github.io/guideline/1.0.2.RELEASE/ja/ArchitectureInDetail/
 
 いろいろ試したけどネストクラスのgroupのvalidationがうまくいかなかったので、いっこのFormに全部フィールドまとめてgroupでvalidationチェックすることにした。
 (余力があれば)ネストクラスでもgroupでvalidationチェックしたい。
+
+@Entityを使わずに、sqlでやろうとすると
+IllegalArgumentException: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+がでる。
+mybatis-spring-boot-starter
+のバージョンを3.0.3にすると解決する。
+
+https://qiita.com/potole/items/4542e4f8689c89c478cc
