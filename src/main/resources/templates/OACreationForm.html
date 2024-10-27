@@ -10,7 +10,7 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <a type="button" th:href="@{/index}" class="button">戻る</a><br>
+    <a type="button" th:href="@{/{id}(id=${studentId})}" class="button">戻る</a><br>
     <form th:action="@{/student/OACreationForm}" method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
@@ -161,18 +161,14 @@
         </div>
         <script>
             $(document).ready(function() {
-                // datepickerを初期化
                 $("#date").datepicker({
                     dateFormat: "yy/mm/dd",
                     onClose: function() {
-                        // カレンダーが閉じられた時にdatepickerのインスタンスを破棄
                         $(this).datepicker("destroy");
                     }
                 });
 
-                // inputフィールドがクリックされたときに再度datepickerを有効化
                 $("#date").on("focus", function() {
-                    // datepickerを再度初期化してカレンダーを表示
                     $(this).datepicker({
                         dateFormat: "yy/mm/dd"
                     }).datepicker("show");

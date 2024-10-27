@@ -9,8 +9,9 @@
 </head>
 <body>
     <section layout:fragment="content">
-        <a th:href="@{/student/OACreationForm}">新規公欠届作成</a><br>
-        <a th:href="@{/student/OABox}">提出済み公欠届</a>
+        <h1>[[${student.name}]]さん、こんにちは</h1>
+        <a th:href="@{/{id}/OACreationForm(id = ${student.id})}">新規公欠届作成</a><br>
+        <a th:href="@{/{id}/OABox(id = ${student.id})}">提出済み公欠届</a>
     </section>
 </body>
 </html>

@@ -12,8 +12,8 @@ public class MainService {
     @Autowired
     private final MainRepository repository;
 
-    public void createOA(OAMainEntity entity){
-//        repository.insert(entity);
+    public void createOA(OAMainEntity entity, Integer id){
+        repository.insertMainOA(entity, id);
     }
 
 
