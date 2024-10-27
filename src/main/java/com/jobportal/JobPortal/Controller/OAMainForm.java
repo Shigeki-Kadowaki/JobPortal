@@ -1,6 +1,7 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
+import com.jobportal.JobPortal.Service.OADatesEntity;
 import com.jobportal.JobPortal.Service.OAMainEntity;
 import com.jobportal.JobPortal.Service.OAReason;
 import com.jobportal.JobPortal.Service.OAStatus;
@@ -18,6 +19,7 @@ import java.util.Map;
 @Data
 public class OAMainForm {
         //共通部分
+        private Integer id;
         @NotBlank
         @Pattern(regexp = "jobSearchForm|seminarForm|bereavementForm|attendanceBanForm|otherForm")
         private String reasonForAbsence;
@@ -62,7 +64,7 @@ public class OAMainForm {
 
         public static OAMainEntity toMainEntity(OAMainForm form){
                 return new OAMainEntity(
-                        (Long) null,
+                        null,
                         (Long) null,
                         LocalDate.now(),
                         checkJobSearchFlag(form.getReasonForAbsence()),
@@ -72,6 +74,13 @@ public class OAMainForm {
                         OAReason.valueOf(form.getReasonForAbsence())
                 );
         }
+
+        public static OADatesEntity toDatesEntity(OAMainForm form){
+                return new OADatesEntity(
+                        form.getOAPeriods()
+                );
+        }
+
         public static  boolean checkJobSearchFlag(String reason){
                 return (reason.equals("jobSearchForm") || reason.equals("seminarForm"));
         }

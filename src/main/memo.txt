@@ -78,5 +78,19 @@ IllegalArgumentException: Invalid value type for attribute 'factoryBeanObjectTyp
 がでる。
 mybatis-spring-boot-starter
 のバージョンを3.0.3にすると解決する。
-
 https://qiita.com/potole/items/4542e4f8689c89c478cc
+
+@GetMapping("/{id}")
+とか作ると、400エラーが出る。
+@GetMapping("/student/{id}")
+とか、前に一個挟むと解決する。
+
+postgresqlのserialによって自動でつけられたidを取得するには、repositoryのメソッドで
+@Options(useGeneratedKeys=true, keyProperty="id") //"id"は、フィールド名にする
+https://autopp-tech.hatenablog.com/entry/2019/08/29/093508
+これは、setId()によってフィールドのIDを設定している(らしい)ので、setterを持てないrecordでは使えない(多分)。
+
+メソッドの引数が２つ以上有る場合、keyPropertyの値に注意する
+@Options(useGeneratedKeys=true,keyProperty ="entity.officialAbsenceId")
+void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
+

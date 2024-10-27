@@ -2,6 +2,7 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.MainService;
+import com.jobportal.JobPortal.Service.OAMainEntity;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +26,15 @@ public class MainController {
     private final MainService service;
 
     @GetMapping("/")
-    public String showFormAgain(@ModelAttribute("student") student student){
+    public String showFormAgain(@ModelAttribute("student") student student) {
         student.setId(40104);
         student.setName("木谷");
         System.out.println(student.getId().toString());
-        return "redirect:/" + student.getId();
+        return "redirect:/student/" + student.getId();
     }
 
-    @GetMapping("/{studentId}")
-    public String student(@PathVariable("studentId") Integer studentId, @ModelAttribute("student") student student){
+    @GetMapping("/student/{studentId}")
+    public String student(@PathVariable("studentId") Integer studentId, @ModelAttribute("student") student student) {
         student.setId(40104);
         student.setName("木谷");
         return "student";
@@ -113,28 +114,36 @@ public class MainController {
 
 
 
-    @GetMapping("/{id}/OACreationForm")
-    public String getForm(@PathVariable("id") Integer id, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
-        model.addAttribute("studentId",id);
+    @GetMapping("/student/{id}/OACreationForm")
+    public String getForm(@PathVariable("id") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
+        model.addAttribute("studentId",studentId);
         return "OACreationForm";
     }
 
 
 
     //就活公欠届提出
-    @PostMapping(value = "/{id}/OACreationForm", params = "jobSearchForm")
-    public String postJobForm(@PathVariable("id") Integer id, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+    @PostMapping(value = "/student/{id}/OACreationForm", params = "jobSearchForm")
+    public String postJobForm(@PathVariable("id") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        service.createOA(OAMainForm.toMainEntity(form),id);
-        return "redirect:/student/OACreationForm";
+        OAMainEntity entity = OAMainForm.toMainEntity(form);
+        service.createOA(entity,studentId);
+        System.out.println(entity.getOfficialAbsenceId());
+//        service.createDate(OAMainForm.toDatesEntity(form), entity.getOfficialAbsenceId());
+        form.getOAPeriods().forEach((key, values) -> {
+            System.out.println(key);
+            values.forEach(System.out::println);
+        });
+        return "redirect:/student/{id}/OACreationForm";
     }
-    //就活公欠届提出
-    @PostMapping(value = "/student/OACreationForm", params = "seminarForm")
+    //セミナー公欠届提出
+    @PostMapping(value = "/student/{id}/OACreationForm", params = "seminarForm")
     public String postSeminarForm(@Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -142,21 +151,22 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/student/OACreationForm";
+        return "redirect:/student/{id}/OACreationForm";
     }
     //忌引公欠届提出
-    @PostMapping(value = "/student/OACreationForm", params = "bereavementForm")
-    public String postBereavementForm(@Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+    @PostMapping(value = "/student/{id}/OACreationForm", params = "bereavementForm")
+    public String postBereavementForm(@PathVariable("id") Integer studentId, @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return "OACreationForm";
+            return "/OACreationForm";
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/student/OACreationForm";
+        return "redirect:/student/{id}/OACreationForm";
     }
     //出席停止公欠届提出
-    @PostMapping(value = "/student/OACreationForm", params = "attendanceBanForm")
+    @PostMapping(value = "/student/{id}/OACreationForm", params = "attendanceBanForm")
     public String postBanForm(@Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -164,10 +174,10 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/student/OACreationForm";
+        return "redirect:/student/{id}/OACreationForm";
     }
     //その他公欠届提出
-    @PostMapping(value = "/student/OACreationForm", params = "otherForm")
+    @PostMapping(value = "/student/{id}/OACreationForm", params = "otherForm")
     public String postOtherForm(@Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -175,15 +185,18 @@ public class MainController {
         }
         Date date = new Date();
         System.out.println("success" + date.getTime());
-        return "redirect:/student/OACreationForm";
+        return "redirect:/student/{id}/OACreationForm";
     }
 
 
 
 
     //提出済み公欠届BOX
-    @GetMapping("/student/OABox")
-    public String getAllOA(){
+    @GetMapping("/student/{id}/OABox")
+    public String showAllOAs(@PathVariable("id") Integer studentId, Model model){
+        var OAList = service.findAllOAs(studentId);
+        model.addAttribute("OAList", OAList);
+        model.addAttribute("studentId", studentId);
         return "OABox";
     }
 
