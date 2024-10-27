@@ -1,8 +1,70 @@
 package com.jobportal.JobPortal.Repository;
 
-import org.springframework.stereotype.Repository;
+import com.jobportal.JobPortal.Controller.exampleForm;
+import com.jobportal.JobPortal.Service.OADatesEntity;
+import com.jobportal.JobPortal.Service.OAMainEntity;
+import org.apache.ibatis.annotations.*;
 
-@Repository
-public class MainRepository {
+import java.util.List;
 
+
+@Mapper
+public interface MainRepository {
+
+
+
+//テスト
+    @Insert("INSERT INTO test (title, body) VALUES (#{form.title},#{form.body} ); ")
+    void insert(@Param("form") exampleForm form);
+
+
+//該当生徒のOA全取得
+    @Select("""
+            SELECT * FROM official_absences
+            WHERE student_id = #{id};
+            """)
+    List<OAMainEntity> selectAll(@Param("id") Integer studentId);
+
+
+//メインOAフォームインサート
+
+    @Insert("""
+            INSERT INTO official_absences (
+                student_id,
+                submission_date,
+                job_search_flag,
+                teacher_check,
+                career_check,
+                status,
+                reason
+            ) VALUES (
+                #{id},
+                #{entity.submissionDate},
+                #{entity.jobSearchFlag},
+                #{entity.teacherCheck},
+                #{entity.careerCheck},
+                #{entity.status},
+                #{entity.reason}
+            );
+            """)
+    @Options(useGeneratedKeys=true,keyProperty ="entity.officialAbsenceId")
+    void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
+
+//日時インサート
+    @Insert("""
+            INSERT INTO official_absence_dates VALUES
+            <foreach collection="dates.OADates.entrySet()" index="index" item="element" >
+                <foreach collection="element.value" item="item" separator=",">
+                    (#{id},#{element.key},#{item})
+                </foreach>
+            
+            </foreach>
+            ;
+            """)
+    void insertOADates(@Param("dates") OADatesEntity dates, @Param("id") Integer id);
 }
+//
+//form.getOAPeriods().forEach((key, values) -> {
+//        System.out.println(key);
+//            values.forEach(System.out::println);
+//        });

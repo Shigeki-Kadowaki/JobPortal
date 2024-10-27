@@ -12,21 +12,28 @@
 </head>
 <body>
 <section layout:fragment="content">
-  <a th:href="@{/index}">戻る</a>
+  <a type="button" th:href="@{/student/{id}(id=${studentId})}" class="btn btn-primary">戻る</a><br>
   <div class="card">
-    <div class="card-header">検索</div>
+    <div class="card-header">並び替え</div>
     <div class="card-body">
-      <select name="">
-        <option></option>
-        <option></option>
-        <option></option>
-        <option></option>
-        <option></option>
-        <option></option>
-        <option></option>
-        <option></option>
-      </select>
+
     </div>
+  </div>
+
+
+
+  <div class="list-group" th:each="OA : ${OAList}" th:object="${OA}">
+    <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+      <div class="d-flex w-100 justify-content-between">
+        <h1 class="mb-1">公欠日</h1>
+      </div>
+      <h2><span class="badge bg-primary position-absolute top-0 end-0" th:text="*{status}"></span></h2>
+      <h2><span class="badge bg-primary position-absolute bottom-0 end-0" th:text="*{status}"></span></h2>
+      <h3 class="ms-3">1限目,2限目</h3>
+
+      <p class="mb-1"></p>
+      <small>提出日：[[*{submissionDate}]]</small>
+    </a>
   </div>
 </section>
 </body>

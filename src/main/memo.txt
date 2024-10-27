@@ -20,10 +20,9 @@ checkbox : (@RequestParam("xxx") List<String> hoge)
 で表示。
 ただし、バインド先がレコードだとうまくいかない。@Dataつけたクラスで受け取る。
 
-th:object="hoge"
+th:object="${hoge}"
 でJavaからobjectを受け取りたい場合、名前はpost時のフォームクラス名に依存する。
 自分で決めたい場合は@ModelAttribute("huga")で"huga"になる。
-bindingResult.hasErrors()で別のメソッド呼んだとしても(恐らく)上書きできないので注意。
 
 ネストクラスに対してバインドしたい場合
 public class Hoge(){
@@ -57,6 +56,8 @@ public class Huga(){
 }
 https://riptutorial.com/spring/example/30721/-valid-usage-to-validate-nested-pojos
 
+配列には@NotEmptyをつかう。
+
 
 任意のタイミングで任意のグループでバリデーションを行いたい場合
 Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -71,3 +72,25 @@ https://terasolunaorg.github.io/guideline/1.0.2.RELEASE/ja/ArchitectureInDetail/
 
 いろいろ試したけどネストクラスのgroupのvalidationがうまくいかなかったので、いっこのFormに全部フィールドまとめてgroupでvalidationチェックすることにした。
 (余力があれば)ネストクラスでもgroupでvalidationチェックしたい。
+
+DBとやり取り時、jpaのsaveとかを使わずに、sqlでやろうとすると
+IllegalArgumentException: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+がでる。
+mybatis-spring-boot-starter
+のバージョンを3.0.3にすると解決する。
+https://qiita.com/potole/items/4542e4f8689c89c478cc
+
+@GetMapping("/{id}")
+とか作ると、400エラーが出る。
+@GetMapping("/student/{id}")
+とか、前に一個挟むと解決する。
+
+postgresqlのserialによって自動でつけられたidを取得するには、repositoryのメソッドで
+@Options(useGeneratedKeys=true, keyProperty="id") //"id"は、フィールド名にする
+https://autopp-tech.hatenablog.com/entry/2019/08/29/093508
+これは、setId()によってフィールドのIDを設定している(らしい)ので、setterを持てないrecordでは使えない(多分)。
+
+メソッドの引数が２つ以上有る場合、keyPropertyの値に注意する
+@Options(useGeneratedKeys=true,keyProperty ="entity.officialAbsenceId")
+void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
+

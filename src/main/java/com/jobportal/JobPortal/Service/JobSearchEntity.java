@@ -1,5 +1,10 @@
 package com.jobportal.JobPortal.Service;
 
-
-public class JobSearchEntity {
+//@Component
+public record JobSearchEntity (
+        Long id,
+        String work,
+        String companyName,
+        String address
+){
 }

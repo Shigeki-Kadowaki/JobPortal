@@ -7,11 +7,12 @@
     <meta charset="UTF-8">
     <title>F</title>
     <!--    <script th:src="@{/script/main.js}"></script>-->
+    <script th:src="@{/main.js}"></script>
 </head>
 <body>
+<a type="button" th:href="@{/student/{id}(id=${studentId})}" class="btn btn-primary">戻る</a><br>
 <section layout:fragment="content">
-    <a type="button" th:href="@{/index}" class="button">戻る</a><br>
-    <form th:action="@{/student/OACreationForm}" method="post" th:object="${oAMainForm}">
+    <form th:action="@{/student/{id}/OACreationForm(id=${studentId})}" method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
 <!--            <span th:errors="*{reasonForAbsence}"></span>-->
@@ -31,7 +32,7 @@
         <div class="jobSearchForm">
             <div class="form-group mt-3">
                 <h3>活動内容</h3>
-                <label class="form-check-label" for="briefing">
+                <h5 class="ms-3"><label class="form-check-label" for="briefing">
                 <input checked class="form-check-input" id="briefing" name="detail" type="radio" value="briefing">
                     説明会
                 </label>
@@ -47,6 +48,7 @@
                 <input class="form-check-input" id="jobOther" name="detail" type="radio" value="jobOther">
                     その他
                 </label>
+                </h5>
             </div>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="companyName">訪問先(企業名)</label></h3>
@@ -161,18 +163,14 @@
         </div>
         <script>
             $(document).ready(function() {
-                // datepickerを初期化
                 $("#date").datepicker({
                     dateFormat: "yy/mm/dd",
                     onClose: function() {
-                        // カレンダーが閉じられた時にdatepickerのインスタンスを破棄
                         $(this).datepicker("destroy");
                     }
                 });
 
-                // inputフィールドがクリックされたときに再度datepickerを有効化
                 $("#date").on("focus", function() {
-                    // datepickerを再度初期化してカレンダーを表示
                     $(this).datepicker({
                         dateFormat: "yy/mm/dd"
                     }).datepicker("show");
@@ -181,7 +179,7 @@
         </script>
 
         <div class="d-flex justify-content-between">
-            <a th:href="@{/student}" class="btn btn-danger">中止</a>
+            <a th:href="@{/student/{id}(id=${studentId})}" class="btn btn-danger">中止</a>
             <div class="jobSearchForm">
                 <div class="text-end">
                     <button type="submit" class="btn btn-primary" name="jobSearchForm">就活</button>
