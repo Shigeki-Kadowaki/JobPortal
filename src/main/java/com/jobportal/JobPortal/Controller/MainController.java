@@ -2,6 +2,7 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.MainService;
+import com.jobportal.JobPortal.Service.OADatesEntity;
 import com.jobportal.JobPortal.Service.OAMainEntity;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -40,11 +42,7 @@ public class MainController {
         return "student";
     }
 
-    @PostMapping(value = "/test", params = "button1")
-    public String test(@ModelAttribute("form") exampleForm form){
-        service.insert(form);
-        return "index";
-    }
+
 //
 //    @PostMapping(value="/test", params="button1")
 //    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
@@ -133,13 +131,19 @@ public class MainController {
         Date date = new Date();
         System.out.println("success" + date.getTime());
         OAMainEntity entity = OAMainForm.toMainEntity(form);
+        Integer officialAbsenceId = entity.getOfficialAbsenceId();
         service.createOA(entity,studentId);
-        System.out.println(entity.getOfficialAbsenceId());
+        //System.out.println(entity.getOfficialAbsenceId());
 //        service.createDate(OAMainForm.toDatesEntity(form), entity.getOfficialAbsenceId());
-        form.getOAPeriods().forEach((key, values) -> {
-            System.out.println(key);
-            values.forEach(System.out::println);
-        });
+//        form.getOAPeriods().forEach((key, values) -> {
+//            System.out.println(key);
+//            values.forEach(System.out::println);
+//        });
+
+        List<OADatesEntity> dateList = OAMainForm.toDatesEntity(form);
+        service.createOADates(dateList, officialAbsenceId);
+//        System.out.println(form.getOAPeriods().keySet());
+
         return "redirect:/student/{id}/OACreationForm";
     }
     //セミナー公欠届提出

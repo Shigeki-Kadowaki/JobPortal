@@ -14,27 +14,38 @@ public class MainService {
 
     private final MainRepository repository;
 
+
+    //OA作成
     @Transactional
     public void createOA(OAMainEntity entity, Integer id){
         repository.insertMainOA(entity, id);
         System.out.println(entity.officialAbsenceId);
     }
 
+    //日付作成
     @Transactional
-    public void createDate(OADatesEntity entity, Integer id){
+    public void createOADates(List<OADatesEntity> entity, Integer id){
         repository.insertOADates(entity, id);
     }
 
+
+    //該当生徒OA取得
     public List<OAMainEntity> findAllOAs(Integer studentId){
         return repository.selectAll(studentId);
     }
 
 
-
-    @Transactional
-    public void insert(exampleForm form){
-        repository.insert(form);
+    //就活情報登録
+    public void createJobSearch(JobSearchEntity jobSearchEntity, Integer OfficialAbsenceId) {
+        repository.insertJobSearch(jobSearchEntity, OfficialAbsenceId);
     }
+
+
+
+//    @Transactional
+//    public void insertOADates(exampleForm form){
+//        repository.insert(form);
+//    }
 
 //    @Transactional
 //    public void saveDate(OADatesEntity datesEntity) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public record OADatesEntity(
-    Map<String,List<String>> OADates
+    String OADate,
+    String OAPeriod
 ) {
 }
