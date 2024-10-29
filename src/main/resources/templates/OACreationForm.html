@@ -156,7 +156,7 @@
                 <h3>公欠日時</h3>
                 <span th:errors="*{OAPeriods}"></span>
                 <label class="form-label mt-3" for="date">公欠日を選択:</label>
-                <input class="form-control" type="text" id="date" name="OADate" onchange="addOADate(this.value.replaceAll('/',''))" readonly>
+                <input class="form-control" type="text" id="date" onchange="addOADate(this.value.replaceAll('/',''))" readonly>
                 <div id="OADates"></div>
                 <br><br>
             </div>

@@ -1,6 +1,6 @@
 package com.jobportal.JobPortal.Repository;
 
-import com.jobportal.JobPortal.Controller.exampleForm;
+import com.jobportal.JobPortal.Service.JobSearchEntity;
 import com.jobportal.JobPortal.Service.OADatesEntity;
 import com.jobportal.JobPortal.Service.OAMainEntity;
 import org.apache.ibatis.annotations.*;
@@ -14,8 +14,8 @@ public interface MainRepository {
 
 
 //テスト
-    @Insert("INSERT INTO test (title, body) VALUES (#{form.title},#{form.body} ); ")
-    void insert(@Param("form") exampleForm form);
+//    @Insert("INSERT INTO test (title, body) VALUES (#{form.title},#{form.body} ); ")
+//    void insert(@Param("form") exampleForm form);
 
 
 //該当生徒のOA全取得
@@ -51,17 +51,30 @@ public interface MainRepository {
     void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
 
 //日時インサート
-    @Insert("""
-            INSERT INTO official_absence_dates VALUES
-            <foreach collection="dates.OADates.entrySet()" index="index" item="element" >
-                <foreach collection="element.value" item="item" separator=",">
-                    (#{id},#{element.key},#{item})
-                </foreach>
-            
+@Insert("""
+            <script>
+            INSERT INTO official_absence_dates
+            VALUES
+            <foreach collection="dateList" item="date" separator=",">
+                (#{OfficialAbsenceId}, #{date.OADate}, #{date.OAPeriod})
             </foreach>
             ;
-            """)
-    void insertOADates(@Param("dates") OADatesEntity dates, @Param("id") Integer id);
+        </script>
+        """)
+    void insertOADates(@Param("dateList") List<OADatesEntity> dates, @Param("OfficialAbsenceId") Integer OfficialAbsenceId);
+
+    //就活情報インサート
+    @Insert("""
+            <script>
+            INSERT INTO official_absence_dates
+            VALUES
+            <foreach collection="dateList" item="date" separator=",">
+                (#{OfficialAbsenceId}, #{date.OADate}, #{date.OAPeriod})
+            </foreach>
+            ;
+            </script>
+        """)
+    void insertJobSearch(@Param("entity") JobSearchEntity jobSearchEntity, @Param("OfficialAbsenceId") Integer OfficialAbsenceId);
 }
 //
 //form.getOAPeriods().forEach((key, values) -> {

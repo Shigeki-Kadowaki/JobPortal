@@ -1,10 +1,7 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
-import com.jobportal.JobPortal.Service.OADatesEntity;
-import com.jobportal.JobPortal.Service.OAMainEntity;
-import com.jobportal.JobPortal.Service.OAReason;
-import com.jobportal.JobPortal.Service.OAStatus;
+import com.jobportal.JobPortal.Service.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +24,7 @@ public class OAMainForm {
         @NotEmpty(message = "日付が未選択です")
         @Valid
         private Map<@NotBlank String,@NotEmpty(message = "時間が未選択です") List<@NotBlank String>> OAPeriods;
+//        private List<OADatesForm> OADates;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Pattern(regexp = "briefing|test|visit|other",groups = jobSearchFormGroup.class)
@@ -75,10 +74,27 @@ public class OAMainForm {
                 );
         }
 
-        public static OADatesEntity toDatesEntity(OAMainForm form){
-                return new OADatesEntity(
-                        form.getOAPeriods()
+        public static JobSearchEntity toJobSearchEntity(OAMainForm form){
+                return new JobSearchEntity(
+                        null,
+                        form.detail,
+                        form.companyName,
+                        form.address
                 );
+        }
+
+
+        public static List<OADatesEntity> toDatesEntity(OAMainForm form){
+                var map = form.getOAPeriods();
+                ArrayList<OADatesEntity> dates = new ArrayList<>();
+                        map.forEach((date,periods)->{
+                                periods.forEach(period->{
+                                        System.out.println(date + " " + period);
+                                        dates.add(new OADatesEntity(date, period));
+                                });
+                        });
+                return dates;
+
         }
 
         public static  boolean checkJobSearchFlag(String reason){
@@ -89,4 +105,6 @@ public class OAMainForm {
                 else return null;
         }
 
+//        public static  toDatesEntity(OAMainForm form) {
+//
 }
