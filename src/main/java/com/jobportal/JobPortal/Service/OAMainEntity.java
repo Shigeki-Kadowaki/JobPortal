@@ -14,7 +14,7 @@ public class OAMainEntity
 //        OtherOAForm otherForm
 {
     Integer officialAbsenceId;
-    Long studentId;
+    Integer studentId;
     LocalDate submissionDate;
     boolean jobSearchFlag;
     boolean teacherCheck;
@@ -22,14 +22,15 @@ public class OAMainEntity
     OAStatus status;
     OAReason reason;
 
-    public OAMainEntity(Integer officialAbsenceId,
-                        Long studentId,
-                        LocalDate submissionDate,
-                        Boolean jobSearchFlag,
-                        Boolean teacherCheck,
-                        Boolean careerCheck,
-                        OAStatus status,
-                        OAReason reason) {
+    public OAMainEntity(
+            Integer officialAbsenceId,
+            Integer studentId,
+            LocalDate submissionDate,
+            Boolean jobSearchFlag,
+            Boolean teacherCheck,
+            Boolean careerCheck,
+            OAStatus status,
+            OAReason reason) {
         this.officialAbsenceId = officialAbsenceId;
         this.studentId = studentId;
         this.submissionDate = submissionDate;

@@ -17,18 +17,17 @@ import java.util.Map;
 @Data
 public class OAMainForm {
         //共通部分
-        private Integer id;
+//        private Integer id;
         @NotBlank
         @Pattern(regexp = "jobSearchForm|seminarForm|bereavementForm|attendanceBanForm|otherForm")
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
-        @Valid
-        private Map<@NotBlank String,@NotEmpty(message = "時間が未選択です") List<@NotBlank String>> OAPeriods;
+        private Map<String,List<String>> OAPeriods;
 //        private List<OADatesForm> OADates;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Pattern(regexp = "briefing|test|visit|other",groups = jobSearchFormGroup.class)
-        private String detail;
+        private String work;
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         private String companyName;
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
@@ -61,10 +60,10 @@ public class OAMainForm {
         private String otherReason;
 
 
-        public static OAMainEntity toMainEntity(OAMainForm form){
+        public static OAMainEntity toMainEntity(OAMainForm form, Integer studentId){
                 return new OAMainEntity(
                         null,
-                        (Long) null,
+                        studentId,
                         LocalDate.now(),
                         checkJobSearchFlag(form.getReasonForAbsence()),
                         false,
@@ -74,23 +73,26 @@ public class OAMainForm {
                 );
         }
 
-        public static JobSearchEntity toJobSearchEntity(OAMainForm form){
+
+
+        public static JobSearchEntity toJobSearchEntity(OAMainForm form, Integer officialAbsenceId){
                 return new JobSearchEntity(
-                        null,
-                        form.detail,
+                        officialAbsenceId,
+                        form.work,
                         form.companyName,
                         form.address
                 );
         }
 
 
+        //日付Formを日付Entityにする。
         public static List<OADatesEntity> toDatesEntity(OAMainForm form){
                 var map = form.getOAPeriods();
                 ArrayList<OADatesEntity> dates = new ArrayList<>();
                         map.forEach((date,periods)->{
                                 periods.forEach(period->{
-                                        System.out.println(date + " " + period);
-                                        dates.add(new OADatesEntity(date, period));
+                                        //(String date(yyyymmdd), String period)を(LocalDate date(yyyy-mm-dd), Integer period)にする。
+                                        dates.add(new OADatesEntity(LocalDate.parse(formatDate(date,"-")), Integer.parseInt(period)));
                                 });
                         });
                 return dates;
@@ -103,6 +105,13 @@ public class OAMainForm {
         public static Object checkCareer(boolean flag){
                 if(flag) return false;
                 else return null;
+        }
+
+        public static String formatDate(String date, String sep){
+                String yyyy = date.substring(0,4);
+                String mm = date.substring(4,6);
+                String dd = date.substring(6,8);
+                return yyyy + sep + mm + sep + dd;
         }
 
 //        public static  toDatesEntity(OAMainForm form) {

@@ -17,15 +17,14 @@ public class MainService {
 
     //OA作成
     @Transactional
-    public void createOA(OAMainEntity entity, Integer id){
-        repository.insertMainOA(entity, id);
-        System.out.println(entity.officialAbsenceId);
+    public void createOA(OAMainEntity entity){
+        repository.insertMainOA(entity);
     }
 
     //日付作成
     @Transactional
-    public void createOADates(List<OADatesEntity> entity, Integer id){
-        repository.insertOADates(entity, id);
+    public void createOADates(List<OADatesEntity> entity, Integer officialAbsenceId){
+        repository.insertOADates(entity, officialAbsenceId);
     }
 
 
@@ -36,8 +35,8 @@ public class MainService {
 
 
     //就活情報登録
-    public void createJobSearch(JobSearchEntity jobSearchEntity, Integer OfficialAbsenceId) {
-        repository.insertJobSearch(jobSearchEntity, OfficialAbsenceId);
+    public void createJobSearch(JobSearchEntity jobSearchEntity) {
+        repository.insertJobSearch(jobSearchEntity);
     }
 
 

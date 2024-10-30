@@ -2,7 +2,7 @@ package com.jobportal.JobPortal.Service;
 
 //@Component
 public record JobSearchEntity (
-        Long id,
+        Integer officialAbsenceId,
         String work,
         String companyName,
         String address

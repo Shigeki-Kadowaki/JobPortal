@@ -4,6 +4,7 @@ import com.jobportal.JobPortal.Service.JobSearchEntity;
 import com.jobportal.JobPortal.Service.OADatesEntity;
 import com.jobportal.JobPortal.Service.OAMainEntity;
 import org.apache.ibatis.annotations.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public interface MainRepository {
 
 //メインOAフォームインサート
 
+    @Transactional
     @Insert("""
             INSERT INTO official_absences (
                 student_id,
@@ -38,7 +40,7 @@ public interface MainRepository {
                 status,
                 reason
             ) VALUES (
-                #{id},
+                #{entity.studentId},
                 #{entity.submissionDate},
                 #{entity.jobSearchFlag},
                 #{entity.teacherCheck},
@@ -48,33 +50,49 @@ public interface MainRepository {
             );
             """)
     @Options(useGeneratedKeys=true,keyProperty ="entity.officialAbsenceId")
-    void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
+    void insertMainOA(@Param("entity")OAMainEntity entity);
 
 //日時インサート
+@Transactional
 @Insert("""
-            <script>
-            INSERT INTO official_absence_dates
+        <script>
+            INSERT INTO official_absence_dates (
+                    official_absence_id,
+                    lesson_id,
+                    period,
+                    official_absence_date)
             VALUES
-            <foreach collection="dateList" item="date" separator=",">
-                (#{OfficialAbsenceId}, #{date.OADate}, #{date.OAPeriod})
+            <foreach collection='dateList' item='date' separator=','>
+                (#{officialAbsenceId}, null, #{date.OAPeriod}, #{date.OADate})
             </foreach>
-            ;
         </script>
         """)
-    void insertOADates(@Param("dateList") List<OADatesEntity> dates, @Param("OfficialAbsenceId") Integer OfficialAbsenceId);
+void insertOADates(@Param("dateList") List<OADatesEntity> dateList, @Param("officialAbsenceId") Integer officialAbsenceId);
+
+
+    @Insert("""
+            INSERT INTO job_searches VALUES (
+                                 #{entity.officialAbsenceId},
+                                 #{entity.work},
+                                 #{entity.companyName},
+                                 #{entity.address}
+                                 );       
+
+            """)
+    void insertJobSearch(@Param("entity") JobSearchEntity jobSearchEntity);
 
     //就活情報インサート
-    @Insert("""
-            <script>
-            INSERT INTO official_absence_dates
-            VALUES
-            <foreach collection="dateList" item="date" separator=",">
-                (#{OfficialAbsenceId}, #{date.OADate}, #{date.OAPeriod})
-            </foreach>
-            ;
-            </script>
-        """)
-    void insertJobSearch(@Param("entity") JobSearchEntity jobSearchEntity, @Param("OfficialAbsenceId") Integer OfficialAbsenceId);
+//    @Insert("""
+//            <script>
+//            INSERT INTO official_absence_dates
+//            VALUES
+//            <foreach collection="dateList" item="date" separator=",">
+//                (#{OfficialAbsenceId}, #{date.OADate}, #{date.OAPeriod})
+//            </foreach>
+//            ;
+//            </script>
+//        """)
+//    void insertJobSearch(@Param("entity") JobSearchEntity jobSearchEntity, @Param("OfficialAbsenceId") Integer OfficialAbsenceId);
 }
 //
 //form.getOAPeriods().forEach((key, values) -> {

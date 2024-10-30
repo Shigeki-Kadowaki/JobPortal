@@ -1,10 +1,13 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
+import com.jobportal.JobPortal.Service.JobSearchEntity;
 import com.jobportal.JobPortal.Service.MainService;
 import com.jobportal.JobPortal.Service.OADatesEntity;
 import com.jobportal.JobPortal.Service.OAMainEntity;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -121,30 +124,26 @@ public class MainController {
 
 
     //就活公欠届提出
-    @PostMapping(value = "/student/{id}/OACreationForm", params = "jobSearchForm")
-    public String postJobForm(@PathVariable("id") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
-        model.addAttribute("studentId", studentId);
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "jobSearchForm")
+    public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+//        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+//        Set<ConstraintViolation<OAMainForm>> violations = validator.validate(form, jobSearchFormGroup.class);
+//        if(!violations.isEmpty()){
+//            showErrorDetails(violations);
+//            return "OACreationForm";
+//        }
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
-        Date date = new Date();
-        System.out.println("success" + date.getTime());
-        OAMainEntity entity = OAMainForm.toMainEntity(form);
-        Integer officialAbsenceId = entity.getOfficialAbsenceId();
-        service.createOA(entity,studentId);
-        //System.out.println(entity.getOfficialAbsenceId());
-//        service.createDate(OAMainForm.toDatesEntity(form), entity.getOfficialAbsenceId());
-//        form.getOAPeriods().forEach((key, values) -> {
-//            System.out.println(key);
-//            values.forEach(System.out::println);
-//        });
-
+        OAMainEntity mainEntity = OAMainForm.toMainEntity(form, studentId);
+        service.createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
         List<OADatesEntity> dateList = OAMainForm.toDatesEntity(form);
         service.createOADates(dateList, officialAbsenceId);
-//        System.out.println(form.getOAPeriods().keySet());
-
-        return "redirect:/student/{id}/OACreationForm";
+        JobSearchEntity jobEntity = OAMainForm.toJobSearchEntity(form, officialAbsenceId);
+        service.createJobSearch(jobEntity);
+        return "redirect:/student/{studentId}/OACreationForm";
     }
     //セミナー公欠届提出
     @PostMapping(value = "/student/{id}/OACreationForm", params = "seminarForm")
