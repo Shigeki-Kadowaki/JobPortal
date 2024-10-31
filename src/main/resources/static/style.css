@@ -1,0 +1,9 @@
+/*.notify {*/
+/*    display: grid;*/
+/*    grid-template-rows: repeat(2, 1fr);*/
+/*    background-color: red;*/
+/*}*/
+
+ul > .btn {
+    border-radius: 0 0 0 0;
+}

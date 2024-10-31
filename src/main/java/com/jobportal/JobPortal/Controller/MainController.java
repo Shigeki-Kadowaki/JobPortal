@@ -184,15 +184,22 @@ public class MainController {
 
 
 
-    //提出済み公欠届BOX
-    @GetMapping("/student/{studentId}/OABox")
+    //提出済み公欠届List
+    @GetMapping("/student/{studentId}/OAList")
     public String showAllOAs(@PathVariable("studentId") Integer studentId, Model model){
         var OAList = service.findAllOAs(studentId);
         model.addAttribute("OAList", OAList);
         model.addAttribute("studentId", studentId);
-        return "OABox";
+        return "OAList";
     }
 
+    //公欠届詳細
+    @GetMapping("/student/{studentId}/OAList/{OAId}")
+    public String showOAInfo(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId, Model model){
+        var OAInfo = service.findOAInfo(studentId, OAId);
+        model.addAttribute("OAInfo", OAInfo);
+        return "OAInfo";
+    }
 
 
 

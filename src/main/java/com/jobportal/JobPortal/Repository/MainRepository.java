@@ -17,17 +17,24 @@ public interface MainRepository {
 //    void insert(@Param("form") exampleForm form);
 
 
-    //該当生徒のOA全取得
+    //該当生徒OAList
     @Select("""
             SELECT * FROM official_absences
             WHERE student_id = #{id};
     """)
     List<OAMainEntity> selectAll(@Param("id") Integer studentId);
+    //該当生徒OAInfo
+    @Select("""
+            SELECT * FROM official_absences
+            INNER JOIN official_absence_dates
+            USING (official_absence_id)
+            WHERE studentId = #{studentId}
+            AND official_absence_id = #{oaId};
+    """)
+    Object selectInfo(@Param("studentId") Integer studentId,@Param("oaId") Integer oaId);
 
 
-//メインOAフォームインサート
-
-    @Transactional
+    //メインOAフォームインサート
     @Insert("""
             INSERT INTO official_absences (
                 student_id,
@@ -51,7 +58,6 @@ public interface MainRepository {
     void insertMainOA(@Param("entity") OAMainEntity entity);
 
     //日時インサート
-    @Transactional
     @Insert("""
         <script>
             INSERT INTO official_absence_dates
@@ -64,7 +70,6 @@ public interface MainRepository {
     void insertOADates(@Param("dateList") List<OADatesEntity> dateList, @Param("officialAbsenceId") Integer officialAbsenceId);
 
 
-    @Transactional
     @Insert("""
             INSERT INTO job_searches VALUES (
                 #{entity.officialAbsenceId},
@@ -76,7 +81,6 @@ public interface MainRepository {
     """)
     void insertJobSearch(@Param("entity") JobSearchEntity jobSearchEntity);
 
-    @Transactional
     @Insert("""
             INSERT INTO seminars VALUES (
                 #{entity.officialAbsenceId},
@@ -88,7 +92,6 @@ public interface MainRepository {
     void insertSeminar(@Param("entity") SeminarEntity seminarEntity);
 
 
-    @Transactional
     @Insert("""
             INSERT INTO bereavements VALUES (
                 #{entity.officialAbsenceId},
@@ -98,7 +101,6 @@ public interface MainRepository {
     """)
     void insertBereavement(@Param("entity") BereavementEntity bereavementEntity);
 
-    @Transactional
     @Insert("""
             INSERT INTO attendance_bans VALUES (
                 #{entity.officialAbsenceId},
@@ -107,7 +109,6 @@ public interface MainRepository {
     """)
     void insertAttendanceBan(@Param("entity") AttendanceBanEntity attendanceBanEntity);
 
-    @Transactional
     @Insert("""
             INSERT INTO others VALUES (
                 #{entity.officialAbsenceId},
@@ -115,4 +116,5 @@ public interface MainRepository {
             );
     """)
     void insertOther(@Param("entity") OtherEntity otherEntity);
+
 }
