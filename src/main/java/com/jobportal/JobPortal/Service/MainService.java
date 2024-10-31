@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Service;
 
+import com.jobportal.JobPortal.Controller.OtherEntity;
 import com.jobportal.JobPortal.Controller.exampleForm;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,21 @@ public class MainService {
         repository.insertJobSearch(jobSearchEntity);
     }
 
+    public void createSeminar(SeminarEntity seminarEntity) {
+        repository.insertSeminar(seminarEntity);
+    }
+
+    public void createBereavement(BereavementEntity bereavementEntity) {
+        repository.insertBereavement(bereavementEntity);
+    }
+
+    public void createAttendanceBan(AttendanceBanEntity attendanceBanEntity) {
+        repository.insertAttendanceBan(attendanceBanEntity);
+    }
+
+    public void createOther(OtherEntity otherEntity) {
+        repository.insertOther(otherEntity);
+    }
 
 
 //    @Transactional
