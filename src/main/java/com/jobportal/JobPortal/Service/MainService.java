@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Service;
 
+import com.jobportal.JobPortal.Controller.OtherEntity;
 import com.jobportal.JobPortal.Controller.exampleForm;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +18,14 @@ public class MainService {
 
     //OA作成
     @Transactional
-    public void createOA(OAMainEntity entity, Integer id){
-        repository.insertMainOA(entity, id);
-        System.out.println(entity.officialAbsenceId);
+    public void createOA(OAMainEntity entity){
+        repository.insertMainOA(entity);
     }
 
     //日付作成
     @Transactional
-    public void createOADates(List<OADatesEntity> entity, Integer id){
-        repository.insertOADates(entity, id);
+    public void createOADates(List<OADatesEntity> entity, Integer officialAbsenceId){
+        repository.insertOADates(entity, officialAbsenceId);
     }
 
 
@@ -36,10 +36,25 @@ public class MainService {
 
 
     //就活情報登録
-    public void createJobSearch(JobSearchEntity jobSearchEntity, Integer OfficialAbsenceId) {
-        repository.insertJobSearch(jobSearchEntity, OfficialAbsenceId);
+    public void createJobSearch(JobSearchEntity jobSearchEntity) {
+        repository.insertJobSearch(jobSearchEntity);
     }
 
+    public void createSeminar(SeminarEntity seminarEntity) {
+        repository.insertSeminar(seminarEntity);
+    }
+
+    public void createBereavement(BereavementEntity bereavementEntity) {
+        repository.insertBereavement(bereavementEntity);
+    }
+
+    public void createAttendanceBan(AttendanceBanEntity attendanceBanEntity) {
+        repository.insertAttendanceBan(attendanceBanEntity);
+    }
+
+    public void createOther(OtherEntity otherEntity) {
+        repository.insertOther(otherEntity);
+    }
 
 
 //    @Transactional

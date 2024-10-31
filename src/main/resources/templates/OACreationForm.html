@@ -10,9 +10,9 @@
     <script th:src="@{/main.js}"></script>
 </head>
 <body>
-<a type="button" th:href="@{/student/{id}(id=${studentId})}" class="btn btn-primary">戻る</a><br>
+<a type="button" th:href="@{/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
 <section layout:fragment="content">
-    <form th:action="@{/student/{id}/OACreationForm(id=${studentId})}" method="post" th:object="${oAMainForm}">
+    <form th:action="@{/student/{studentId}/OACreationForm(studentId=${studentId})}" method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
 <!--            <span th:errors="*{reasonForAbsence}"></span>-->
@@ -32,20 +32,21 @@
         <div class="jobSearchForm">
             <div class="form-group mt-3">
                 <h3>活動内容</h3>
+                <span th:errors="*{work}"></span>
                 <h5 class="ms-3"><label class="form-check-label" for="briefing">
-                <input checked class="form-check-input" id="briefing" name="detail" type="radio" value="briefing">
+                <input checked class="form-check-input" id="briefing" name="work" type="radio" value="briefing">
                     説明会
                 </label>
                 <label class="form-check-label" for="test">
-                <input class="form-check-input" id="test" name="detail" type="radio" value="test">
+                <input class="form-check-input" id="test" name="work" type="radio" value="test">
                     試験
                 </label>
                 <label class="form-check-label" for="visit">
-                <input class="form-check-input" id="visit" name="detail" type="radio" value="visit">
+                <input class="form-check-input" id="visit" name="work" type="radio" value="visit">
                     訪問
                 </label>
                 <label class="form-check-label" for="jobOther">
-                <input class="form-check-input" id="jobOther" name="detail" type="radio" value="jobOther">
+                <input class="form-check-input" id="jobOther" name="work" type="radio" value="jobOther">
                     その他
                 </label>
                 </h5>
@@ -179,7 +180,7 @@
         </script>
 
         <div class="d-flex justify-content-between">
-            <a th:href="@{/student/{id}(id=${studentId})}" class="btn btn-danger">中止</a>
+            <a th:href="@{/student/{studentId}(studentId=${studentId})}" class="btn btn-danger">中止</a>
             <div class="jobSearchForm">
                 <div class="text-end">
                     <button type="submit" class="btn btn-primary" name="jobSearchForm">就活</button>

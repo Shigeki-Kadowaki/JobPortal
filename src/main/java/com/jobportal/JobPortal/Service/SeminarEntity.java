@@ -1,4 +1,9 @@
 package com.jobportal.JobPortal.Service;
 
-public class SeminarEntity {
+public record SeminarEntity (
+        Integer officialAbsenceId,
+        String seminarName,
+        String location,
+        String venueName
+){
 }

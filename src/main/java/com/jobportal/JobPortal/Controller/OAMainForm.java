@@ -17,18 +17,17 @@ import java.util.Map;
 @Data
 public class OAMainForm {
         //共通部分
-        private Integer id;
+//        private Integer id;
         @NotBlank
         @Pattern(regexp = "jobSearchForm|seminarForm|bereavementForm|attendanceBanForm|otherForm")
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
-        @Valid
-        private Map<@NotBlank String,@NotEmpty(message = "時間が未選択です") List<@NotBlank String>> OAPeriods;
+        private Map<String,List<String>> OAPeriods;
 //        private List<OADatesForm> OADates;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Pattern(regexp = "briefing|test|visit|other",groups = jobSearchFormGroup.class)
-        private String detail;
+        private String work;
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         private String companyName;
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
@@ -54,43 +53,76 @@ public class OAMainForm {
 //出席停止部分
         @NotBlank(message = "必須項目です",groups = attendanceBanGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = attendanceBanGroup.class)
-        private String BanReason;
+        private String banReason;
 //その他部分
         @NotBlank(message = "必須項目です",groups = otherGroup.class)
-        @Size(max = 64, message = "64文字以内で入力してください",groups = otherGroup.class)
+        @Size(max = 128, message = "128文字以内で入力してください",groups = otherGroup.class)
         private String otherReason;
 
 
-        public static OAMainEntity toMainEntity(OAMainForm form){
+        public OAMainEntity toMainEntity(Integer studentId){
                 return new OAMainEntity(
                         null,
-                        (Long) null,
+                        studentId,
                         LocalDate.now(),
-                        checkJobSearchFlag(form.getReasonForAbsence()),
+                        checkJobSearchFlag(reasonForAbsence),
                         false,
-                        (Boolean) checkCareer(checkJobSearchFlag(form.getReasonForAbsence())),
+                        (Boolean) checkCareer(checkJobSearchFlag(reasonForAbsence)),
                         OAStatus.valueOf("unaccepted"),
-                        OAReason.valueOf(form.getReasonForAbsence())
+                        OAReason.valueOf(reasonForAbsence)
                 );
         }
 
-        public static JobSearchEntity toJobSearchEntity(OAMainForm form){
+
+
+        public JobSearchEntity toJobSearchEntity(Integer officialAbsenceId){
                 return new JobSearchEntity(
-                        null,
-                        form.detail,
-                        form.companyName,
-                        form.address
+                        officialAbsenceId,
+                        work,
+                        companyName,
+                        address
                 );
         }
 
+        public SeminarEntity toSeminarEntity(Integer officialAbsenceId){
+                return new SeminarEntity(
+                        officialAbsenceId,
+                        seminarName,
+                        location,
+                        venueName
+                );
+        }
 
-        public static List<OADatesEntity> toDatesEntity(OAMainForm form){
-                var map = form.getOAPeriods();
+        public BereavementEntity toBereavementEntity(Integer officialAbsenceId){
+                return new BereavementEntity(
+                        officialAbsenceId,
+                        deceasedName,
+                        relationship
+                );
+        }
+
+        public AttendanceBanEntity toAttendanceBanEntity(Integer officialAbsenceId){
+                return new AttendanceBanEntity(
+                        officialAbsenceId,
+                        banReason
+                );
+        }
+
+        public OtherEntity toOtherEntity(Integer officialAbsenceId){
+                return new OtherEntity(
+                        officialAbsenceId,
+                        otherReason
+                );
+        }
+
+        //日付Formを日付Entityにする。
+        public List<OADatesEntity> toDatesEntity(){
+                var map = getOAPeriods();
                 ArrayList<OADatesEntity> dates = new ArrayList<>();
                         map.forEach((date,periods)->{
                                 periods.forEach(period->{
-                                        System.out.println(date + " " + period);
-                                        dates.add(new OADatesEntity(date, period));
+                                        //(String date(yyyymmdd), String period)を(LocalDate date(yyyy-mm-dd), Integer period)にする。
+                                        dates.add(new OADatesEntity(LocalDate.parse(formatDate(date,"-")), Integer.parseInt(period)));
                                 });
                         });
                 return dates;
@@ -103,6 +135,13 @@ public class OAMainForm {
         public static Object checkCareer(boolean flag){
                 if(flag) return false;
                 else return null;
+        }
+
+        public static String formatDate(String date, String sep){
+                String yyyy = date.substring(0,4);
+                String mm = date.substring(4,6);
+                String dd = date.substring(6,8);
+                return yyyy + sep + mm + sep + dd;
         }
 
 //        public static  toDatesEntity(OAMainForm form) {

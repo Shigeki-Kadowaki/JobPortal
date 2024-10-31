@@ -1,9 +1,7 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
-import com.jobportal.JobPortal.Service.MainService;
-import com.jobportal.JobPortal.Service.OADatesEntity;
-import com.jobportal.JobPortal.Service.OAMainEntity;
+import com.jobportal.JobPortal.Service.*;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -88,116 +85,108 @@ public class MainController {
         }
     }
 
-//        System.out.println("bind");
-//        System.out.println(form.getTest());
-//        validator.validate(form, bindingResult);
-//        if(bindingResult.hasErrors()){
-//            System.out.println("error");
-//            return "index";
-//        }
-//        System.out.println("success");
-//    }
 
-
-//    public String vtest(@Validated validateTest test){
-//        validator.validate(test, vtest);
-//        if (result.hasErrors()) {
-//            model.addAttribute("validationSampleModel", vm);
-//            return "validationSample";
-//        }
-//        return "index";
-//    }
-
-    //学生マイページ
-
-
-
-    @GetMapping("/student/{id}/OACreationForm")
-    public String getForm(@PathVariable("id") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
+    //Form画面
+    @GetMapping("/student/{studentId}/OACreationForm")
+    public String getForm(@PathVariable("studentId") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
         model.addAttribute("studentId",studentId);
         return "OACreationForm";
     }
 
-
-
     //就活公欠届提出
-    @PostMapping(value = "/student/{id}/OACreationForm", params = "jobSearchForm")
-    public String postJobForm(@PathVariable("id") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
-        model.addAttribute("studentId", studentId);
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "jobSearchForm")
+    public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+//        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+//        Set<ConstraintViolation<OAMainForm>> violations = validator.validate(form, jobSearchFormGroup.class);
+//        if(!violations.isEmpty()){
+//            showErrorDetails(violations);
+//            return "OACreationForm";
+//        }
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
-        Date date = new Date();
-        System.out.println("success" + date.getTime());
-        OAMainEntity entity = OAMainForm.toMainEntity(form);
-        Integer officialAbsenceId = entity.getOfficialAbsenceId();
-        service.createOA(entity,studentId);
-        //System.out.println(entity.getOfficialAbsenceId());
-//        service.createDate(OAMainForm.toDatesEntity(form), entity.getOfficialAbsenceId());
-//        form.getOAPeriods().forEach((key, values) -> {
-//            System.out.println(key);
-//            values.forEach(System.out::println);
-//        });
-
-        List<OADatesEntity> dateList = OAMainForm.toDatesEntity(form);
+        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        service.createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
+        List<OADatesEntity> dateList = form.toDatesEntity();
         service.createOADates(dateList, officialAbsenceId);
-//        System.out.println(form.getOAPeriods().keySet());
-
-        return "redirect:/student/{id}/OACreationForm";
+        JobSearchEntity jobEntity = form.toJobSearchEntity(officialAbsenceId);
+        service.createJobSearch(jobEntity);
+        return "redirect:/student/{studentId}/OACreationForm";
     }
     //セミナー公欠届提出
-    @PostMapping(value = "/student/{id}/OACreationForm", params = "seminarForm")
-    public String postSeminarForm(@Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "seminarForm")
+    public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
-        Date date = new Date();
-        System.out.println("success" + date.getTime());
-        return "redirect:/student/{id}/OACreationForm";
+        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        service.createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
+        List<OADatesEntity> dateList = form.toDatesEntity();
+        service.createOADates(dateList, officialAbsenceId);
+        SeminarEntity seminarEntity = form.toSeminarEntity(officialAbsenceId);
+        service.createSeminar(seminarEntity);
+        return "redirect:/student/{studentId}/OACreationForm";
     }
     //忌引公欠届提出
-    @PostMapping(value = "/student/{id}/OACreationForm", params = "bereavementForm")
-    public String postBereavementForm(@PathVariable("id") Integer studentId, @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "bereavementForm")
+    public String postBereavementForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "/OACreationForm";
         }
-        Date date = new Date();
-        System.out.println("success" + date.getTime());
-        return "redirect:/student/{id}/OACreationForm";
+        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        service.createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
+        List<OADatesEntity> dateList = form.toDatesEntity();
+        service.createOADates(dateList, officialAbsenceId);
+        BereavementEntity bereavementEntity = form.toBereavementEntity(officialAbsenceId);
+        service.createBereavement(bereavementEntity);
+        return "redirect:/student/{studentId}/OACreationForm";
     }
     //出席停止公欠届提出
-    @PostMapping(value = "/student/{id}/OACreationForm", params = "attendanceBanForm")
-    public String postBanForm(@Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "attendanceBanForm")
+    public String postBanForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
-        Date date = new Date();
-        System.out.println("success" + date.getTime());
-        return "redirect:/student/{id}/OACreationForm";
+        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        service.createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
+        List<OADatesEntity> dateList = form.toDatesEntity();
+        service.createOADates(dateList, officialAbsenceId);
+        AttendanceBanEntity attendanceBanEntity = form.toAttendanceBanEntity(officialAbsenceId);
+        service.createAttendanceBan(attendanceBanEntity);
+        return "redirect:/student/{studentId}/OACreationForm";
     }
     //その他公欠届提出
-    @PostMapping(value = "/student/{id}/OACreationForm", params = "otherForm")
-    public String postOtherForm(@Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "otherForm")
+    public String postOtherForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OACreationForm";
         }
-        Date date = new Date();
-        System.out.println("success" + date.getTime());
-        return "redirect:/student/{id}/OACreationForm";
+        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        service.createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
+        List<OADatesEntity> dateList = form.toDatesEntity();
+        service.createOADates(dateList, officialAbsenceId);
+        OtherEntity otherEntity = form.toOtherEntity(officialAbsenceId);
+        service.createOther(otherEntity);
+        return "redirect:/student/{studentId}/OACreationForm";
     }
 
 
 
 
     //提出済み公欠届BOX
-    @GetMapping("/student/{id}/OABox")
-    public String showAllOAs(@PathVariable("id") Integer studentId, Model model){
+    @GetMapping("/student/{studentId}/OABox")
+    public String showAllOAs(@PathVariable("studentId") Integer studentId, Model model){
         var OAList = service.findAllOAs(studentId);
         model.addAttribute("OAList", OAList);
         model.addAttribute("studentId", studentId);
