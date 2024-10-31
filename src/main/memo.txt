@@ -94,4 +94,3 @@ https://autopp-tech.hatenablog.com/entry/2019/08/29/093508
 @Options(useGeneratedKeys=true,keyProperty ="entity.officialAbsenceId")
 void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
 
-TODO:就活の、訪問日時追加
