@@ -22,19 +22,39 @@
 
 
 
-  <div class="list-group" th:each="OA : ${OAList}" th:object="${OA}">
-    <a href="#" class="list-group-item list-group-item-action" aria-current="true">
-      <div class="d-flex w-100 justify-content-between">
-        <h1 class="mb-1">公欠日</h1>
-      </div>
-      <h1><span class="badge bg-primary position-absolute top-0 end-0" th:text="*{status}"></span></h1>
-      <h1><span class="badge bg-primary position-absolute bottom-0 end-0" th:text="*{status}"></span></h1>
-      <h3 class="ms-3">1限目,2限目</h3>
+<!--  <div class="list-group" th:each="OA : ${OAList}" th:object="${OA}">-->
+<!--    <a href="#" class="list-group-item list-group-item-action" aria-current="true">-->
+<!--      <div class="d-flex w-100 justify-content-between">-->
+<!--        <h1 class="mb-1">公欠日</h1>-->
+<!--      </div>-->
+<!--      <h1><span class="badge bg-primary position-absolute top-0 end-0" th:text="*{status}"></span></h1>-->
+<!--      <h1><span class="badge bg-primary position-absolute bottom-0 end-0" th:text="*{status}"></span></h1>-->
+<!--      <h3 class="ms-3">1限目,2限目</h3>-->
 
-      <p class="mb-1"></p>
-      <small>提出日：[[*{submissionDate}]]</small>
-    </a>
-  </div>
+<!--      <p class="mb-1"></p>-->
+<!--      <small>提出日：[[*{submissionDate}]]</small>-->
+<!--    </a>-->
+<!--  </div>-->
+  <ul class="list-group list-group-horizontal">
+    <li class="list-group-item col-1 m-0 p-1 bg-light">
+      <ul class="list-group list-group-flush text-center">
+        <li class="list-group-item  list-group-item">公欠届<br><br><h5>未受理</h5></li>
+        <li class="list-group-item  list-group-item">報告書<br><br><h5>未受理</h5></li>
+      </ul>
+    </li>
+    <li class="list-group-item col">2 <br><br><br><br><br><br><br></li>
+    <li class="list-group-item col-1 m-0 p-0">
+      <ul class="list-group list-group-flush text-center">
+        <li class="list-group-item">詳細を<br>表示<br><br></li>
+        <li class="list-group-item">報告書を<br>提出</li>
+      </ul>
+    </li>
+  </ul>
+  <ul class="list-group list-group-horizontal">
+    <li class="list-group-item">An item</li>
+    <li class="list-group-item">A second item</li>
+    <li class="list-group-item">A third item</li>
+  </ul>
 </section>
 </body>
 </html>
