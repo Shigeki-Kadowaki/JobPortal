@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Mapper
@@ -25,15 +26,15 @@ public interface MainRepository {
     List<OAMainEntity> selectAll(@Param("id") Integer studentId);
     //該当生徒OAInfo
     @Select("""
-            SELECT * FROM official_absences
+            SELECT official_absence_id, student_id, submission_date, status, reason, official_absence_dates.period, lesson_name, day_of_week FROM official_absences
             INNER JOIN official_absence_dates
             USING (official_absence_id)
-            WHERE studentId = #{studentId}
+            INNER JOIN lessons
+            USING (lesson_id)
+            WHERE student_id = #{studentId}
             AND official_absence_id = #{oaId};
     """)
-    Object selectInfo(@Param("studentId") Integer studentId,@Param("oaId") Integer oaId);
-
-
+    List<OAInfoDTO> selectInfo(@Param("studentId") Integer studentId, @Param("oaId") Integer oaId);
     //メインOAフォームインサート
     @Insert("""
             INSERT INTO official_absences (

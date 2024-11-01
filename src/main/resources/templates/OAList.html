@@ -13,7 +13,7 @@
 </head>
 <body>
 <section layout:fragment="content">
-  <a type="button" th:href="@{/student/{id}(id=${studentId})}" class="btn btn-primary">戻る</a><br>
+  <a type="button" th:href="@{/jobportal/student/{id}(id=${studentId})}" class="btn btn-primary">戻る</a><br>
   <div class="card">
     <div class="card-header">並び替え</div>
     <div class="card-body">
@@ -32,7 +32,7 @@
       <li class="list-group-item col"><h3>10月30日(木)</h3></li>
       <li class="list-group-item col"><h3>1,2,3,4,5限</h3></li>
       <li class="list-group-item col"><h3>就活</h3></li>
-      <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書提出</h5></button>
+      <a th:href="@{/jobportal/student/{studentId}/OAList/97(studentId=${studentId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>詳細表示</h5></a>
       <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書提出</h5></button>
     </ul>
   </div>

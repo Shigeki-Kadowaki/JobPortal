@@ -10,9 +10,9 @@
     <script th:src="@{/main.js}"></script>
 </head>
 <body>
-<a type="button" th:href="@{/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
+<a type="button" th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
 <section layout:fragment="content">
-    <form th:action="@{/student/{studentId}/OACreationForm(studentId=${studentId})}" method="post" th:object="${oAMainForm}">
+    <form th:action="@{/jobportal/student/{studentId}/OACreationForm(studentId=${studentId})}" method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
 <!--            <span th:errors="*{reasonForAbsence}"></span>-->
@@ -180,7 +180,7 @@
         </script>
 
         <div class="d-flex justify-content-between">
-            <a th:href="@{/student/{studentId}(studentId=${studentId})}" class="btn btn-danger">中止</a>
+            <a th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-danger">中止</a>
             <div class="jobSearchForm">
                 <div class="text-end">
                     <button type="submit" class="btn btn-primary" name="jobSearchForm">就活</button>

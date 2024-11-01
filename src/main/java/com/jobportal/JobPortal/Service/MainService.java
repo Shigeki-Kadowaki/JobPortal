@@ -1,7 +1,6 @@
 package com.jobportal.JobPortal.Service;
 
 import com.jobportal.JobPortal.Controller.OtherEntity;
-import com.jobportal.JobPortal.Controller.exampleForm;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,12 @@ public class MainService {
     //日付登録
     @Transactional
     public void createOADates(List<OADatesEntity> entity, Integer officialAbsenceId){repository.insertOADates(entity, officialAbsenceId);}
-    //該当生徒OA取得
+    //該当生徒OAList取得
     public List<OAMainEntity> findAllOAs(Integer studentId){
         return repository.selectAll(studentId);
     }
-    public Object findOAInfo(Integer studentId, Integer oaId) {return repository.selectInfo(studentId, oaId);}
+    //該当生徒該当OA取得
+    public List<OAInfoDTO> findOAInfo(Integer studentId, Integer oaId) {return repository.selectInfo(studentId, oaId);}
     //就活情報登録
     @Transactional
     public void createJobSearch(JobSearchEntity jobSearchEntity) {

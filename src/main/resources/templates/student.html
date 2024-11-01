@@ -10,8 +10,8 @@
 <body>
     <section layout:fragment="content">
         <h1>[[${student.name}]]さん、こんにちは</h1>
-        <a th:href="@{/student/{id}/OACreationForm(id = ${student.id})}">新規公欠届作成</a><br>
-        <a th:href="@{/student/{id}/OAList(id = ${student.id})}">提出済み公欠届</a>
+        <a th:href="@{/jobportal/student/{id}/OACreationForm(id = ${student.id})}">新規公欠届作成</a><br>
+        <a th:href="@{/jobportal/student/{id}/OAList(id = ${student.id})}">提出済み公欠届</a>
     </section>
 </body>
 </html>

@@ -12,7 +12,16 @@
 </head>
 <body>
 <section layout:fragment="content">
-    詳細ページ
+    <div th:each="info, stat : ${OAInfo}" th:object="${info}">
+        <div th:if="${stat.index} == 0">
+            <div>提出日:[[*{submissionDate}]]</div>
+            <div>状態:[[*{status}]]</div>
+            <div>理由:[[*{reason}]]</div>
+        </div>
+        <div>
+            [[*{period}]]限目:[[*{}]]
+        </div>
+    </div>
 </section>
 </body>
 </html>
