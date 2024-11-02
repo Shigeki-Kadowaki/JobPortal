@@ -12,16 +12,19 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <div th:each="info, stat : ${OAInfo}" th:object="${info}">
-        <div th:if="${stat.index} == 0">
-            <div>提出日:[[*{submissionDate}]]</div>
-            <div>状態:[[*{status}]]</div>
-            <div>理由:[[*{reason}]]</div>
+        <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
+            <div>
+                [[${mapEntry.key}]]<br>
+                <div th:each="v : ${mapEntry.value}">
+                    [[${v.period}]]限目:[[${v.lessonName}]]
+                </div>
+            </div>
         </div>
         <div>
-            [[*{period}]]限目:[[*{}]]
+            提出日 : [[${mainInfo.submissionDate}]]<br>
+            公欠理由 : [[${mainInfo.reason}]]<br>
+            ステータス : [[${mainInfo.status}]]<br>
         </div>
-    </div>
 </section>
 </body>
 </html>

@@ -94,3 +94,13 @@ https://autopp-tech.hatenablog.com/entry/2019/08/29/093508
 @Options(useGeneratedKeys=true,keyProperty ="entity.officialAbsenceId")
 void insertMainOA(@Param("entity")OAMainEntity entity,@Param("id") Integer id);
 
+map<String, List<Object>>をthymeleafで表示する
+<div th:each="mapEntry : ${lessonInfo}" th:object="${info}">
+    [[${mapEntry.key}]]<br>
+    <div th:each="v : ${mapEntry.value}">
+        [[${v.fieldName}]]
+    </div>
+</div>
+https://github.com/thymeleaf/thymeleaf/issues/748
+
+mapを昇順にするには、TreeMapを使う

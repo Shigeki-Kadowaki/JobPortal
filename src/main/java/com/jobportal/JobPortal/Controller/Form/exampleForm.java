@@ -1,4 +1,4 @@
-package com.jobportal.JobPortal.Controller;
+package com.jobportal.JobPortal.Controller.Form;
 
 import lombok.Data;
 

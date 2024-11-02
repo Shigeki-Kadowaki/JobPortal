@@ -1,12 +1,15 @@
 package com.jobportal.JobPortal.Repository;
 
-import com.jobportal.JobPortal.Controller.OtherEntity;
-import com.jobportal.JobPortal.Service.*;
+import com.jobportal.JobPortal.Service.DTO.OADateInfoDTO;
+import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
+import com.jobportal.JobPortal.Service.Entity.OtherEntity;
+import com.jobportal.JobPortal.Service.DTO.OADateInfoDTO;
+import com.jobportal.JobPortal.Service.DTO.OAResonInfoDTO;
+import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Mapper
@@ -20,21 +23,55 @@ public interface MainRepository {
 
     //該当生徒OAList
     @Select("""
-            SELECT * FROM official_absences
-            WHERE student_id = #{id};
+            SELECT
+            	official_absence_id,
+            	student_id,
+            	official_absences.status,
+            	reason,
+            	submitted_flag,
+            	reports.status,
+                MIN(official_absence_date) AS startDate,
+                MAX(official_absence_date) AS endDate
+            FROM official_absences
+            RIGHT OUTER JOIN official_absence_dates
+            USING (official_absence_id)
+            LEFT OUTER JOIN reports
+            USING (official_absence_id)
+            WHERE student_id = #{studentId}
+            GROUP BY official_absence_id,student_id,official_absences.status,reason,submitted_flag,reports.status
+            ORDER BY official_absence_id;
     """)
-    List<OAMainEntity> selectAll(@Param("id") Integer studentId);
-    //該当生徒OAInfo
+    List<OAListEntity> selectAll(@Param("studentId") Integer studentId);
+    //共通部分Info
     @Select("""
-            SELECT official_absence_id, student_id, submission_date, status, reason, official_absence_dates.period, lesson_name, day_of_week FROM official_absences
+            SELECT DISTINCT official_absence_id,
+                            student_id,
+                            submission_date,
+                            status,
+                            reason,
+                            submitted_flag
+            FROM official_absences
             INNER JOIN official_absence_dates
             USING (official_absence_id)
             INNER JOIN lessons
             USING (lesson_id)
-            WHERE student_id = #{studentId}
-            AND official_absence_id = #{oaId};
+            WHERE official_absence_id = #{oaId};
     """)
-    List<OAInfoDTO> selectInfo(@Param("studentId") Integer studentId, @Param("oaId") Integer oaId);
+    OAMainInfoDTO selectMainInfo(@Param("oaId") Integer oaId);
+    //日時Info
+    @Select("""
+            SELECT  official_absence_date,
+                    official_absence_dates.period,
+                    lesson_name
+            FROM official_absence_dates
+            INNER JOIN lessons
+            USING (lesson_id)
+            WHERE official_absence_id = #{oaId}
+            ORDER BY official_absence_date, period;
+    """)
+    List<OADateInfoDTO> selectInfo(@Param("oaId") Integer oaId);
+    //OA内容Info
+    OAResonInfoDTO selectReasonInfo(Integer oaId);
     //メインOAフォームインサート
     @Insert("""
             INSERT INTO official_absences (
@@ -44,7 +81,8 @@ public interface MainRepository {
                 teacher_check,
                 career_check,
                 status,
-                reason
+                reason,
+                submitted_flag
             ) VALUES (
                 #{entity.studentId},
                 #{entity.submissionDate},
@@ -52,7 +90,8 @@ public interface MainRepository {
                 #{entity.teacherCheck},
                 #{entity.careerCheck},
                 #{entity.status},
-                #{entity.reason}
+                #{entity.reason},
+                #{entity.submittedFlag}
             );
     """)
     @Options(useGeneratedKeys = true, keyProperty = "entity.officialAbsenceId")
@@ -123,5 +162,6 @@ public interface MainRepository {
             );
     """)
     void insertOther(@Param("entity") OtherEntity otherEntity);
+
 
 }
