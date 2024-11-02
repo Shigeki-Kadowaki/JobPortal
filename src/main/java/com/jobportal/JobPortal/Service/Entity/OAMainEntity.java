@@ -1,5 +1,7 @@
-package com.jobportal.JobPortal.Service;
+package com.jobportal.JobPortal.Service.Entity;
 
+import com.jobportal.JobPortal.Service.OAReason;
+import com.jobportal.JobPortal.Service.OAStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -18,8 +20,9 @@ public class OAMainEntity
     LocalDate submissionDate;
     boolean jobSearchFlag;
     boolean teacherCheck;
+    boolean submittedFlag;
     Boolean careerCheck;
-    OAStatus status;
+    String status;
     OAReason reason;
 
     public OAMainEntity(
@@ -29,7 +32,8 @@ public class OAMainEntity
             Boolean jobSearchFlag,
             Boolean teacherCheck,
             Boolean careerCheck,
-            OAStatus status,
+            Boolean submittedFlag,
+            String status,
             OAReason reason) {
         this.officialAbsenceId = officialAbsenceId;
         this.studentId = studentId;
@@ -37,6 +41,7 @@ public class OAMainEntity
         this.jobSearchFlag = jobSearchFlag;
         this.teacherCheck = teacherCheck;
         this.careerCheck = careerCheck;
+        this.submittedFlag = submittedFlag;
         this.status = status;
         this.reason = reason;
     }

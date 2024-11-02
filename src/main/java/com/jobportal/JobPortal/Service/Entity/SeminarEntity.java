@@ -1,4 +1,4 @@
-package com.jobportal.JobPortal.Service;
+package com.jobportal.JobPortal.Service.Entity;
 
 public record SeminarEntity (
         Integer officialAbsenceId,

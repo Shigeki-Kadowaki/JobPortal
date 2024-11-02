@@ -1,8 +1,9 @@
-package com.jobportal.JobPortal.Controller;
+package com.jobportal.JobPortal.Controller.Form;
 
+import com.jobportal.JobPortal.Service.Entity.OtherEntity;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.*;
-import jakarta.validation.Valid;
+import com.jobportal.JobPortal.Service.Entity.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -68,7 +69,8 @@ public class OAMainForm {
                         checkJobSearchFlag(reasonForAbsence),
                         false,
                         (Boolean) checkCareer(checkJobSearchFlag(reasonForAbsence)),
-                        OAStatus.valueOf("unaccepted"),
+                        false,
+                        "unaccepted",
                         OAReason.valueOf(reasonForAbsence)
                 );
         }

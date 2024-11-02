@@ -1,4 +1,4 @@
-package com.jobportal.JobPortal.Controller;
+package com.jobportal.JobPortal.Service.Entity;
 
 public record OtherEntity(
         Integer officialAbsenceId,

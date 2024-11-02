@@ -3,13 +3,14 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
-<link rel="stylesheet" th:href="@{/style.css}">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>box</title>
+  <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <section layout:fragment="content">
@@ -21,21 +22,33 @@
     </div>
   </div>
   <br>
-  <div>
-    <ul class="list-group list-group-horizontal text-center">
-      <li class="list-group-item col-1 m-0 p-1 bg-light">
+  <div th:each="mapEntry : ${lessonMap}" th:object="${list}">
+    [[${mapEntry.key}]]<br>
+    <div th:each="v : ${mapEntry.value}">
+      [[${v}]]
+    </div>
+  </div>
+  <div th:each="value : ${mainList}" th:object="${value}">
+    <ul class="list-group list-group-horizontal row">
+      <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
         <ul class="list-group list-group-flush">
-          <li class="list-group-item list-group-item-warning m-0 p-0">公欠届未受理</li>
-          <li class="list-group-item list-group-item-warning m-0 p-0">報告書未受理</li>
+          <li class="list-group-item list-group-item-warning m-0 p-0  text-center">公欠届 : [[*{status}]]</li>
+          <li class="list-group-item list-group-item-warning m-0 p-0  text-center">報告書 : [[*{reportStatus}]]</li>
         </ul>
       </li>
-      <li class="list-group-item col"><h3>10月30日(木)</h3></li>
-      <li class="list-group-item col"><h3>1,2,3,4,5限</h3></li>
-      <li class="list-group-item col"><h3>就活</h3></li>
-      <a th:href="@{/jobportal/student/{studentId}/OAList/97(studentId=${studentId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>詳細表示</h5></a>
+      <th:block th:if="(*{startDate} eq *{endDate})">
+        <li class="list-group-item col "><h4>公欠日 : [[*{startDate}]]</h4></li>
+      </th:block>
+      <th:block th:unless="(*{startDate} eq *{endDate})">
+        <li class="list-group-item col "><h4>公欠日 : [[*{startDate}]] - [[*{endDate}]]</h4></li>
+      </th:block>
+      <li class="list-group-item col-2  text-center"><h4>[[*{reason}]]</h4></li>
+      <a th:href="@{/jobportal/student/{studentId}/OAList/{oaId}(studentId=*{studentId}, oaId=*{officialAbsenceId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
       <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書提出</h5></button>
     </ul>
   </div>
+
+
 
 
 </section>
