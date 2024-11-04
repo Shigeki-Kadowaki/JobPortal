@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher_OAList</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <a type="button" th:href="@{/jobportal/teacher}" class="btn btn-primary">戻る</a><br>
+
+    <div class="card">
+        <div class="card-header">並び替え</div>
+        <div class="card-body">
+
+        </div>
+    </div>
+    <br>
+    <div th:each="value : ${mainList}" th:object="${value}">
+        <ul class="list-group list-group-horizontal row">
+            <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[*{status}]]</li>
+                    <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[*{reportStatus}]]</li>
+                </ul>
+            </li>
+            <th:block th:if="${value.startDate} == ${value.endDate}">
+                <li class="list-group-item col-2 d-flex align-items-center justify-content-center"><h5>[[*{startDate}]]</h5></li>
+                <li class="list-group-item col-2 d-flex align-items-center justify-content-center">
+                    <h5><span th:each="lesson, iterStat : ${value.lessons}" th:object="${lesson}">
+                       [[${lesson}]]
+                      <span th:unless="${iterStat.last}">,</span>
+                    </span>限目</h5>
+                </li>
+            </th:block>
+            <th:block th:unless="${value.startDate} == ${value.endDate}">
+                <li class="list-group-item col-4 d-flex align-items-center justify-content-center"><h5 class="">[[*{startDate}]] - [[*{endDate}]]</h5></li>
+            </th:block>
+            <li class="list-group-item col-4 text-center d-flex align-items-center justify-content-center"><h4>NNNNN NNNNNNNNNN NNNNNN</h4></li>
+            <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId()})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>公欠届詳細</h5></a>
+            <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書詳細</h5></button>
+        </ul>
+    </div>
+</section>
+</body>
+</html>

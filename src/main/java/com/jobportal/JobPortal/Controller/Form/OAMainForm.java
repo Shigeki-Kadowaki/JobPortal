@@ -80,7 +80,7 @@ public class OAMainForm {
         public JobSearchEntity toJobSearchEntity(Integer officialAbsenceId){
                 return new JobSearchEntity(
                         officialAbsenceId,
-                        work,
+                        JobSearchWork.valueOf(work),
                         companyName,
                         address
                 );
@@ -124,7 +124,7 @@ public class OAMainForm {
                         map.forEach((date,periods)->{
                                 periods.forEach(period->{
                                         //(String date(yyyymmdd), String period)を(LocalDate date(yyyy-mm-dd), Integer period)にする。
-                                        dates.add(new OADatesEntity(LocalDate.parse(formatDate(date,"-")), Integer.parseInt(period)));
+                                        dates.add(new OADatesEntity(1,Integer.parseInt(period),LocalDate.parse(formatDate(date,"-"))));
                                 });
                         });
                 return dates;

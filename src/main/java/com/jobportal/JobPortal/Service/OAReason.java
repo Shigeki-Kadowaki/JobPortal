@@ -7,7 +7,7 @@ public enum OAReason {
     attendanceBanForm("出席停止"),
     otherForm("その他");
 
-    private String japanese;
+    private final String japanese;
 
     OAReason(String japanese) {
         this.japanese = japanese;

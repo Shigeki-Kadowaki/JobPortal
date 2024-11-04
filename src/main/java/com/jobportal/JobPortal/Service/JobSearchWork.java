@@ -1,19 +1,18 @@
 package com.jobportal.JobPortal.Service;
 
-public enum OAStatus {
-    acceptance("受理"),
-    unaccepted("未受理"),
-    rejection("却下"),
-    unsubmitted("未提出");
+public enum JobSearchWork {
+    briefing("説明会"),
+    test("試験"),
+    visit("訪問"),
+    other("その他");
 
     private final String japanese;
 
-    OAStatus(String japanese) {
+    JobSearchWork(String japanese) {
         this.japanese = japanese;
     }
 
     public String getJapaneseName() {
         return japanese;
     }
-
 }

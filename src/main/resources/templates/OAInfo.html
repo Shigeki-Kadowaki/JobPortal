@@ -12,6 +12,7 @@
 </head>
 <body>
 <section layout:fragment="content">
+    <a type="button" th:href="@{/jobportal/student/{id}/OAList(id=${studentId})}" class="btn btn-primary">戻る</a><br>
         <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
             <div>
                 [[${mapEntry.key}]]<br>
@@ -21,9 +22,29 @@
             </div>
         </div>
         <div>
+            ステータス : [[${mainInfo.status}]]<br>
             提出日 : [[${mainInfo.submissionDate}]]<br>
             公欠理由 : [[${mainInfo.reason}]]<br>
-            ステータス : [[${mainInfo.status}]]<br>
+            <th:block th:if="${mainInfo.reason} == '就活'" th:object="${jobSearchInfo}">
+                活動内容 : [[*{work.getJapaneseName()}]]<br>
+                会社名 : [[*{companyName}]]<br>
+                住所 : [[*{address}]]<br>
+            </th:block>
+            <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
+                セミナー・合説名 : [[*{seminarName}]]<br>
+                実施場所 : [[*{location}]]<br>
+                会場名 : [[*{venueName}]]<br>
+            </th:block>
+            <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
+                亡くなった方 : [[*{deceasedName}]]<br>
+                続柄 : [[*{relationship}]]<br>
+            </th:block>
+            <th:block th:if="${mainInfo.reason} == '出席停止'" th:object="${attendanceBanInfo}">
+                理由 : [[*{banReason}]]<br>
+            </th:block>
+            <th:block th:if="${mainInfo.reason} == 'その他'" th:object="${otherInfo}">
+                理由 : [[*{otherReason}]]<br>
+            </th:block>
         </div>
 </section>
 </body>

@@ -1,10 +1,8 @@
 package com.jobportal.JobPortal.Repository;
 
-import com.jobportal.JobPortal.Service.DTO.OADateInfoDTO;
-import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
+import com.jobportal.JobPortal.Service.Entity.OADateInfoEntity;
+import com.jobportal.JobPortal.Service.Entity.OAMainInfoEntity;
 import com.jobportal.JobPortal.Service.Entity.OtherEntity;
-import com.jobportal.JobPortal.Service.DTO.OADateInfoDTO;
-import com.jobportal.JobPortal.Service.DTO.OAResonInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,32 +22,50 @@ public interface MainRepository {
     //該当生徒OAList
     @Select("""
             SELECT
-            	official_absence_id,
-            	student_id,
-            	official_absences.status,
-            	reason,
-            	submitted_flag,
-            	reports.status,
-                MIN(official_absence_date) AS startDate,
-                MAX(official_absence_date) AS endDate
-            FROM official_absences
-            RIGHT OUTER JOIN official_absence_dates
-            USING (official_absence_id)
-            LEFT OUTER JOIN reports
-            USING (official_absence_id)
-            WHERE student_id = #{studentId}
-            GROUP BY official_absence_id,student_id,official_absences.status,reason,submitted_flag,reports.status
-            ORDER BY official_absence_id;
+                                    	official_absence_id,
+                                    	student_id,
+                                    	official_absences.status,
+                                    	reason,
+                                    	reports.status AS reportStatus,
+                                	    MIN(official_absence_date) AS startDate,
+                            	        MAX(official_absence_date) AS endDate,
+                        				official_absence_dates.period
+                                    FROM official_absences
+                                    RIGHT OUTER JOIN official_absence_dates
+                                    USING (official_absence_id)
+                                    LEFT OUTER JOIN reports
+                                    USING (official_absence_id)
+                                    WHERE student_id = #{studentId}
+                                GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_dates.period
+            ORDER BY official_absence_id, period;
     """)
     List<OAListEntity> selectAll(@Param("studentId") Integer studentId);
+    @Select("""
+            SELECT
+                                    	official_absence_id,
+                                    	student_id,
+                                    	official_absences.status,
+                                    	reason,
+                                    	reports.status AS reportStatus,
+                                	    MIN(official_absence_date) AS startDate,
+                            	        MAX(official_absence_date) AS endDate,
+                        				official_absence_dates.period
+                                    FROM official_absences
+                                    RIGHT OUTER JOIN official_absence_dates
+                                    USING (official_absence_id)
+                                    LEFT OUTER JOIN reports
+                                    USING (official_absence_id)
+                                GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_dates.period
+            ORDER BY official_absence_id, period;
+    """)
+    List<OAListEntity> teacherFindAllOAs();
     //共通部分Info
     @Select("""
             SELECT DISTINCT official_absence_id,
                             student_id,
                             submission_date,
                             status,
-                            reason,
-                            submitted_flag
+                            reason
             FROM official_absences
             INNER JOIN official_absence_dates
             USING (official_absence_id)
@@ -57,7 +73,7 @@ public interface MainRepository {
             USING (lesson_id)
             WHERE official_absence_id = #{oaId};
     """)
-    OAMainInfoDTO selectMainInfo(@Param("oaId") Integer oaId);
+    OAMainInfoEntity selectMainInfo(@Param("oaId") Integer oaId);
     //日時Info
     @Select("""
             SELECT  official_absence_date,
@@ -69,9 +85,8 @@ public interface MainRepository {
             WHERE official_absence_id = #{oaId}
             ORDER BY official_absence_date, period;
     """)
-    List<OADateInfoDTO> selectInfo(@Param("oaId") Integer oaId);
-    //OA内容Info
-    OAResonInfoDTO selectReasonInfo(Integer oaId);
+    List<OADateInfoEntity> selectInfo(@Param("oaId") Integer oaId);
+
     //メインOAフォームインサート
     @Insert("""
             INSERT INTO official_absences (
@@ -81,8 +96,7 @@ public interface MainRepository {
                 teacher_check,
                 career_check,
                 status,
-                reason,
-                submitted_flag
+                reason
             ) VALUES (
                 #{entity.studentId},
                 #{entity.submissionDate},
@@ -90,8 +104,7 @@ public interface MainRepository {
                 #{entity.teacherCheck},
                 #{entity.careerCheck},
                 #{entity.status},
-                #{entity.reason},
-                #{entity.submittedFlag}
+                #{entity.reason}
             );
     """)
     @Options(useGeneratedKeys = true, keyProperty = "entity.officialAbsenceId")
@@ -104,7 +117,7 @@ public interface MainRepository {
             INSERT INTO official_absence_dates
             VALUES
             <foreach collection='dateList' item='date' separator=','>
-                (#{officialAbsenceId}, null, #{date.OAPeriod}, #{date.OADate})
+                (#{officialAbsenceId}, 2, #{date.OAPeriod}, #{date.OADate})
             </foreach>
         </script>
     """)
@@ -163,5 +176,25 @@ public interface MainRepository {
     """)
     void insertOther(@Param("entity") OtherEntity otherEntity);
 
-
+    //公欠内容Info
+    @Select("""
+            SELECT * FROM job_searches WHERE official_absence_id = #{oaId};
+    """)
+    JobSearchEntity selectJobSearchInfo(@Param("oaId") Integer oaId);
+    @Select("""
+            SELECT * FROM seminars WHERE official_absence_id = #{oaId};
+    """)
+    SeminarEntity selectSeminarInfo(@Param("oaId") Integer oaId);
+    @Select("""
+            SELECT * FROM bereavements WHERE official_absence_id = #{oaId};
+    """)
+    BereavementEntity selectBereavementInfo(@Param("oaId") Integer oaId);
+    @Select("""
+            SELECT * FROM attendance_Bans WHERE official_absence_id = #{oaId};
+    """)
+    AttendanceBanEntity selectAttendanceBanInfo(@Param("oaId") Integer oaId);
+    @Select("""
+            SELECT * FROM others WHERE official_absence_id = #{oaId};
+    """)
+    OtherEntity selectOtherInfo(@Param("oaId") Integer oaId);
 }
