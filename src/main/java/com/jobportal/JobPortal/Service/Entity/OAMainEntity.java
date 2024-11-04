@@ -1,7 +1,6 @@
 package com.jobportal.JobPortal.Service.Entity;
 
 import com.jobportal.JobPortal.Service.OAReason;
-import com.jobportal.JobPortal.Service.OAStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,7 +19,6 @@ public class OAMainEntity
     LocalDate submissionDate;
     boolean jobSearchFlag;
     boolean teacherCheck;
-    boolean submittedFlag;
     Boolean careerCheck;
     String status;
     OAReason reason;
@@ -41,7 +39,6 @@ public class OAMainEntity
         this.jobSearchFlag = jobSearchFlag;
         this.teacherCheck = teacherCheck;
         this.careerCheck = careerCheck;
-        this.submittedFlag = submittedFlag;
         this.status = status;
         this.reason = reason;
     }

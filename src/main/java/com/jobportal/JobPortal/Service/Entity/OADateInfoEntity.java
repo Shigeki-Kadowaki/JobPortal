@@ -1,8 +1,8 @@
-package com.jobportal.JobPortal.Service.DTO;
+package com.jobportal.JobPortal.Service.Entity;
 
 import java.time.LocalDate;
 
-public record OADateInfoDTO(
+public record OADateInfoEntity(
         LocalDate officialAbsenceDate,//Dates
         Integer period,//Dates
         String lessonName//lessons

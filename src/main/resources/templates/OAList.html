@@ -22,28 +22,33 @@
     </div>
   </div>
   <br>
-  <div th:each="mapEntry : ${lessonMap}" th:object="${list}">
-    [[${mapEntry.key}]]<br>
-    <div th:each="v : ${mapEntry.value}">
-      [[${v}]]
-    </div>
-  </div>
+
   <div th:each="value : ${mainList}" th:object="${value}">
     <ul class="list-group list-group-horizontal row">
       <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
         <ul class="list-group list-group-flush">
-          <li class="list-group-item list-group-item-warning m-0 p-0  text-center">公欠届 : [[*{status}]]</li>
-          <li class="list-group-item list-group-item-warning m-0 p-0  text-center">報告書 : [[*{reportStatus}]]</li>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[*{status}]]</li>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[*{reportStatus}]]</li>
         </ul>
       </li>
-      <th:block th:if="(*{startDate} eq *{endDate})">
-        <li class="list-group-item col "><h4>公欠日 : [[*{startDate}]]</h4></li>
+      <li class="list-group-item col-2 d-flex align-items-center justify-content-center"><h4>[[*{reason}]]</h4></li>
+      <th:block th:if="${value.startDate} == ${value.endDate}">
+        <li class="list-group-item col d-flex align-items-center justify-content-center"><h4>[[*{startDate}]]</h4></li>
+        <li class="list-group-item col d-flex align-items-center justify-content-center">
+          <h4>
+            <span th:each="lesson, iterStat : ${value.lessons}" th:object="${lesson}">
+               [[${lesson}]]
+              <span th:unless="${iterStat.last}">,</span>
+            </span>
+            限目
+          </h4>
+        </li>
       </th:block>
-      <th:block th:unless="(*{startDate} eq *{endDate})">
-        <li class="list-group-item col "><h4>公欠日 : [[*{startDate}]] - [[*{endDate}]]</h4></li>
+      <th:block th:unless="${value.startDate} == ${value.endDate}">
+        <li class="list-group-item col d-flex align-items-center justify-content-center"><h4><span class="me-2">[[*{startDate}]]</span><span class="mx-5">-</span><span class="ms-2">[[*{endDate}]]</span></h4></li>
       </th:block>
-      <li class="list-group-item col-2  text-center"><h4>[[*{reason}]]</h4></li>
-      <a th:href="@{/jobportal/student/{studentId}/OAList/{oaId}(studentId=*{studentId}, oaId=*{officialAbsenceId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
+
+      <a th:href="@{/jobportal/student/{studentId}/OAList/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
       <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書提出</h5></button>
     </ul>
   </div>

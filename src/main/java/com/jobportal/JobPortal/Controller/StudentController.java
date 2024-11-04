@@ -2,9 +2,11 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
-import com.jobportal.JobPortal.Service.*;
-import com.jobportal.JobPortal.Service.DTO.*;
+import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
+import com.jobportal.JobPortal.Service.DTO.OAListDTO;
+import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
+import com.jobportal.JobPortal.Service.MainService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
@@ -21,16 +23,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
-public class MainController {
+public class StudentController {
 
     @Autowired
     private final MainService service;
@@ -163,7 +160,7 @@ public class MainController {
         service.createOADates(dateList, officialAbsenceId);
         JobSearchEntity jobEntity = form.toJobSearchEntity(officialAbsenceId);
         service.createJobSearch(jobEntity);
-        return "redirect:/jobportal/student/{studentId}/OACreationForm";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //セミナー公欠届提出
     @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "seminarForm")
@@ -179,7 +176,7 @@ public class MainController {
         service.createOADates(dateList, officialAbsenceId);
         SeminarEntity seminarEntity = form.toSeminarEntity(officialAbsenceId);
         service.createSeminar(seminarEntity);
-        return "redirect:/jobportal/student/{studentId}/OACreationForm";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //忌引公欠届提出
     @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "bereavementForm")
@@ -196,7 +193,7 @@ public class MainController {
         service.createOADates(dateList, officialAbsenceId);
         BereavementEntity bereavementEntity = form.toBereavementEntity(officialAbsenceId);
         service.createBereavement(bereavementEntity);
-        return "redirect:/jobportal/student/{studentId}/OACreationForm";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //出席停止公欠届提出
     @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "attendanceBanForm")
@@ -212,7 +209,7 @@ public class MainController {
         service.createOADates(dateList, officialAbsenceId);
         AttendanceBanEntity attendanceBanEntity = form.toAttendanceBanEntity(officialAbsenceId);
         service.createAttendanceBan(attendanceBanEntity);
-        return "redirect:/jobportal/student/{studentId}/OACreationForm";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //その他公欠届提出
     @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "otherForm")
@@ -228,7 +225,7 @@ public class MainController {
         service.createOADates(dateList, officialAbsenceId);
         OtherEntity otherEntity = form.toOtherEntity(officialAbsenceId);
         service.createOther(otherEntity);
-        return "redirect:/jobportal/student/{studentId}/OACreationForm";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
 
@@ -237,18 +234,24 @@ public class MainController {
     //提出済み公欠届List
     @GetMapping("/jobportal/student/{studentId}/OAList")
     public String showAllOAs(@PathVariable("studentId") Integer studentId, Model model){
-//        var OAList = service.findAllOAs(studentId);
-//        model.addAttribute("OAList", OAList);
-//        model.addAttribute("studentId", studentId);
+        Map<String, String> colors = new HashMap<>();
+        colors.put("受理","list-group-item-success");
+        colors.put("未受理","list-group-item-warning");
+        colors.put("却下","list-group-item-danger");
+        colors.put("未提出","list-group-item-dark");
         //OAList取得
         List<OAListEntity> listEntity = service.findAllOAs(studentId);
         //公欠日時をMapにする
-        if(!listEntity.isEmpty()){
-            List<OAListDTO> listDTO = listEntity.stream().map(OAListEntity::toListDTO).collect(Collectors.toList());
-//            Map<LocalDate, List<Integer>> lessonMap = service.toLessonList(list);
-//            model.addAttribute("lessonMap", lessonMap);
+        if(!listEntity.isEmpty()) {
+//            List<OAListDTO> listDTO = listEntity.stream().map(OAListEntity::toListDTO).collect(Collectors.toList());
+            List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
+//            listDTO.forEach(e->{
+//                System.out.println(e.officialAbsenceId());
+//                e.lessons().forEach(System.out::println);
+//            });
         }
+        model.addAttribute("colors", colors);
         return "OAList";
     }
 
@@ -257,16 +260,37 @@ public class MainController {
     public String showOAInfo(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId, Model model){
         //OAInfo取得
 //        List<OADateInfoDTO> allInfoDTO = service.findOAAllInfo(OAId);
-        OAMainInfoDTO mainInfoDTO = service.findMainInfo(OAId);
-        List<OADateInfoDTO> dateInfoDTO = service.findDateInfo(OAId);
+        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         //公欠日時をMapにする
-        if(!dateInfoDTO.isEmpty()){
-            Map<LocalDate, List<OALessonsDTO>> lessonInfoDTO = service.toLessonInfoDTO(dateInfoDTO);
+        if(!dateInfoEntities.isEmpty()){
+            Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
+            OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
 //        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
-//        //公欠内容抽出
-//        OAReasonInfoDTO reasonInfoDTO = service.findOAReasonInfo(OAId);
-            model.addAttribute("lessonInfo", lessonInfoDTO);
+            switch (mainInfoDTO.reason()){
+                case "就活" -> {
+                    JobSearchEntity  jobSearch = service.findJobSearchInfo(OAId);
+                    model.addAttribute("jobSearchInfo", jobSearch);
+                }
+                case "セミナー・合説" -> {
+                    SeminarEntity seminar = service.findSeminarInfo(OAId);
+                    model.addAttribute("seminarInfo", seminar);
+                }
+                case "忌引" -> {
+                    BereavementEntity bereavement = service.findBereavementInfo(OAId);
+                    model.addAttribute("bereavementInfo", bereavement);
+                }
+                case "出席停止" -> {
+                    AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
+                    model.addAttribute("attendanceBanInfo", attendanceBan);
+                }
+                case "その他" -> {
+                    OtherEntity other = service.findOtherInfo(OAId);
+                    model.addAttribute("otherInfo", other);
+                }
+            }
+            model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
         }
         return "OAInfo";
