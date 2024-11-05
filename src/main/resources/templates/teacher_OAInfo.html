@@ -47,12 +47,14 @@
     </th:block>
   </div>
   <div class="d-flex justify-content-between">
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">却下</button>
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptedModal">承認</button>
+
+    <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">却下理由を入力してください</h1>
+            <h1 class="modal-title fs-5" id="rejectionModalLabel">却下理由を入力してください</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -70,8 +72,21 @@
         </div>
       </div>
     </div>
-    <a type="button" th:href="@{/jobportal/teacher/OAList/rejection}" th:method="post" class="btn btn-danger">却下</a><br>
-    <a type="button" th:href="@{/jobportal/teacher/OAList/accepted}" class="btn btn-primary">受理</a><br>
+
+    <div class="modal fade" id="acceptedModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="acceptedModalLabel">承認しますか？</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" th:href="@{}" class="btn btn-primary">承認</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 </body>
