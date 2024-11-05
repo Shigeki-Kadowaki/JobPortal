@@ -233,7 +233,7 @@ public class StudentController {
 
     //提出済み公欠届List
     @GetMapping("/jobportal/student/{studentId}/OAList")
-    public String showAllOAs(@PathVariable("studentId") Integer studentId, Model model){
+    public String showStudentOAList(@PathVariable("studentId") Integer studentId, Model model){
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
@@ -256,8 +256,8 @@ public class StudentController {
     }
 
     //公欠届詳細
-    @GetMapping("/jobportal/student/{studentId}/OAList/{OAId}")
-    public String showOAInfo(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId, Model model){
+    @GetMapping("/jobportal/student/{studentId}/OAInfo/{OAId}")
+    public String showStudentOAInfo(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId, Model model){
         //OAInfo取得
 //        List<OADateInfoDTO> allInfoDTO = service.findOAAllInfo(OAId);
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
@@ -294,6 +294,11 @@ public class StudentController {
             model.addAttribute("mainInfo", mainInfoDTO);
         }
         return "OAInfo";
+    }
+
+    @GetMapping("/jobportal/student/{studentId}/reportinfo/{OAId}")
+    public String showStudentReportInfo(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
+        return "student_reportInfo";
     }
 
 
