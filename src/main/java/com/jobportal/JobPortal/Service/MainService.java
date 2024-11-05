@@ -126,6 +126,7 @@ public class MainService {
         List<OAListDTO> listDTO = new ArrayList<>();
         List<Integer> lessons = new ArrayList<>();
         Integer prevId = listEntity.getFirst().officialAbsenceId();
+        final LocalDate currentDate = LocalDate.now();
         int index = 0;
         int i = 0;
         for(var list : listEntity){
@@ -140,6 +141,7 @@ public class MainService {
                         existsReport(listEntity.get(index).reportStatus()),
                         dateFormat(listEntity.get(index).startDate()),
                         dateFormat(listEntity.get(index).endDate()),
+                        listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
                         lessons
                         ));
                 lessons = new ArrayList<>(List.of(list.period()));
@@ -147,6 +149,17 @@ public class MainService {
             }
             i++;
         }
+        listDTO.add(new OAListDTO(
+                listEntity.get(index).officialAbsenceId(),
+                listEntity.get(index).studentId(),
+                existsReport(listEntity.get(index).status()),
+                listEntity.get(index).reason().getJapaneseName(),
+                existsReport(listEntity.get(index).reportStatus()),
+                dateFormat(listEntity.get(index).startDate()),
+                dateFormat(listEntity.get(index).endDate()),
+                listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
+                lessons
+        ));
         return listDTO;
     }
 
@@ -156,6 +169,10 @@ public class MainService {
         }else {
             return status.getJapaneseName();
         }
+    }
+
+    public void updateOAStatus(Integer oaId) {
+        repository.updateOAStatus(oaId);
     }
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {

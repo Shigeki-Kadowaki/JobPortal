@@ -22,40 +22,41 @@ public interface MainRepository {
     //該当生徒OAList
     @Select("""
             SELECT
-                                    	official_absence_id,
-                                    	student_id,
-                                    	official_absences.status,
-                                    	reason,
-                                    	reports.status AS reportStatus,
-                                	    MIN(official_absence_date) AS startDate,
-                            	        MAX(official_absence_date) AS endDate,
-                        				official_absence_dates.period
-                                    FROM official_absences
-                                    RIGHT OUTER JOIN official_absence_dates
-                                    USING (official_absence_id)
-                                    LEFT OUTER JOIN reports
-                                    USING (official_absence_id)
-                                    WHERE student_id = #{studentId}
-                                GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_dates.period
+                official_absence_id,
+                student_id,
+                official_absences.status,
+                reason,
+                reports.status AS reportStatus,
+                MIN(official_absence_date) AS startDate,
+                MAX(official_absence_date) AS endDate,
+                official_absence_dates.period
+            FROM official_absences
+            RIGHT OUTER JOIN official_absence_dates
+            USING (official_absence_id)
+            LEFT OUTER JOIN reports
+            USING (official_absence_id)
+            WHERE student_id = #{studentId}
+            GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_dates.period
             ORDER BY official_absence_id, period;
     """)
     List<OAListEntity> selectAll(@Param("studentId") Integer studentId);
+    //先生側OAList
     @Select("""
             SELECT
-                                    	official_absence_id,
-                                    	student_id,
-                                    	official_absences.status,
-                                    	reason,
-                                    	reports.status AS reportStatus,
-                                	    MIN(official_absence_date) AS startDate,
-                            	        MAX(official_absence_date) AS endDate,
-                        				official_absence_dates.period
-                                    FROM official_absences
-                                    RIGHT OUTER JOIN official_absence_dates
-                                    USING (official_absence_id)
-                                    LEFT OUTER JOIN reports
-                                    USING (official_absence_id)
-                                GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_dates.period
+                official_absence_id,
+                student_id,
+                official_absences.status,
+                reason,
+                reports.status AS reportStatus,
+                MIN(official_absence_date) AS startDate,
+                MAX(official_absence_date) AS endDate,
+                official_absence_dates.period
+            FROM official_absences
+            RIGHT OUTER JOIN official_absence_dates
+            USING (official_absence_id)
+            LEFT OUTER JOIN reports
+            USING (official_absence_id)
+            GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_dates.period
             ORDER BY official_absence_id, period;
     """)
     List<OAListEntity> teacherFindAllOAs();
@@ -197,4 +198,12 @@ public interface MainRepository {
             SELECT * FROM others WHERE official_absence_id = #{oaId};
     """)
     OtherEntity selectOtherInfo(@Param("oaId") Integer oaId);
+
+    @Transactional
+    @Update("""
+            UPDATE official_absences
+            SET status = 'acceptance'
+            WHERE official_absence_id = #{oaId};
+    """)
+    void updateOAStatus(Integer oaId);
 }

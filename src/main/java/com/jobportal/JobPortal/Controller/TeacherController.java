@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public class TeacherController {
         return "teacher";
     }
     @GetMapping("/jobportal/teacher/OAList")
-    public String showFormOAList(Model model) {
+    public String showTeacherOAList(Model model) {
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
@@ -41,8 +42,8 @@ public class TeacherController {
         return "teacher_OAList";
     }
     //
-    @GetMapping("/jobportal/teacher/OAList/{oaId}")
-    public String teacherShowOAInfo(@PathVariable("oaId") Integer OAId, Model model) {
+    @GetMapping("/jobportal/teacher/OAList/{OAId}")
+    public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         //公欠日時をMapにする
@@ -77,5 +78,10 @@ public class TeacherController {
             model.addAttribute("mainInfo", mainInfoDTO);
         }
         return "teacher_OAInfo";
+    }
+    @PostMapping("/jobportal/teacher/OAList/{OAId}/accepted")
+    public String teacherTest(@PathVariable("OAId") Integer OAId, Model model) {
+        service.updateOAStatus(OAId);
+        return showTeacherOAList(model);
     }
 }

@@ -82,7 +82,9 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" th:href="@{}" class="btn btn-primary">承認</button>
+            <form th:action="@{/jobportal/teacher/OAList/{OAId}/accepted(OAId=${mainInfo.officialAbsenceId})}" method="post">
+              <button type="submit" class="btn btn-primary">承認</button>
+            </form>
           </div>
         </div>
       </div>
