@@ -118,20 +118,23 @@ public interface MainRepository {
             INSERT INTO official_absence_dates
             VALUES
             <foreach collection='dateList' item='date' separator=','>
-                (#{officialAbsenceId}, 2, #{date.OAPeriod}, #{date.OADate})
+                (#{officialAbsenceId},1, 2, #{date.OAPeriod}, #{date.OADate})
             </foreach>
         </script>
     """)
     void insertOADates(@Param("dateList") List<OADatesEntity> dateList, @Param("officialAbsenceId") Integer officialAbsenceId);
 
-
+    //就活インサート
     @Transactional
     @Insert("""
             INSERT INTO job_searches VALUES (
                 #{entity.officialAbsenceId},
+                1,
                 #{entity.work},
                 #{entity.companyName},
-                #{entity.address}
+                #{entity.address},
+                #{entity.remarks},
+                #{entity.visitStartTime}
             );
 
     """)

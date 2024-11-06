@@ -10,7 +10,6 @@
     <script th:src="@{/main.js}"></script>
 </head>
 <body>
-<a type="button" th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
 <section layout:fragment="content">
     <form th:action="@{/jobportal/student/{studentId}/OACreationForm(studentId=${studentId})}" method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
@@ -76,18 +75,28 @@
             <div class="row">
                 <div class="col-2">
                     <div class="form-group mt-3">
-                        <h3><label for="jobSearchVisitStartTime">訪問開始時間</label></h3>
-                        <span th:errors="*{jobSearchVisitStartTime}"></span>
+                        <h3><label for="jobSearchVisitStartHour">訪問開始時間</label></h3>
+                        <span th:errors="*{jobSearchVisitStartHour}"></span>
                         <div class="d-flex justify-content-between">
                             <input class="form-control"
                                    type="number"
-                                   id="jobSearchVisitStartTime"
-                                   name="jobSearchVisitStartTime"
-                                   placeholder="訪問開始時間"
-                                   max="24"
+                                   id="jobSearchVisitStartHour"
+                                   name="jobSearchVisitStartHour"
+                                   placeholder="時"
+                                   max="23"
                                    min="0"
-                                   th:value="*{jobSearchVisitStartTime}"
+                                   th:value="*{jobSearchVisitStartHour}"
                             ><h3>時</h3>
+                            <span th:errors="*{jobSearchVisitStartMinute}"></span>
+                                <input class="form-control"
+                                       type="number"
+                                       id="jobSearchVisitStartMinute"
+                                       name="jobSearchVisitStartMinute"
+                                       placeholder="分"
+                                       max="59"
+                                       min="0"
+                                       th:value="*{jobSearchVisitStartMinute}"
+                                ><h3>分</h3>
                         </div>
                     </div>
                 </div>
@@ -127,18 +136,28 @@
             <div class="row">
                 <div class="col-2">
                     <div class="form-group mt-3">
-                        <h3><label for="seminarVisitStartTime">訪問開始時間</label></h3>
-                        <span th:errors="*{seminarVisitStartTime}"></span>
+                        <h3><label for="seminarVisitStartHour">訪問開始時間</label></h3>
+                        <span th:errors="*{seminarVisitStartHour}"></span>
                         <div class="d-flex justify-content-between">
                             <input class="form-control"
                                    type="number"
-                                   id="seminarVisitStartTime"
-                                   name="seminarVisitStartTime"
-                                   placeholder="訪問開始時間"
-                                   max="24"
+                                   id="seminarVisitStartHour"
+                                   name="seminarVisitStartHour"
+                                   placeholder="時"
+                                   max="23"
                                    min="0"
-                                   th:value="*{seminarVisitStartTime}"
+                                   th:value="*{seminarVisitStartHour}"
                             ><h3>時</h3>
+                            <span th:errors="*{seminarVisitStartMinute}"></span>
+                            <input class="form-control"
+                                   type="number"
+                                   id="seminarVisitStartMinute"
+                                   name="seminarVisitStartMinute"
+                                   placeholder="分"
+                                   max="59"
+                                   min="0"
+                                   th:value="*{seminarVisitStartMinute}"
+                            ><h3>分</h3>
                         </div>
                     </div>
                 </div>

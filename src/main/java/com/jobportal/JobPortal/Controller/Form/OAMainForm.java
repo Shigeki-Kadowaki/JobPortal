@@ -24,8 +24,6 @@ public class OAMainForm {
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
         private Map<String,List<String>> OAPeriods;
-        @Size(max = 256, message = "256文字以内で入力してください")
-        private String remarks;
 //        private List<OADatesForm> OADates;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
@@ -36,8 +34,12 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = jobSearchFormGroup.class)
         private String address;
+        @Size(max = 512, message = "512文字以内で入力してください",groups = jobSearchFormGroup.class)
+        private String jobSearchRemarks;
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        private String jobSearchVisitStartTime;
+        private String jobSearchVisitStartHour;
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
+        private String jobSearchVisitStartMinute;
 //セミナー部分
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
@@ -48,8 +50,12 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
         private String venueName;
-        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        private String seminarVisitStartTime;
+        @Size(max = 512, message = "512文字以内で入力してください",groups = seminarGroup.class)
+        private String seminarRemarks;
+        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        private String seminarVisitStartHour;
+        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        private String seminarVisitStartMinute;
 //忌引部分
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
@@ -57,14 +63,20 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
         private String relationship;
+        @Size(max = 512, message = "512文字以内で入力してください",groups = bereavementGroup.class)
+        private String bereavementRemarks;
 //出席停止部分
         @NotBlank(message = "必須項目です",groups = attendanceBanGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = attendanceBanGroup.class)
         private String banReason;
+        @Size(max = 512, message = "512文字以内で入力してください",groups = attendanceBanGroup.class)
+        private String banRemarks;
 //その他部分
         @NotBlank(message = "必須項目です",groups = otherGroup.class)
         @Size(max = 128, message = "128文字以内で入力してください",groups = otherGroup.class)
         private String otherReason;
+        @Size(max = 512, message = "512文字以内で入力してください",groups = otherGroup.class)
+        private String otherRemarks;
 
 
         public OAMainEntity toMainEntity(Integer studentId){
@@ -88,7 +100,9 @@ public class OAMainForm {
                         officialAbsenceId,
                         JobSearchWork.valueOf(work),
                         companyName,
-                        address
+                        address,
+                        jobSearchRemarks,
+                        jobSearchVisitStartHour + ":" + jobSearchVisitStartMinute + ":" + "00"
                 );
         }
 
@@ -97,7 +111,9 @@ public class OAMainForm {
                         officialAbsenceId,
                         seminarName,
                         location,
-                        venueName
+                        venueName,
+                        seminarRemarks,
+                        seminarVisitStartHour + ":" + seminarVisitStartMinute + ":" + "00"
                 );
         }
 
@@ -105,21 +121,24 @@ public class OAMainForm {
                 return new BereavementEntity(
                         officialAbsenceId,
                         deceasedName,
-                        relationship
+                        relationship,
+                        bereavementRemarks
                 );
         }
 
         public AttendanceBanEntity toAttendanceBanEntity(Integer officialAbsenceId){
                 return new AttendanceBanEntity(
                         officialAbsenceId,
-                        banReason
+                        banReason,
+                        banRemarks
                 );
         }
 
         public OtherEntity toOtherEntity(Integer officialAbsenceId){
                 return new OtherEntity(
                         officialAbsenceId,
-                        otherReason
+                        otherReason,
+                        otherRemarks
                 );
         }
 
