@@ -4,6 +4,8 @@ public record SeminarEntity (
         Integer officialAbsenceId,
         String seminarName,
         String location,
-        String venueName
+        String venueName,
+        String remarks,
+        String visitStartTime
 ){
 }

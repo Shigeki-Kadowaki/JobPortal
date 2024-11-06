@@ -25,42 +25,17 @@ import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
-//@RequestMapping("/jobportal")
+@RequestMapping("/jobportal")
 public class StudentController {
 
     @Autowired
     private final MainService service;
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
-    public String showFormAgain(HttpServletResponse response, HttpServletRequest request, Model model) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-//        student.setId(40104);
-//        student.setName("木谷");
-//        System.out.println(student.getId().toString());
-        Enumeration<String> headerNames = request.getHeaderNames();
-        Map<String, String > map = new HashMap<>();
-        List<String> values = new ArrayList<>();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-            map.put(headerName, value);
-            values.add(value);
-        }
-        String group;
-        if(values.contains("bdab862e-69fc-4932-ab21-96a46e05881f")){
-            group = "教職員";
-            map.put("group", group);
-            return "redirect:/teacher/";
-        }else {
-            group = "学生";
-            Student student = new Student();
-            student.setId(Integer.parseInt(map.get("mellon-email").substring(0,5)));
-            student.setSurname(map.get("mellon-surname"));
-            student.setGivenname(map.get("mellon-givenname"));
-            student.setGroup(map.get("group"));
-            model.addAttribute("student", student);
-            return "redirect:/student/" + student.getId();
-        }
+    public String showFormAgain(@ModelAttribute("student")Student student) throws IOException {
+        student.setId(40104);
+        student.setSurname("木谷");
+        return "redirect:/jobportal/student/" + student.getId();
     }
     @GetMapping(value= "/test", produces = "text/html; charset=UTF-8")
     public Map<String, String> test(HttpServletResponse response, HttpServletRequest request) throws IOException {
@@ -111,34 +86,9 @@ public class StudentController {
 
 
     @GetMapping(value="/student/{studentId}",  produces = "text/html; charset=UTF-8")
-    public String student(HttpServletResponse response, HttpServletRequest request, @PathVariable("studentId") Integer studentId, Model model) throws IOException {
-      response.setContentType("text/html;charset=UTF-8");
-//        student.setId(40104);
-//        student.setName("木谷");
-//        System.out.println(student.getId().toString());
-        Enumeration<String> headerNames = request.getHeaderNames();
-        Map<String, String > map = new HashMap<>();
-        List<String> values = new ArrayList<>();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-            map.put(headerName, value);
-            values.add(value);
-        }
-        String group;
-        if(values.contains("bdab862e-69fc-4932-ab21-96a46e05881f")){
-            group = "教職員";
-        }else {
-            group = "学生";
-        }
-        map.put("group", group);
-        Student student = new Student();
-        student = new Student();
-        student.setId(Integer.parseInt(map.get("mellon-email").substring(0,5)));
-        student.setSurname(map.get("mellon-surname"));
-        student.setGivenname(map.get("mellon-givenname"));
-        student.setGroup(map.get("group"));
-        model.addAttribute("student", student);
+    public String student(@ModelAttribute("student") Student student, @PathVariable("studentId") Integer studentId, Model model) throws IOException {
+        student.setId(40104);
+        student.setSurname("木谷");
         return "student";
     }
 
@@ -219,7 +169,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //セミナー公欠届提出
-    @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "seminarForm")
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "seminarForm")
     public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -235,7 +185,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //忌引公欠届提出
-    @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "bereavementForm")
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "bereavementForm")
     public String postBereavementForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
@@ -252,7 +202,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //出席停止公欠届提出
-    @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "attendanceBanForm")
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "attendanceBanForm")
     public String postBanForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -268,7 +218,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //その他公欠届提出
-    @PostMapping(value = "/jobportal/student/{studentId}/OACreationForm", params = "otherForm")
+    @PostMapping(value = "/student/{studentId}/OACreationForm", params = "otherForm")
     public String postOtherForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -312,7 +262,7 @@ public class StudentController {
     }
 
     //公欠届詳細
-    @GetMapping("/jobportal/student/{studentId}/OAInfo/{OAId}")
+    @GetMapping("/student/{studentId}/OAInfo/{OAId}")
     public String showStudentOAInfo(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId, Model model){
         //OAInfo取得
 //        List<OADateInfoDTO> allInfoDTO = service.findOAAllInfo(OAId);
@@ -352,7 +302,7 @@ public class StudentController {
         return "OAInfo";
     }
 
-    @GetMapping("/jobportal/student/{studentId}/reportinfo/{OAId}")
+    @GetMapping("/student/{studentId}/reportinfo/{OAId}")
     public String showStudentReportInfo(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
         return "student_reportInfo";
     }

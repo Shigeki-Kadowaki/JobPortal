@@ -7,6 +7,8 @@ public record JobSearchEntity (
         Integer officialAbsenceId,
         JobSearchWork work,
         String companyName,
-        String address
+        String address,
+        String remarks,
+        String visitStartTime
 ){
 }
