@@ -9,7 +9,7 @@
   <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>box</title>
+  <title>List</title>
   <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
@@ -27,13 +27,13 @@
     <ul class="list-group list-group-horizontal row">
       <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
         <ul class="list-group list-group-flush">
-          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[*{status}]]</li>
-          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[*{reportStatus}]]</li>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[${value.status}]]</li>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
         </ul>
       </li>
-      <li class="list-group-item col-2 d-flex align-items-center justify-content-center"><h4>[[*{reason}]]</h4></li>
+      <li class="list-group-item col-2 d-flex align-items-center justify-content-center"><h4>[[${value.reason}]]</h4></li>
       <th:block th:if="${value.startDate} == ${value.endDate}">
-        <li class="list-group-item col d-flex align-items-center justify-content-center"><h4>[[*{startDate}]]</h4></li>
+        <li class="list-group-item col d-flex align-items-center justify-content-center"><h4>[[${value.startDate}]]</h4></li>
         <li class="list-group-item col d-flex align-items-center justify-content-center">
           <h4>
             <span th:each="lesson, iterStat : ${value.lessons}" th:object="${lesson}">
@@ -45,11 +45,16 @@
         </li>
       </th:block>
       <th:block th:unless="${value.startDate} == ${value.endDate}">
-        <li class="list-group-item col d-flex align-items-center justify-content-center"><h4><span class="me-2">[[*{startDate}]]</span><span class="mx-5">-</span><span class="ms-2">[[*{endDate}]]</span></h4></li>
+        <li class="list-group-item col d-flex align-items-center justify-content-center"><h4><span class="me-2">[[${value.startDate}]]</span><span class="mx-5">-</span><span class="ms-2">[[${value.endDate}]]</span></h4></li>
       </th:block>
 
-      <a th:href="@{/jobportal/student/{studentId}/OAList/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
-      <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書提出</h5></button>
+      <a th:href="@{/jobportal/student/{studentId}/OAInfo/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
+      <th:block th:if="${value.reportStatus} == '未提出'">
+        <a th:href="@{/jobportal/student/{studentId}/reportform/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportSubmissionFlag?'btn-primary':'btn-secondary'} ${value.reportSubmissionFlag?'':'disabled'}|" type="button" class="btn   text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書提出</h5></a>
+      </th:block>
+      <th:block th:unless="${value.reportStatus} == '未提出'">
+        <a th:href="@{/jobportal/student/{studentId}/reportinfo/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}"  type="button" class="btn btn-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
+      </th:block>
     </ul>
   </div>
 

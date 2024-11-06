@@ -24,6 +24,8 @@ public class OAMainForm {
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
         private Map<String,List<String>> OAPeriods;
+        @Size(max = 256, message = "256文字以内で入力してください")
+        private String remarks;
 //        private List<OADatesForm> OADates;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
@@ -34,6 +36,8 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = jobSearchFormGroup.class)
         private String address;
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
+        private String jobSearchVisitStartTime;
 //セミナー部分
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
@@ -44,6 +48,8 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
         private String venueName;
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
+        private String seminarVisitStartTime;
 //忌引部分
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
