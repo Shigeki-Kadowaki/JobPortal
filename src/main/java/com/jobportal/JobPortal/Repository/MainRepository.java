@@ -27,8 +27,8 @@ public interface MainRepository {
                 official_absences.status,
                 reason,
                 reports.status AS reportStatus,
-                MIN(official_absence_date) AS startDate,
-                MAX(official_absence_date) AS endDate,
+                MIN(date) AS startDate,
+                MAX(date) AS endDate,
                 official_absence_dates.period
             FROM official_absences
             RIGHT OUTER JOIN official_absence_dates
@@ -48,8 +48,8 @@ public interface MainRepository {
                 official_absences.status,
                 reason,
                 reports.status AS reportStatus,
-                MIN(official_absence_date) AS startDate,
-                MAX(official_absence_date) AS endDate,
+                MIN(date) AS startDate,
+                MAX(date) AS endDate,
                 official_absence_dates.period
             FROM official_absences
             RIGHT OUTER JOIN official_absence_dates
@@ -77,14 +77,14 @@ public interface MainRepository {
     OAMainInfoEntity selectMainInfo(@Param("oaId") Integer oaId);
     //日時Info
     @Select("""
-            SELECT  official_absence_date,
+            SELECT  date,
                     official_absence_dates.period,
-                    lesson_name
+                    name
             FROM official_absence_dates
             INNER JOIN lessons
             USING (lesson_id)
             WHERE official_absence_id = #{oaId}
-            ORDER BY official_absence_date, period;
+            ORDER BY date, period;
     """)
     List<OADateInfoEntity> selectInfo(@Param("oaId") Integer oaId);
 
