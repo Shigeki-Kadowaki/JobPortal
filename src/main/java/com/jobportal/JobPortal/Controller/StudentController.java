@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -40,12 +41,12 @@ public class StudentController {
         return "redirect:/jobportal/student/" + student.getId();
     }
     @GetMapping(value= "/test", produces = "text/html; charset=UTF-8")
-    public void test(@ModelAttribute("student") student student, HttpServletResponse response, HttpServletRequest request) throws IOException {
-        response.setContentType("text/html");
-
+    public void test(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        Enumeration<String> headerNames = request.getHeaderNames();
         PrintWriter out = response.getWriter();
 
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
 
         sb.append("<html>");
         sb.append("<head>");
@@ -54,20 +55,15 @@ public class StudentController {
         sb.append("<body>");
 
         sb.append("<p>");
-
-        Enumeration<String> headernames = request.getHeaderNames();
-        while (headernames.hasMoreElements()){
-            String name = headernames.nextElement();
-            Enumeration<String> headervals = request.getHeaders(name);
-            while (headervals.hasMoreElements()){
-                String val = headervals.nextElement();
-                sb.append(name);
-                sb.append(":");
-                sb.append(val);
-                sb.append("<br>");
-            }
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1),
+                    StandardCharsets.UTF_8);
+            sb.append(headerName);
+            sb.append(":");
+            sb.append(value);
+            sb.append("<br>");
         }
-
         sb.append("</p>");
 
         sb.append("</body>");
@@ -76,6 +72,7 @@ public class StudentController {
         out.println(new String(sb));
 
         out.close();
+
     }
 
 
