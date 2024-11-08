@@ -23,8 +23,6 @@ bin/
 *.iml
 *.ipr
 src/main/resources/application.properties
-.properties
-*.properties
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
