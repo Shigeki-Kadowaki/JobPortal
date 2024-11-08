@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,15 +19,16 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/jobportal")
 public class TeacherController {
 
     public final MainService service;
 
-    @GetMapping("/jobportal/teacher")
+    @GetMapping("/teacher")
     public String showTeacherPage() {
         return "teacher";
     }
-    @GetMapping("/jobportal/teacher/OAList")
+    @GetMapping("/teacher/OAList")
     public String showTeacherOAList(Model model) {
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
@@ -42,7 +44,7 @@ public class TeacherController {
         return "teacher_OAList";
     }
     //
-    @GetMapping("/jobportal/teacher/OAList/{OAId}")
+    @GetMapping("/teacher/OAList/{OAId}")
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
@@ -79,7 +81,7 @@ public class TeacherController {
         }
         return "teacher_OAInfo";
     }
-    @PostMapping("/jobportal/teacher/OAList/{OAId}/accepted")
+    @PostMapping("teacher/OAList/{OAId}/accepted")
     public String teacherTest(@PathVariable("OAId") Integer OAId, Model model) {
         service.updateOAStatus(OAId);
         return showTeacherOAList(model);

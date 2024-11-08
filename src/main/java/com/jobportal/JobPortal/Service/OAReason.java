@@ -1,11 +1,11 @@
 package com.jobportal.JobPortal.Service;
 
 public enum OAReason {
-    jobSearchForm("就活"),
-    seminarForm("セミナー・合説"),
-    bereavementForm("忌引"),
-    attendanceBanForm("出席停止"),
-    otherForm("その他");
+    jobSearch("就活"),
+    seminar("セミナー・合説"),
+    bereavement("忌引"),
+    attendanceBan("出席停止"),
+    other("その他");
 
     private final String japanese;
 

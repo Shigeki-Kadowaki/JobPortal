@@ -139,6 +139,7 @@ public class MainService {
                         existsReport(listEntity.get(index).status()),
                         listEntity.get(index).reason().getJapaneseName(),
                         existsReport(listEntity.get(index).reportStatus()),
+                        listEntity.get(index).reportRequired(),
                         dateFormat(listEntity.get(index).startDate()),
                         dateFormat(listEntity.get(index).endDate()),
                         listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
@@ -155,6 +156,7 @@ public class MainService {
                 existsReport(listEntity.get(index).status()),
                 listEntity.get(index).reason().getJapaneseName(),
                 existsReport(listEntity.get(index).reportStatus()),
+                listEntity.get(index).reportRequired(),
                 dateFormat(listEntity.get(index).startDate()),
                 dateFormat(listEntity.get(index).endDate()),
                 listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
@@ -163,7 +165,8 @@ public class MainService {
         return listDTO;
     }
 
-    public String existsReport(OAStatus status) {
+
+    public static String existsReport(OAStatus status) {
         if(status == null){
             return "未提出";
         }else {
