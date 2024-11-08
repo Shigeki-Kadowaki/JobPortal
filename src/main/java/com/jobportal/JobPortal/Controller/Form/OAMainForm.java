@@ -15,18 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.jobportal.JobPortal.Service.OAStatus.unaccepted;
+
 @Data
 public class OAMainForm {
         //共通部分
 //        private Integer id;
         @NotBlank
-        @Pattern(regexp = "jobSearchForm|seminarForm|bereavementForm|attendanceBanForm|otherForm")
+        @Pattern(regexp = "jobSearch|seminar|bereavement|attendanceBan|other")
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
         private Map<String,List<String>> OAPeriods;
         @Size(max = 256, message = "256文字以内で入力してください")
         private String remarks;
 //        private List<OADatesForm> OADates;
+        private boolean reportRequired;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Pattern(regexp = "briefing|test|visit|other",groups = jobSearchFormGroup.class)
@@ -37,7 +40,10 @@ public class OAMainForm {
         @Size(max = 256, message = "256文字以内で入力してください",groups = jobSearchFormGroup.class)
         private String address;
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        private String jobSearchVisitStartTime;
+        private String jobSearchVisitStartHour;
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
+        private String jobSearchVisitStartMinute;
+
 //セミナー部分
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
@@ -48,8 +54,10 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
         private String venueName;
-        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        private String seminarVisitStartTime;
+        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        private String seminarVisitStartHour;
+        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        private String seminarVisitStartMinute;
 //忌引部分
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
@@ -71,13 +79,10 @@ public class OAMainForm {
                 return new OAMainEntity(
                         null,
                         studentId,
-                        LocalDate.now(),
-                        checkJobSearchFlag(reasonForAbsence),
-                        false,
-                        (Boolean) checkCareer(checkJobSearchFlag(reasonForAbsence)),
-                        false,
-                        "unaccepted",
-                        OAReason.valueOf(reasonForAbsence)
+                        reportRequired,
+                        OAStatus.valueOf("unaccepted"),
+                        OAReason.valueOf(reasonForAbsence),
+                        false
                 );
         }
 
@@ -130,7 +135,12 @@ public class OAMainForm {
                         map.forEach((date,periods)->{
                                 periods.forEach(period->{
                                         //(String date(yyyymmdd), String period)を(LocalDate date(yyyy-mm-dd), Integer period)にする。
-                                        dates.add(new OADatesEntity(1,Integer.parseInt(period),LocalDate.parse(formatDate(date,"-"))));
+                                        dates.add(new OADatesEntity(
+                                                1,
+                                                Integer.parseInt(period),
+                                                LocalDate.parse(formatDate(date,"-")),
+                                                LocalDate.now()
+                                                ));
                                 });
                         });
                 return dates;

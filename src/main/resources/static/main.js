@@ -43,8 +43,8 @@ function formatDate(date, sep="") {
 
 let prevSelected = "firstLoad";
 window.addEventListener('DOMContentLoaded',()=>{
+    //公欠理由によってフォームを変える
     let formRadio = document.getElementsByName('reasonForAbsence');
-//    let radioCheckID = document.getElementById('reasonAbsence');
     formRadio.forEach((target)=>{
         target.addEventListener('change',()=>{
           console.log(prevSelected);
@@ -61,24 +61,24 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
     if(prevSelected==="firstLoad"){
         document.getElementById("jobSearch").checked = true;
-        prevSelected="jobSearchForm";
+        prevSelected="jobSearch";
     }
 //    document.getElementById('jobSearchForm').style.display='none';
 //    document.getElementById('seminarForm').style.display='none';
 //    document.getElementById('bereavementForm').style.display='none';
 //    document.getElementById('attendanceBanForm').style.display='none';
 //    document.getElementById('otherForm').style.display='none';
-    document.getElementsByClassName('jobSearchForm')[0].style.display='none';
-    document.getElementsByClassName('seminarForm')[0].style.display='none';
-    document.getElementsByClassName('bereavementForm')[0].style.display='none';
-    document.getElementsByClassName('attendanceBanForm')[0].style.display='none';
-    document.getElementsByClassName('otherForm')[0].style.display='none';
+    document.getElementsByClassName('jobSearch')[0].style.display='none';
+    document.getElementsByClassName('seminar')[0].style.display='none';
+    document.getElementsByClassName('bereavement')[0].style.display='none';
+    document.getElementsByClassName('attendanceBan')[0].style.display='none';
+    document.getElementsByClassName('other')[0].style.display='none';
     document.getElementsByClassName(prevSelected)[0].style.display='block';
-    document.getElementsByClassName('jobSearchForm')[1].style.display='none';
-    document.getElementsByClassName('seminarForm')[1].style.display='none';
-    document.getElementsByClassName('bereavementForm')[1].style.display='none';
-    document.getElementsByClassName('attendanceBanForm')[1].style.display='none';
-    document.getElementsByClassName('otherForm')[1].style.display='none';
+    document.getElementsByClassName('jobSearch')[1].style.display='none';
+    document.getElementsByClassName('seminar')[1].style.display='none';
+    document.getElementsByClassName('bereavement')[1].style.display='none';
+    document.getElementsByClassName('attendanceBan')[1].style.display='none';
+    document.getElementsByClassName('other')[1].style.display='none';
     document.getElementsByClassName(prevSelected)[1].style.display='block';
     console.log(prevSelected);
     console.log("load");

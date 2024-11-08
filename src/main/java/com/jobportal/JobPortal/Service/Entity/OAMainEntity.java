@@ -1,45 +1,22 @@
 package com.jobportal.JobPortal.Service.Entity;
 
 import com.jobportal.JobPortal.Service.OAReason;
+import com.jobportal.JobPortal.Service.OAStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@RequiredArgsConstructor
 public class OAMainEntity
-
-
-//        JobSearchEntity jobSearchEntity
-//        BereavementOAForm bereaveForm,
-//        AttendanceBanOAForm banForm,
-//        OtherOAForm otherForm
 {
-    Integer officialAbsenceId;
-    Integer studentId;
-    LocalDate submissionDate;
-    boolean jobSearchFlag;
-    boolean teacherCheck;
-    Boolean careerCheck;
-    String status;
-    OAReason reason;
-
-    public OAMainEntity(
-            Integer officialAbsenceId,
-            Integer studentId,
-            LocalDate submissionDate,
-            Boolean jobSearchFlag,
-            Boolean teacherCheck,
-            Boolean careerCheck,
-            Boolean submittedFlag,
-            String status,
-            OAReason reason) {
-        this.officialAbsenceId = officialAbsenceId;
-        this.studentId = studentId;
-        this.submissionDate = submissionDate;
-        this.jobSearchFlag = jobSearchFlag;
-        this.teacherCheck = teacherCheck;
-        this.careerCheck = careerCheck;
-        this.status = status;
-        this.reason = reason;
-    }
+    final Integer officialAbsenceId;
+    final Integer studentId;
+    final boolean reportRequired;
+    final OAStatus status;
+    final OAReason reason;
+    final boolean reportSubmittedFlag;
 }

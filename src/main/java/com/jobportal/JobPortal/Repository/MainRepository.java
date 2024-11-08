@@ -92,18 +92,12 @@ public interface MainRepository {
     @Insert("""
             INSERT INTO official_absences (
                 student_id,
-                submission_date,
-                job_search_flag,
-                teacher_check,
-                career_check,
+                report_required,
                 status,
                 reason
             ) VALUES (
                 #{entity.studentId},
-                #{entity.submissionDate},
-                #{entity.jobSearchFlag},
-                #{entity.teacherCheck},
-                #{entity.careerCheck},
+                #{entity.reportRequired},
                 #{entity.status},
                 #{entity.reason}
             );
@@ -117,8 +111,11 @@ public interface MainRepository {
         <script>
             INSERT INTO official_absence_dates
             VALUES
-            <foreach collection='dateList' item='date' separator=','>
-                (#{officialAbsenceId}, 2, #{date.OAPeriod}, #{date.OADate})
+            <foreach collection='dateList' item='date' open="(" separator=',' close=")">
+                    #{officialAbsenceId}, 
+                    2, 
+                    #{date.OAPeriod}, 
+                    #{date.OADate}
             </foreach>
         </script>
     """)
