@@ -6,7 +6,6 @@ import java.time.LocalTime;
 public record OADatesEntity(
         Integer lessonId,
         Integer OAPeriod,
-        LocalDate OADate,
-        LocalDate submittedDate
+        LocalDate OADate
 ) {
 }

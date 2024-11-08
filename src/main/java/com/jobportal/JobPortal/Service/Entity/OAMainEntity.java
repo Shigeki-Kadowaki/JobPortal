@@ -2,8 +2,6 @@ package com.jobportal.JobPortal.Service.Entity;
 
 import com.jobportal.JobPortal.Service.OAReason;
 import com.jobportal.JobPortal.Service.OAStatus;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +13,9 @@ public class OAMainEntity
 {
     final Integer officialAbsenceId;
     final Integer studentId;
-    final boolean reportRequired;
-    final OAStatus status;
-    final OAReason reason;
+    final Boolean reportRequired;
+    final String status;
+    final String reason;
     final boolean reportSubmittedFlag;
+    final LocalDate submittedDate;
 }

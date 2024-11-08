@@ -8,6 +8,7 @@ public record OAListDTO(
         String status,
         String reason,
         String reportStatus,
+        boolean reportRequired,
         String startDate,
         String endDate,
         boolean reportSubmissionFlag,

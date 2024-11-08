@@ -12,6 +12,7 @@ public record OAListEntity (
         OAStatus status,
         OAReason reason,
         OAStatus reportStatus,
+        boolean reportRequired,
         LocalDate startDate,
         LocalDate endDate,
         Integer period

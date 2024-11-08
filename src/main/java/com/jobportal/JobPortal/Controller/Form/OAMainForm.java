@@ -1,9 +1,8 @@
 package com.jobportal.JobPortal.Controller.Form;
 
-import com.jobportal.JobPortal.Service.Entity.OtherEntity;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
-import com.jobportal.JobPortal.Service.*;
 import com.jobportal.JobPortal.Service.Entity.*;
+import com.jobportal.JobPortal.Service.JobSearchWork;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -15,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.jobportal.JobPortal.Service.OAStatus.unaccepted;
-
 @Data
 public class OAMainForm {
         //共通部分
@@ -26,8 +23,6 @@ public class OAMainForm {
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
         private Map<String,List<String>> OAPeriods;
-        @Size(max = 256, message = "256文字以内で入力してください")
-        private String remarks;
 //        private List<OADatesForm> OADates;
         private boolean reportRequired;
 //就活部分
@@ -43,6 +38,8 @@ public class OAMainForm {
         private String jobSearchVisitStartHour;
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
         private String jobSearchVisitStartMinute;
+        @Size(max = 256, message = "256文字以内で入力してください")
+        private String jobSearchRemarks;
 
 //セミナー部分
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
@@ -58,6 +55,8 @@ public class OAMainForm {
         private String seminarVisitStartHour;
         @NotBlank(message = "必須項目です", groups = seminarGroup.class)
         private String seminarVisitStartMinute;
+        @Size(max = 256, message = "256文字以内で入力してください")
+        private String seminarRemarks;
 //忌引部分
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
@@ -65,25 +64,35 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
         private String relationship;
+        @Size(max = 256, message = "256文字以内で入力してください")
+        private String bereavementRemarks;
 //出席停止部分
         @NotBlank(message = "必須項目です",groups = attendanceBanGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = attendanceBanGroup.class)
         private String banReason;
+        @Size(max = 256, message = "256文字以内で入力してください")
+        private String banRemarks;
 //その他部分
         @NotBlank(message = "必須項目です",groups = otherGroup.class)
         @Size(max = 128, message = "128文字以内で入力してください",groups = otherGroup.class)
         private String otherReason;
+        @Size(max = 256, message = "256文字以内で入力してください")
+        private String otherRemarks;
 
 
         public OAMainEntity toMainEntity(Integer studentId){
                 return new OAMainEntity(
                         null,
                         studentId,
-                        reportRequired,
-                        OAStatus.valueOf("unaccepted"),
-                        OAReason.valueOf(reasonForAbsence),
-                        false
+                        checkReportRequired(reasonForAbsence),
+                        "unaccepted",
+                        reasonForAbsence,
+                        false,
+                        LocalDate.now()
                 );
+        }
+        public boolean checkReportRequired(String reasonForAbsence){
+                return reasonForAbsence.equals("jobSearch") || reasonForAbsence.equals("seminar");
         }
 
 
@@ -93,7 +102,8 @@ public class OAMainForm {
                         officialAbsenceId,
                         JobSearchWork.valueOf(work),
                         companyName,
-                        address
+                        address,
+                        jobSearchRemarks
                 );
         }
 
@@ -102,7 +112,8 @@ public class OAMainForm {
                         officialAbsenceId,
                         seminarName,
                         location,
-                        venueName
+                        venueName,
+                        seminarRemarks
                 );
         }
 
@@ -110,21 +121,24 @@ public class OAMainForm {
                 return new BereavementEntity(
                         officialAbsenceId,
                         deceasedName,
-                        relationship
+                        relationship,
+                        bereavementRemarks
                 );
         }
 
         public AttendanceBanEntity toAttendanceBanEntity(Integer officialAbsenceId){
                 return new AttendanceBanEntity(
                         officialAbsenceId,
-                        banReason
+                        banReason,
+                        banRemarks
                 );
         }
 
         public OtherEntity toOtherEntity(Integer officialAbsenceId){
                 return new OtherEntity(
                         officialAbsenceId,
-                        otherReason
+                        otherReason,
+                        otherRemarks
                 );
         }
 
@@ -138,8 +152,7 @@ public class OAMainForm {
                                         dates.add(new OADatesEntity(
                                                 1,
                                                 Integer.parseInt(period),
-                                                LocalDate.parse(formatDate(date,"-")),
-                                                LocalDate.now()
+                                                LocalDate.parse(formatDate(date,"-"))
                                                 ));
                                 });
                         });
