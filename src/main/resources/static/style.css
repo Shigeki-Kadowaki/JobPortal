@@ -1,4 +1,7 @@
-ul > .btn {
+.infobtn {
     border-radius: 0 0 0 0;
+}
+.reportbtn {
+    border-radius: 0 5px 5px 0;
 }
 
