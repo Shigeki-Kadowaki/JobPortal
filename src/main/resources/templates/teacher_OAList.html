@@ -23,8 +23,13 @@
         <ul class="list-group list-group-horizontal row">
             <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[*{status}]]</li>
-                    <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[*{reportStatus}]]</li>
+                    <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[${value.status}]]</li>
+                    <th:block th:if="${value.reportRequired}">
+                        <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
+                    </th:block>
+                    <th:block th:unless="${value.reportRequired}">
+                        <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center list-group-item-light">報告書 : 不要</li>
+                    </th:block>
                 </ul>
             </li>
             <th:block th:if="${value.startDate} == ${value.endDate}">
@@ -40,8 +45,8 @@
                 <li class="list-group-item col-4 d-flex align-items-center justify-content-center"><h5 class="">[[*{startDate}]] - [[*{endDate}]]</h5></li>
             </th:block>
             <li class="list-group-item col-4 text-center d-flex align-items-center justify-content-center"><h4>NNNNN NNNNNNNNNN NNNNNN</h4></li>
-            <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId()})}" type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>公欠届詳細</h5></a>
-            <button type="button" class="btn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1"><h5>報告書詳細</h5></button>
+            <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
+            <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未提出'?'btn-secondary':'btn-primary'} ${value.reportStatus == '未提出'?'disabled':''}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
         </ul>
     </div>
 </section>
