@@ -4,7 +4,7 @@ public enum JobSearchWork {
     briefing("説明会"),
     test("試験"),
     visit("訪問"),
-    other("その他");
+    jobOther("その他");
 
     private final String japanese;
 

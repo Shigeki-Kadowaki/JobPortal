@@ -32,7 +32,7 @@ public interface MainRepository {
                 MAX(official_absence_date) AS endDate,
                 official_absence_date_histories.period
             FROM official_absences
-            RIGHT OUTER JOIN official_absence_date_histories
+            LEFT OUTER JOIN official_absence_date_histories
             USING (official_absence_id)
             LEFT OUTER JOIN reports
             USING (official_absence_id)
@@ -56,16 +56,24 @@ public interface MainRepository {
                 official_absences.status,
                 reason,
                 reports.status AS reportStatus,
+            	report_required,
                 MIN(official_absence_date) AS startDate,
                 MAX(official_absence_date) AS endDate,
                 official_absence_date_histories.period
             FROM official_absences
-            RIGHT OUTER JOIN official_absence_date_histories
+            LEFT OUTER JOIN official_absence_date_histories
             USING (official_absence_id)
             LEFT OUTER JOIN reports
             USING (official_absence_id)
-            GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_date_histories.period
-            ORDER BY official_absence_id, period;
+            WHERE (official_absence_id, version) IN (
+                SELECT 
+                    official_absence_id,
+                    MAX(version)
+                FROM official_absence_date_histories
+                GROUP BY official_absence_id
+            )
+            GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
+            ORDER BY official_absence_id DESC, period;
     """)
     List<OAListEntity> teacherFindAllOAs();
     //共通部分Info
@@ -81,9 +89,9 @@ public interface MainRepository {
             FROM official_absences
             LEFT OUTER JOIN reports
             USING (official_absence_id)
-            WHERE official_absence_id = #{oaId};
+            WHERE official_absence_id = #{OAId};
     """)
-    OAMainInfoEntity selectMainInfo(@Param("oaId") Integer oaId);
+    OAMainInfoEntity selectMainInfo(@Param("OAId") Integer OAId);
     //日時Info
     @Select("""
             SELECT  
@@ -94,12 +102,13 @@ public interface MainRepository {
             FROM official_absence_date_histories
             INNER JOIN lessons
             USING (lesson_id)
-            WHERE official_absence_id = #{oaId}
+            WHERE official_absence_id = #{OAId}
             ORDER BY official_absence_date, period;
     """)
-    List<OADateInfoEntity> selectInfo(@Param("oaId") Integer oaId);
+    List<OADateInfoEntity> selectInfo(@Param("OAId") Integer OAId);
 
     //メインOAフォームインサート
+    @Transactional
     @Insert("""
             INSERT INTO official_absences (
                 student_id,
@@ -145,7 +154,9 @@ public interface MainRepository {
                 #{entity.companyName},
                 #{entity.address},
                 1,
-                #{entity.remarks}
+                #{entity.remarks},
+                #{entity.visitStartHour},
+                #{entity.visitStartMinute}
             );
     """)
     void insertJobSearch(@Param("entity") JobSearchEntity jobSearchEntity);
@@ -158,7 +169,9 @@ public interface MainRepository {
                 #{entity.location},
                 #{entity.venueName},
                 1,
-                #{entity.remarks}
+                #{entity.remarks},
+                #{entity.visitStartHour},
+                #{entity.visitStartMinute}
             );
     """)
     void insertSeminar(@Param("entity") SeminarEntity seminarEntity);
@@ -205,51 +218,120 @@ public interface MainRepository {
                 work,
                 company_name,
                 address,
-                remarks
-            FROM job_search_histories WHERE official_absence_id = #{oaId};
+                remarks,
+                visit_start_hour,
+                visit_start_minute
+            FROM job_search_histories 
+            WHERE (official_absence_id, version) IN (
+                SELECT 
+                    official_absence_id,
+                    MAX(version)
+                FROM job_search_histories
+                GROUP BY official_absence_id
+            )
+            AND official_absence_id = #{OAId};
     """)
-    JobSearchEntity selectJobSearchInfo(@Param("oaId") Integer oaId);
+    JobSearchEntity selectJobSearchInfo(@Param("OAId") Integer OAId);
     @Select("""
             SELECT
                 official_absence_id,
                 seminar_name,
                 location,
                 venue_name,
-                remarks
-            FROM seminar_histories WHERE official_absence_id = #{oaId};
+                remarks,
+                visit_start_hour,
+                visit_start_minute
+            FROM seminar_histories WHERE official_absence_id = #{OAId};
     """)
-    SeminarEntity selectSeminarInfo(@Param("oaId") Integer oaId);
+    SeminarEntity selectSeminarInfo(@Param("OAId") Integer OAId);
     @Select("""
             SELECT
                 official_absence_id,
                 deceased_name,
                 relationship,
                 remarks
-            FROM bereavement_histories WHERE official_absence_id = #{oaId};
+            FROM bereavement_histories WHERE official_absence_id = #{OAId};
     """)
-    BereavementEntity selectBereavementInfo(@Param("oaId") Integer oaId);
+    BereavementEntity selectBereavementInfo(@Param("OAId") Integer OAId);
     @Select("""
             SELECT
                 official_absence_id,
                 ban_reason,
                 remarks
-            FROM attendance_ban_histories WHERE official_absence_id = #{oaId};
+            FROM attendance_ban_histories WHERE official_absence_id = #{OAId};
     """)
-    AttendanceBanEntity selectAttendanceBanInfo(@Param("oaId") Integer oaId);
+    AttendanceBanEntity selectAttendanceBanInfo(@Param("OAId") Integer OAId);
     @Select("""
             SELECT
                 official_absence_id,
                 other_reason,
                 remarks
-            FROM other_histories WHERE official_absence_id = #{oaId};
+            FROM other_histories WHERE official_absence_id = #{OAId};
     """)
-    OtherEntity selectOtherInfo(@Param("oaId") Integer oaId);
+    OtherEntity selectOtherInfo(@Param("OAId") Integer OAId);
 
     @Transactional
     @Update("""
             UPDATE official_absences
-            SET status = 'acceptance'
-            WHERE official_absence_id = #{oaId};
+            SET status = #{status}
+            WHERE official_absence_id = #{OAId};
     """)
-    void updateOAStatus(Integer oaId);
+    void updateOAStatus(@Param("OAId") Integer OAId, @Param("status") String status);
+
+    @Transactional
+    @Update("""
+        UPDATE official_absences
+        SET report_required = #{flag}
+        WHERE official_absence_id = #{OAId};
+    """)
+    void updateReportRequired(@Param("OAId") Integer OAId, @Param("flag") boolean flag);
+
+    @Transactional
+    @Insert("""
+    <script>
+            INSERT INTO official_absence_date_histories
+            VALUES
+            <foreach item='date' collection='dateList' separator=','>
+                    (#{officialAbsenceId},
+                    2,
+                    #{date.OAPeriod},
+                    #{date.OADate},
+                    1)
+            </foreach>
+            ;
+            </script>
+    """)
+    void updateOADates(List<OADatesEntity> dateList, Integer oaId);
+    @Transactional
+    @Insert("""
+        INSERT INTO job_search_histories VALUES (
+            #{entity.officialAbsenceId},
+            #{entity.work},
+            #{entity.companyName},
+            #{entity.address},
+            (SELECT version FROM job_search_histories WHERE official_absence_id = #{entity.officialAbsenceId}) + 1,
+            #{entity.remarks},
+            #{entity.visit_start_hour},
+            #{entity.visit_start_minute}
+    )
+    """)
+    void updateJobSearch(@Param("entity") JobSearchEntity jobEntity);
+
+    @Transactional
+    @Delete("""
+        DELETE FROM job_search_histories WHERE official_absence_id = #{OAId};
+    """)
+    void deleteJobSearch(Integer oaId);
+
+    @Transactional
+    @Delete("""
+        DELETE FROM official_absence_date_histories WHERE official_absence_id = #{OAId};
+    """)
+    void deleteDate(@Param("OAId") Integer OAId);
+
+    @Transactional
+    @Delete("""
+        DELETE FROM official_absences WHERE official_absence_id = #{OAId};
+    """)
+    void deleteMain(@Param("OAId") Integer OAId);
 }

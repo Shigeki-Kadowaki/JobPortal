@@ -8,6 +8,8 @@ public record JobSearchEntity (
         JobSearchWork work,
         String companyName,
         String address,
-        String remarks
+        String remarks,
+        Integer visitStartHour,
+        Integer visitStartMinute
 ){
 }

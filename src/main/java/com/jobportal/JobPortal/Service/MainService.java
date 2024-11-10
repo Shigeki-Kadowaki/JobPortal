@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Service;
 
+import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Service.DTO.*;
 import com.jobportal.JobPortal.Service.Entity.OtherEntity;
 import com.jobportal.JobPortal.Repository.MainRepository;
@@ -121,7 +122,7 @@ public class MainService {
     public OtherEntity findOtherInfo(Integer oaId) {
         return repository.selectOtherInfo(oaId);
     }
-
+    //公欠授業をリスト化
     public List<OAListDTO> toListEntity(List<OAListEntity> listEntity) {
         List<OAListDTO> listDTO = new ArrayList<>();
         List<Integer> lessons = new ArrayList<>();
@@ -165,7 +166,6 @@ public class MainService {
         return listDTO;
     }
 
-
     public static String existsReport(OAStatus status) {
         if(status == null){
             return "未提出";
@@ -174,8 +174,53 @@ public class MainService {
         }
     }
 
-    public void updateOAStatus(Integer oaId) {
-        repository.updateOAStatus(oaId);
+    public void updateOAStatus(Integer OAId, String status) {
+        repository.updateOAStatus(OAId, status);
+    }
+
+    public void updateReportRequired(Integer OAId, boolean flag) {
+        repository.updateReportRequired(OAId, flag);
+    }
+
+    public OAMainForm toForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, JobSearchEntity jobSearch) {
+        Map<String, List<String>> map = new HashMap<>();
+        lessonInfoEntities.forEach((k,v)->{
+            List<String> l = new ArrayList<>();
+            v.forEach(e->{
+                l.add(e.toString());
+            });
+            map.put(k, l);
+        });
+        return new OAMainForm(
+            mainInfoDTO.reason(),
+            map,
+            mainInfoDTO.reportRequired(),
+            jobSearch.work().toString(),
+            jobSearch.companyName(),
+            jobSearch.address(),
+            jobSearch.remarks(),
+            jobSearch.visitStartHour(),
+            jobSearch.visitStartMinute()
+        );
+    }
+
+    public void updateOADates(List<OADatesEntity> dateList, Integer OAId) {
+        repository.updateOADates(dateList, OAId);
+    }
+
+    public void updateJobSearch(JobSearchEntity jobEntity) {
+        repository.updateJobSearch(jobEntity);
+    }
+
+    public void deleteJobSearch(Integer OAId) {
+        repository.deleteJobSearch(OAId);
+    }
+
+    public void deleteDate(Integer OAId) {
+        repository.deleteDate(OAId);
+    }
+    public void deleteMain(Integer OAId){
+        repository.deleteMain(OAId);
     }
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
