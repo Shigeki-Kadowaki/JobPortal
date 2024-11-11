@@ -62,8 +62,8 @@ window.addEventListener('DOMContentLoaded',()=>{
         }
     });
     if(prevSelected==="firstLoad"){
-        document.getElementById("jobSearch").checked = true;
-        prevSelected="jobSearch";
+        prevSelected=document.getElementsByName("reasonForAbsence")[0].value;
+        console.log(prevSelected)
     }
 //    document.getElementById('jobSearchForm').style.display='none';
 //    document.getElementById('seminarForm').style.display='none';
@@ -82,6 +82,5 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.getElementsByClassName('attendanceBan')[1].style.display='none';
     document.getElementsByClassName('other')[1].style.display='none';
     document.getElementsByClassName(prevSelected)[1].style.display='block';
-    console.log(prevSelected);
     console.log("load");
 })

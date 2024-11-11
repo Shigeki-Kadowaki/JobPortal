@@ -40,14 +40,10 @@ public class MainService {
     public List<OADateInfoEntity> findDateInfo(Integer oaId) {return repository.selectInfo(oaId);}
     //就活情報登録
     @Transactional
-    public void createJobSearch(JobSearchEntity jobSearchEntity) {
-        repository.insertJobSearch(jobSearchEntity);
-    }
+    public void createJobSearch(JobSearchEntity jobSearchEntity) {repository.insertJobSearch(jobSearchEntity);}
     //セミナー情報登録
     @Transactional
-    public void createSeminar(SeminarEntity seminarEntity) {
-        repository.insertSeminar(seminarEntity);
-    }
+    public void createSeminar(SeminarEntity seminarEntity) {repository.insertSeminar(seminarEntity);}
     //忌引情報登録
     @Transactional
     public void createBereavement(BereavementEntity bereavementEntity) {repository.insertBereavement(bereavementEntity);}
@@ -56,9 +52,10 @@ public class MainService {
     public void createAttendanceBan(AttendanceBanEntity attendanceBanEntity) {repository.insertAttendanceBan(attendanceBanEntity);}
     //その他情報登録
     @Transactional
-    public void createOther(OtherEntity otherEntity) {
-        repository.insertOther(otherEntity);
-    }
+    public void createOther(OtherEntity otherEntity) {repository.insertOther(otherEntity);}
+    //提出日情報登録
+    @Transactional
+    public void createSubmitted(Integer officialAbsenceId) {repository.createSubmittedDate(officialAbsenceId,LocalDate.now());}
 
 
     //重複データを排除するために、ListをMapにするメソッド
@@ -182,7 +179,7 @@ public class MainService {
         repository.updateReportRequired(OAId, flag);
     }
 
-    public OAMainForm toForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, JobSearchEntity jobSearch) {
+    public OAMainForm toJobSearchForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, JobSearchEntity jobSearch) {
         Map<String, List<String>> map = new HashMap<>();
         lessonInfoEntities.forEach((k,v)->{
             List<String> l = new ArrayList<>();
@@ -192,6 +189,7 @@ public class MainService {
             map.put(k, l);
         });
         return new OAMainForm(
+            jobSearch,
             mainInfoDTO.reason(),
             map,
             mainInfoDTO.reportRequired(),
@@ -203,25 +201,105 @@ public class MainService {
             jobSearch.visitStartMinute()
         );
     }
-
-    public void updateOADates(List<OADatesEntity> dateList, Integer OAId) {
-        repository.updateOADates(dateList, OAId);
+    public OAMainForm toSeminarForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, SeminarEntity seminar) {
+        Map<String, List<String>> map = new HashMap<>();
+        lessonInfoEntities.forEach((k,v)->{
+            List<String> l = new ArrayList<>();
+            v.forEach(e->{
+                l.add(e.toString());
+            });
+            map.put(k, l);
+        });
+        return new OAMainForm(
+                seminar,
+                mainInfoDTO.reason(),
+                map,
+                mainInfoDTO.reportRequired(),
+                seminar.seminarName(),
+                seminar.location(),
+                seminar.venueName(),
+                seminar.remarks(),
+                seminar.visitStartHour(),
+                seminar.visitStartMinute()
+        );
+    }
+    public OAMainForm toBereavementForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, BereavementEntity bereavement) {
+        Map<String, List<String>> map = new HashMap<>();
+        lessonInfoEntities.forEach((k,v)->{
+            List<String> l = new ArrayList<>();
+            v.forEach(e->{
+                l.add(e.toString());
+            });
+            map.put(k, l);
+        });
+        return new OAMainForm(
+                bereavement,
+                mainInfoDTO.reason(),
+                map,
+                mainInfoDTO.reportRequired(),
+                bereavement.remarks(),
+                bereavement.deceasedName(),
+                bereavement.relationship()
+        );
+    }
+    public OAMainForm toAttendanceBanForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, AttendanceBanEntity ban) {
+        Map<String, List<String>> map = new HashMap<>();
+        lessonInfoEntities.forEach((k,v)->{
+            List<String> l = new ArrayList<>();
+            v.forEach(e->{
+                l.add(e.toString());
+            });
+            map.put(k, l);
+        });
+        return new OAMainForm(
+                ban,
+                mainInfoDTO.reason(),
+                map,
+                mainInfoDTO.reportRequired(),
+                ban.banReason(),
+                ban.remarks()
+        );
+    }
+    public OAMainForm toOtherForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, OtherEntity other) {
+        Map<String, List<String>> map = new HashMap<>();
+        lessonInfoEntities.forEach((k,v)->{
+            List<String> l = new ArrayList<>();
+            v.forEach(e->{
+                l.add(e.toString());
+            });
+            map.put(k, l);
+        });
+        return new OAMainForm(
+                other,
+                mainInfoDTO.reason(),
+                map,
+                mainInfoDTO.reportRequired(),
+                other.otherReason(),
+                other.remarks()
+        );
     }
 
-    public void updateJobSearch(JobSearchEntity jobEntity) {
-        repository.updateJobSearch(jobEntity);
-    }
 
-    public void deleteJobSearch(Integer OAId) {
-        repository.deleteJobSearch(OAId);
-    }
+    //削除
+    public void deleteDate(Integer OAId) {repository.deleteDate(OAId);}
+    public void deleteMain(Integer OAId) {repository.deleteMain(OAId);}
+    public void deleteJobSearch(Integer OAId) {repository.deleteJobSearch(OAId);}
+    public void deleteSeminar(Integer OAId) {repository.deleteSeminar(OAId);}
+    public void deleteBereavement(Integer OAId) {repository.deleteBereavement(OAId);}
+    public void deleteAttendanceBan(Integer OAId) {repository.deleteAttendanceBan(OAId);}
+    public void deleteOther(Integer OAId) {repository.deleteOther(OAId);}
+    public void deleteSubmittedDate(Integer OAId) {repository.deleteSubmittedDate(OAId);}
+    //再提出
+    public void updateSubmittedDate(Integer OAId) {repository.updateSubmittedDate(OAId, LocalDate.now());}
+    public void updateOADates(List<OADatesEntity> dateList, Integer OAId) {repository.updateOADates(dateList, OAId);}
+    public void updateJobSearch(JobSearchEntity jobEntity) {repository.updateJobSearch(jobEntity);}
+    public void updateSeminar(SeminarEntity seminar) {repository.updateSeminar(seminar);}
+    public void updateBereavement(BereavementEntity bereavement) {repository.updateBereavement(bereavement);}
+    public void updateAttendanceBan(AttendanceBanEntity attendanceBan) {repository.updateAttendanceBan(attendanceBan);}
+    public void updateOther(OtherEntity other) {repository.updateOther(other);}
 
-    public void deleteDate(Integer OAId) {
-        repository.deleteDate(OAId);
-    }
-    public void deleteMain(Integer OAId){
-        repository.deleteMain(OAId);
-    }
+
+
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
