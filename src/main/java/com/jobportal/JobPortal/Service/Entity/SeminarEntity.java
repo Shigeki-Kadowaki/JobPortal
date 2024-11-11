@@ -5,6 +5,8 @@ public record SeminarEntity (
         String seminarName,
         String location,
         String venueName,
-        String remarks
+        String remarks,
+        Integer visitStartHour,
+        Integer visitStartMinute
 ){
 }

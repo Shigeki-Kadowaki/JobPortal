@@ -8,10 +8,7 @@ import com.jobportal.JobPortal.Service.MainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,9 +78,19 @@ public class TeacherController {
         }
         return "teacher_OAInfo";
     }
-    @PostMapping("teacher/OAList/{OAId}/accepted")
-    public String teacherTest(@PathVariable("OAId") Integer OAId, Model model) {
-        service.updateOAStatus(OAId);
-        return showTeacherOAList(model);
+    //OA承認
+    @PutMapping(value="teacher/{OAId}", params = "acceptance")
+    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired) {
+        //System.out.println(reportRequired);
+        service.updateOAStatus(OAId,"acceptance");
+        service.updateReportRequired(OAId, reportRequired != null);
+        return "redirect:/jobportal/teacher/OAList";
+    }
+    //OA却下
+    @PutMapping(value = "teacher/{OAId}", params = "rejection")
+    public String OAUnaccepted(@PathVariable("OAId") Integer OAId,@RequestParam(value = "reportRequired", required = false)String reasonForRejection) {
+        service.updateOAStatus(OAId,"rejection");
+        System.out.println(reasonForRejection);
+        return "redirect:/jobportal/teacher/OAList";
     }
 }

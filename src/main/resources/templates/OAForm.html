@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>F</title>
+    <!--    <script th:src="@{/script/main.js}"></script>-->
+    <script th:src="@{/main.js}"></script>
+    <style type="text/css">
+        <!--
+        .primary {background-color:#007bff; color:#ffffff;border-radius: 5px 5px 5px 5px}
+        -->
+    </style>
+</head>
+<body>
+<a type="button" th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
+<section layout:fragment="content">
+    <form th:action="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" th:method="${mode == 'create'}?post:put" th:object="${oAMainForm}">
+        <div class="form-group mt-3" id="officialAbsenceDetail">
+            <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
+<!--            <span th:errors="*{reasonForAbsence}"></span>-->
+            <th:block th:if="${mode == 'create'}">
+                <div aria-label="Basic radio toggle button group" class="btn-group" id="reasonAbsence" role="group">
+                    <input autocomplete="off" checked class="btn-check" id="jobSearch" name="reasonForAbsence" type="radio" value="jobSearch" th:checked="*{reasonForAbsence == 'jobSearch'}">
+                    <label class="btn btn-outline-primary" for="jobSearch">就活</label>
+                    <input autocomplete="off" class="btn-check" id="seminar" name="reasonForAbsence" type="radio" value="seminar" th:checked="*{reasonForAbsence == 'seminar'}">
+                    <label class="btn btn-outline-primary" for="seminar">セミナー・合同説明会</label>
+                    <input autocomplete="off" class="btn-check" id="bereavement" name="reasonForAbsence" type="radio" value="bereavement" th:checked="*{reasonForAbsence == 'bereavement'}">
+                    <label class="btn btn-outline-primary" for="bereavement">忌引</label>
+                    <input autocomplete="off" class="btn-check" id="attendanceBan" name="reasonForAbsence" type="radio" value="attendanceBan" th:checked="*{reasonForAbsence == 'attendanceBan'}">
+                    <label class="btn btn-outline-primary" for="attendanceBan">出席停止</label>
+                    <input autocomplete="off" class="btn-check" id="other" name="reasonForAbsence" type="radio" value="other" th:checked="*{reasonForAbsence == 'other'}">
+                    <label class="btn btn-outline-primary" for="other">その他</label>
+                </div>
+            </th:block>
+            <th:block th:if="${mode == 'edit'}">
+                <th:block th:switch="*{reasonForAbsence}">
+                    <span th:case="'就活'">
+                        <h5><span class="primary p-2">就活</span></h5>
+                        <input type="hidden" name="reasonForAbsence" value="editJobSearch">
+                    </span>
+                    <span th:case="'セミナー・合説'">
+                        セミナー・合同説明会
+                    </span>
+                    <span th:case="'忌引'">
+                        忌引
+                    </span>
+                    <span th:case="'出席停止'">
+                        出席停止
+                    </span>
+                    <span th:case="'その他'">
+                        その他
+                    </span>
+                </th:block>
+            </th:block>
+        </div>
+            <div class="jobSearch">
+                <div class="form-group mt-3">
+                    <h3>活動内容</h3>
+                    <span th:errors="*{work}"></span>
+                    <h5 class="ms-3"><label class="form-check-label" for="briefing">
+                        <input checked class="form-check-input" id="briefing" name="work" type="radio" value="briefing" th:checked="*{work == 'briefing'}">
+                        説明会
+                    </label>
+                    <label class="form-check-label" for="test">
+                        <input class="form-check-input" id="test" name="work" type="radio" value="test" th:checked="*{work == 'test'}">
+                        試験
+                    </label>
+                    <label class="form-check-label" for="visit">
+                        <input class="form-check-input" id="visit" name="work" type="radio" value="visit" th:checked="*{work == 'visit'}">
+                        訪問
+                    </label>
+                    <label class="form-check-label" for="jobOther">
+                        <input class="form-check-input" id="jobOther" name="work" type="radio" value="jobOther" th:checked="*{work == 'jobOther'}">
+                        その他
+                    </label>
+                    </h5>
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="companyName">訪問先(企業名)</label></h3>
+                    <span th:errors="*{companyName}"></span>
+                    <input type="text"
+                           class="form-control"
+                           id="companyName"
+                           name="companyName"
+                           placeholder="訪問先(企業名)"
+                           th:value="*{companyName}"
+                    >
+
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="address">所在地</label></h3>
+                    <span th:errors="*{address}"></span>
+                    <input class="form-control"
+                           id="address"
+                           name="address"
+                           placeholder="所在地"
+                           th:value="*{address}"
+                    >
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <div class="form-group mt-3">
+                            <h3><label for="jobSearchVisitStartHour">開始時間</label></h3>
+                            <span th:errors="*{jobSearchVisitStartHour}"></span>
+                            <span th:errors="*{jobSearchVisitStartMinute}"></span>
+                            <div class="d-flex justify-content-between mt-3">
+                                <input class="form-control"
+                                       type="number"
+                                       id="jobSearchVisitStartHour"
+                                       name="jobSearchVisitStartHour"
+                                       placeholder="時"
+                                       max="23"
+                                       min="0"
+                                       th:value="*{jobSearchVisitStartHour}"
+                                ><h3>時</h3>
+                                <input class="form-control"
+                                       type="number"
+                                       id="jobSearchVisitStartMinute"
+                                       name="jobSearchVisitStartMinute"
+                                       placeholder="分"
+                                       max="59"
+                                       min="0"
+                                       th:value="*{jobSearchVisitStartMinute}"
+                                ><h3>分</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="jobSearchRemarks">備考</label></h3>
+                    <textarea  class="form-control" type="text" id="jobSearchRemarks" name="jobSearchRemarks" rows="3">[[*{jobSearchRemarks}]]</textarea>
+                </div>
+            </div>
+            <div class="seminar" style="display:none">
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="seminarName">セミナー・合説名</label></h3>
+                    <span th:errors="*{seminarName}"></span>
+                    <input class="form-control"
+                           id="seminarName"
+                           name="seminarName"
+                           placeholder="合説・セミナー名"
+                           th:value="*{seminarName}"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="location">実施場所</label></h3>
+                    <span th:errors="*{location}"></span>
+                    <input class="form-control"
+                           id="location"
+                           name="location"
+                           placeholder="実施場所"
+                           th:value="*{location}"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="venueName">会場名</label></h3>
+                    <span th:errors="*{venueName}"></span>
+                    <input class="form-control"
+                           id="venueName"
+                           name="venueName"
+                           placeholder="会場名"
+                           th:value="*{venueName}"
+                    >
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <div class="form-group mt-3">
+                            <h3><label for="seminarVisitStartHour">開始時間</label></h3>
+                            <span th:errors="*{seminarVisitStartHour}"></span>
+                            <span th:errors="*{seminarVisitStartMinute}"></span>
+                            <div class="d-flex justify-content-between">
+                                <input class="form-control"
+                                       type="number"
+                                       id="seminarVisitStartHour"
+                                       name="seminarVisitStartHour"
+                                       placeholder="時"
+                                       max="23"
+                                       min="0"
+                                       th:value="*{seminarVisitStartHour}"
+                                ><h3>時</h3>
+                                <input class="form-control"
+                                       type="number"
+                                       id="seminarVisitStartMinute"
+                                       name="seminarVisitStartMinute"
+                                       placeholder="分"
+                                       max="59"
+                                       min="0"
+                                       th:value="*{seminarVisitStartMinute}"
+                                ><h3>分</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="seminarRemarks">備考</label></h3>
+                    <textarea  class="form-control" type="text" id="seminarRemarks" name="seminarRemarks" rows="3" th:value="*{seminarRemarks}"></textarea>
+                </div>
+            </div>
+            <div class="bereavement" style="display:none">
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="deceasedName">亡くなった方</label></h3>
+                    <span th:errors="*{deceasedName}"></span>
+                    <input class="form-control"
+                           id="deceasedName"
+                           name="deceasedName"
+                           placeholder="亡くなった方"
+                           th:value="*{deceasedName}"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="relationship">続柄</label></h3>
+                    <span th:errors="*{relationship}"></span>
+                    <input class="form-control"
+                           id="relationship"
+                           name="relationship"
+                           placeholder="続柄"
+                           th:value="*{relationship}"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="bereavementRemarks">備考</label></h3>
+                    <textarea  class="form-control" type="text" id="bereavementRemarks" name="bereavementRemarks" rows="3" th:value="*{bereavementRemarks}"></textarea>
+                </div>
+            </div>
+            <div class="attendanceBan" style="display:none">
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="banReason">停止理由(病名)</label></h3>
+                    <span th:errors="*{banReason}"></span>
+                    <input class="form-control"
+                           id="banReason"
+                           name="banReason"
+                           placeholder="停止理由(病名)"
+                           th:value="*{banReason}"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="banRemarks">備考</label></h3>
+                    <textarea  class="form-control" type="text" id="banRemarks" name="banRemarks" rows="3" th:value="*{banRemarks}"></textarea>
+                </div>
+            </div>
+            <div class="other" style="display:none">
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="reason">理由</label></h3>
+                    <span th:errors="*{otherReason}"></span>
+                    <input class="form-control"
+                           id="reason"
+                           name="otherReason"
+                           placeholder="理由"
+                           th:value="*{otherReason}"
+                    >
+                </div>
+                <div class="form-group mt-3">
+                    <h3><label class="form-label" for="otherRemarks">備考</label></h3>
+                    <textarea  class="form-control" type="text" id="otherRemarks" name="otherRemarks" rows="3" th:value="*{otherRemarks}"></textarea>
+                </div>
+            </div>
+
+
+            <div class="OADatesForm">
+                <div class="form-group mt-3">
+                    <h3>公欠日時</h3>
+                    <span th:errors="*{OAPeriods}"></span>
+                    <label class="form-label mt-3" for="date">公欠日を選択:</label>
+                    <input class="form-control" type="text" id="date" onchange="addOADate(this.value.replaceAll('/',''))" readonly>
+                    <div id="OADates"></div>
+                    <br><br>
+                </div>
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $("#date").datepicker({
+                        dateFormat: "yy/mm/dd",
+                        onClose: function() {
+                            $(this).datepicker("destroy");
+                        }
+                    });
+
+                    $("#date").on("focus", function() {
+                        $(this).datepicker({
+                            dateFormat: "yy/mm/dd"
+                        }).datepicker("show");
+                    });
+                });
+            </script>
+
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-danger">中止</a>
+                <div class="jobSearch">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" name="jobSearch">就活</button>
+                    </div>
+                </div>
+                <div class="seminar" style="display:none">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" name="seminar">セミナー</button>
+                    </div>
+                </div>
+                <div class="bereavement" style="display:none">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" name="bereavement">忌引</button>
+                    </div>
+                </div>
+                <div class="attendanceBan" style="display:none">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" name="attendanceBan">停止</button>
+                    </div>
+                </div>
+                <div class="other" style="display:none">
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" name="other">その他</button>
+                    </div>
+                </div>
+            </div>
+    </form>
+    <br><br><br><br><br>
+</section>
+<!--<a th:href="@{/tasks/creationForm}" class="btn btn-primary">作成</a>-->
+<div class="card">
+    <div class="card-header"></div>
+    <div class="card-body"></div>
+</div>
+</body>
+</html>

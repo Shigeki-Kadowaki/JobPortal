@@ -3,11 +3,9 @@ package com.jobportal.JobPortal.Controller.Form;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.Entity.*;
 import com.jobportal.JobPortal.Service.JobSearchWork;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@RequiredArgsConstructor
 public class OAMainForm {
         //共通部分
 //        private Integer id;
@@ -27,19 +26,23 @@ public class OAMainForm {
         private boolean reportRequired;
 //就活部分
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
-        @Pattern(regexp = "briefing|test|visit|other",groups = jobSearchFormGroup.class)
+        @Pattern(regexp = "briefing|test|visit|jobOther",groups = jobSearchFormGroup.class)
         private String work;
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         private String companyName;
         @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = jobSearchFormGroup.class)
         private String address;
-        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        private String jobSearchVisitStartHour;
-        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        private String jobSearchVisitStartMinute;
         @Size(max = 256, message = "256文字以内で入力してください")
         private String jobSearchRemarks;
+        @NotNull(message = "必須項目です", groups = jobSearchFormGroup.class)
+        @Max(value = 23,groups = jobSearchFormGroup.class)
+        @Min(value = 0,groups = jobSearchFormGroup.class)
+        private Integer jobSearchVisitStartHour;
+        @NotNull(message = "必須項目です", groups = jobSearchFormGroup.class)
+        @Max(value = 59, groups = jobSearchFormGroup.class)
+        @Min(value = 0,groups = jobSearchFormGroup.class)
+        private Integer jobSearchVisitStartMinute;
 
 //セミナー部分
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
@@ -51,12 +54,16 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
         private String venueName;
-        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
-        private String seminarVisitStartHour;
-        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
-        private String seminarVisitStartMinute;
         @Size(max = 256, message = "256文字以内で入力してください")
         private String seminarRemarks;
+        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        @Max(23)
+        @Min(0)
+        private Integer seminarVisitStartHour;
+        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        @Max(59)
+        @Min(0)
+        private Integer seminarVisitStartMinute;
 //忌引部分
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
@@ -103,7 +110,9 @@ public class OAMainForm {
                         JobSearchWork.valueOf(work),
                         companyName,
                         address,
-                        jobSearchRemarks
+                        jobSearchRemarks,
+                        jobSearchVisitStartHour,
+                        jobSearchVisitStartMinute
                 );
         }
 
@@ -113,7 +122,9 @@ public class OAMainForm {
                         seminarName,
                         location,
                         venueName,
-                        seminarRemarks
+                        seminarRemarks,
+                        seminarVisitStartHour,
+                        seminarVisitStartHour
                 );
         }
 
@@ -175,6 +186,17 @@ public class OAMainForm {
                 return yyyy + sep + mm + sep + dd;
         }
 
+        public OAMainForm(String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String work, String companyName, String address,String jobSearchRemarks, Integer jobSearchVisitStartHour, Integer jobSearchVisitStartMinute){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.work = work;
+                this.companyName = companyName;
+                this.address = address;
+                this.jobSearchRemarks = jobSearchRemarks;
+                this.jobSearchVisitStartHour = jobSearchVisitStartHour;
+                this.jobSearchVisitStartMinute = jobSearchVisitStartMinute;
+        }
 //        public static  toDatesEntity(OAMainForm form) {
 //
 }
