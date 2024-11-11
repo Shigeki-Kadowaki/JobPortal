@@ -346,7 +346,7 @@ public class StudentController {
         return "OAForm";
     }
     //就活再提出
-    @PostMapping(value = "/student/{studentId}/OAList/{OAId}/", params = "jobSearch")
+    @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "jobSearch")
     public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         System.out.println("test");
         if(bindingResult.hasErrors()){
@@ -362,7 +362,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //セミナー再提出
-    @PostMapping(value = "/student/{studentId}/OAList/{OAId}/", params = "seminar")
+    @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "seminar")
     public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             System.out.println("error");
