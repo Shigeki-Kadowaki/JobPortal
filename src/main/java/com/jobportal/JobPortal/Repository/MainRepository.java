@@ -83,11 +83,22 @@ public interface MainRepository {
             official_absences.status,
             reason,
             reports.status,
-            submitted_date
+            submitted_date,
+            career_check_required,
+            teacher_check,
+            career_check
         FROM official_absences
         LEFT OUTER JOIN reports
         USING (official_absence_id)
-        WHERE official_absence_id = #{OAId};
+        INNER JOIN submitted_date_histories
+        USING (official_absence_id)
+        WHERE (official_absence_id, submitted_date_histories.version) IN (
+            SELECT 
+                official_absence_id,
+                MAX(version)
+            FROM official_absence_date_histories
+            GROUP BY official_absence_id
+        ) AND official_absence_id = #{OAId};
     """)
     OAMainInfoEntity selectMainInfo(@Param("OAId") Integer OAId);
     //日時Info
@@ -119,13 +130,17 @@ public interface MainRepository {
             report_required,
             status,
             reason,
-            submitted_date
+            career_check_required,
+            teacher_check,
+            career_check
         ) VALUES (
             #{entity.studentId},
             #{entity.reportRequired},
             #{entity.status},
             #{entity.reason},
-            #{entity.submittedDate}
+            #{entity.careerCheckRequired},
+            #{entity.teacherCheck},
+            #{entity.careerCheck}
         );
     """)
     @Options(useGeneratedKeys = true, keyProperty = "entity.officialAbsenceId")

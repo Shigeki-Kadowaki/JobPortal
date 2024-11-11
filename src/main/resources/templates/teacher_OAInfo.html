@@ -23,6 +23,7 @@
     </div>
   </div>
   <div>
+    [[${mainInfo.careerCheckRequired}]][[${mainInfo.teacherCheck}]][[${mainInfo.careerCheck}]]
     ステータス : [[${mainInfo.status}]]<br>
     提出日 : [[${mainInfo.submittedDate}]]<br>
     公欠理由 : [[${mainInfo.reason}]]<br>
@@ -90,9 +91,22 @@
         <form th:action="@{/jobportal/teacher/{OAId}(OAId=${mainInfo.officialAbsenceId})}" th:method="put">
           <div class="modal-body modalContainer">
             <h5 class="form-check">
-              <input class="form-check-input" type="checkbox" value="necessary" name="reportRequired" id="reportRequired">
+              <input class="form-check-input" type="checkbox" value="necessary" name="reportRequired" id="reportRequired" th:checked="${mainInfo.reportRequired}">
               <label class="form-check-label" for="reportRequired">
                 報告書必要
+              </label>
+            </h5>
+            <span class="vr mx-3" style="height: 50px;width: 2px;color: black"></span>
+            <h5 class="form-check">
+              <input class="form-check-input" type="radio" name="teacherType" id="teacher" checked>
+              <label class="form-check-label" for="teacher">
+                担任
+              </label>
+            </h5>
+            <h5 class="form-check ms-3">
+              <input class="form-check-input" type="radio" name="teacherType" id="career">
+              <label class="form-check-label" for="career">
+                キャリア
               </label>
             </h5>
           </div>
