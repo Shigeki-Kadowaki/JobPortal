@@ -17,8 +17,8 @@ import java.util.Map;
 public class OAMainForm {
         //共通部分
 //        private Integer id;
-        @NotBlank
-        @Pattern(regexp = "jobSearch|seminar|bereavement|attendanceBan|other")
+        @NotBlank(message = "必須項目です")
+        //@Pattern(regexp = "jobSearch|seminar|bereavement|attendanceBan|other")
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
         private Map<String,List<String>> OAPeriods;
@@ -56,11 +56,11 @@ public class OAMainForm {
         private String venueName;
         @Size(max = 256, message = "256文字以内で入力してください")
         private String seminarRemarks;
-        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        @NotNull(message = "必須項目です", groups = seminarGroup.class)
         @Max(23)
         @Min(0)
         private Integer seminarVisitStartHour;
-        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
+        @NotNull(message = "必須項目です", groups = seminarGroup.class)
         @Max(59)
         @Min(0)
         private Integer seminarVisitStartMinute;
@@ -186,7 +186,7 @@ public class OAMainForm {
                 return yyyy + sep + mm + sep + dd;
         }
 
-        public OAMainForm(String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String work, String companyName, String address,String jobSearchRemarks, Integer jobSearchVisitStartHour, Integer jobSearchVisitStartMinute){
+        public OAMainForm(JobSearchEntity entity,String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String work, String companyName, String address,String jobSearchRemarks, Integer jobSearchVisitStartHour, Integer jobSearchVisitStartMinute){
                 this.reasonForAbsence = reasonForAbsence;
                 this.OAPeriods = lessonInfoEntities;
                 this.reportRequired = reportRequired;
@@ -196,6 +196,39 @@ public class OAMainForm {
                 this.jobSearchRemarks = jobSearchRemarks;
                 this.jobSearchVisitStartHour = jobSearchVisitStartHour;
                 this.jobSearchVisitStartMinute = jobSearchVisitStartMinute;
+        }
+        public OAMainForm(SeminarEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String seminarName, String location, String venueName, String remarks, Integer seminarVisitStartHour, Integer seminarVisitStartMinute){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.seminarName = seminarName;
+                this.location = location;
+                this.venueName = venueName;
+                this.seminarRemarks = remarks;
+                this.seminarVisitStartHour = seminarVisitStartHour;
+                this.seminarVisitStartMinute = seminarVisitStartMinute;
+        }
+        public OAMainForm(BereavementEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String remarks, String deceasedName, String relationship){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.bereavementRemarks = remarks;
+                this.deceasedName = deceasedName;
+                this.relationship = relationship;
+        }
+        public OAMainForm(AttendanceBanEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String banRemarks, String banReason){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.banReason = banReason;
+                this.banRemarks = banRemarks;
+        }
+        public OAMainForm(OtherEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String otherRemarks, String otherReason){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.otherReason = otherReason;
+                this.otherRemarks = otherRemarks;
         }
 //        public static  toDatesEntity(OAMainForm form) {
 //

@@ -17,11 +17,11 @@
 <body>
 <a type="button" th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
 <section layout:fragment="content">
-    <form th:action="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" th:method="${mode == 'create'}?post:put" th:object="${oAMainForm}">
+    <form th:action="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" th:method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>
-<!--            <span th:errors="*{reasonForAbsence}"></span>-->
             <th:block th:if="${mode == 'create'}">
+                <div th:errors="*{reasonForAbsence}"></div>
                 <div aria-label="Basic radio toggle button group" class="btn-group" id="reasonAbsence" role="group">
                     <input autocomplete="off" checked class="btn-check" id="jobSearch" name="reasonForAbsence" type="radio" value="jobSearch" th:checked="*{reasonForAbsence == 'jobSearch'}">
                     <label class="btn btn-outline-primary" for="jobSearch">就活</label>
@@ -38,20 +38,24 @@
             <th:block th:if="${mode == 'edit'}">
                 <th:block th:switch="*{reasonForAbsence}">
                     <span th:case="'就活'">
-                        <h5><span class="primary p-2">就活</span></h5>
-                        <input type="hidden" name="reasonForAbsence" value="editJobSearch">
+                        <h5><span class="primary p-2">[[*{reasonForAbsence}]]</span></h5>
+                        <input type="hidden" name="reasonForAbsence" value="jobSearch">
                     </span>
                     <span th:case="'セミナー・合説'">
-                        セミナー・合同説明会
+                        <h5><span class="primary p-2">セミナー・合説</span></h5>
+                        <input type="hidden" name="reasonForAbsence" value="seminar">
                     </span>
                     <span th:case="'忌引'">
-                        忌引
+                        <h5><span class="primary p-2">忌引</span></h5>
+                        <input type="hidden" name="reasonForAbsence" value="bereavement">
                     </span>
                     <span th:case="'出席停止'">
-                        出席停止
+                        <h5><span class="primary p-2">出席停止</span></h5>
+                        <input type="hidden" name="reasonForAbsence" value="attendanceBan">
                     </span>
                     <span th:case="'その他'">
-                        その他
+                        <h5><span class="primary p-2">その他</span></h5>
+                        <input type="hidden" name="reasonForAbsence" value="other">
                     </span>
                 </th:block>
             </th:block>
@@ -196,7 +200,7 @@
                 </div>
                 <div class="form-group mt-3">
                     <h3><label class="form-label" for="seminarRemarks">備考</label></h3>
-                    <textarea  class="form-control" type="text" id="seminarRemarks" name="seminarRemarks" rows="3" th:value="*{seminarRemarks}"></textarea>
+                    <textarea  class="form-control" type="text" id="seminarRemarks" name="seminarRemarks" rows="3">[[*{seminarRemarks}]]</textarea>
                 </div>
             </div>
             <div class="bereavement" style="display:none">
@@ -222,7 +226,7 @@
                 </div>
                 <div class="form-group mt-3">
                     <h3><label class="form-label" for="bereavementRemarks">備考</label></h3>
-                    <textarea  class="form-control" type="text" id="bereavementRemarks" name="bereavementRemarks" rows="3" th:value="*{bereavementRemarks}"></textarea>
+                    <textarea  class="form-control" type="text" id="bereavementRemarks" name="bereavementRemarks" rows="3">[[*{bereavementRemarks}]]</textarea>
                 </div>
             </div>
             <div class="attendanceBan" style="display:none">
@@ -238,7 +242,7 @@
                 </div>
                 <div class="form-group mt-3">
                     <h3><label class="form-label" for="banRemarks">備考</label></h3>
-                    <textarea  class="form-control" type="text" id="banRemarks" name="banRemarks" rows="3" th:value="*{banRemarks}"></textarea>
+                    <textarea  class="form-control" type="text" id="banRemarks" name="banRemarks" rows="3">[[*{banRemarks}]]</textarea>
                 </div>
             </div>
             <div class="other" style="display:none">
@@ -253,8 +257,8 @@
                     >
                 </div>
                 <div class="form-group mt-3">
-                    <h3><label class="form-label" for="otherRemarks">備考</label></h3>
-                    <textarea  class="form-control" type="text" id="otherRemarks" name="otherRemarks" rows="3" th:value="*{otherRemarks}"></textarea>
+                    <h3><label class="form-label" for="otherRemarks">備考[[*{otherRemarks}]]</label></h3>
+                    <textarea  class="form-control" type="text" id="otherRemarks" name="otherRemarks" rows="3">[[*{otherRemarks}]]</textarea>
                 </div>
             </div>
 
@@ -287,8 +291,8 @@
             </script>
 
             <div class="d-flex justify-content-between">
-                <a th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-danger">中止</a>
-                <div class="jobSearch">
+                <a th:href="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" class="btn btn-danger">中止</a>
+                <div class="jobSearch" style="display: none">
                     <div class="text-end">
                         <button type="submit" class="btn btn-primary" name="jobSearch">就活</button>
                     </div>
