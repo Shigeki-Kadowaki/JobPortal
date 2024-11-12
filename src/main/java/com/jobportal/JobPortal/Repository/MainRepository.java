@@ -86,7 +86,8 @@ public interface MainRepository {
             submitted_date,
             career_check_required,
             teacher_check,
-            career_check
+            career_check,
+            submitted_date_histories.version
         FROM official_absences
         LEFT OUTER JOIN reports
         USING (official_absence_id)
@@ -464,4 +465,28 @@ public interface MainRepository {
         DELETE FROM submitted_date_histories WHERE official_absence_id = #{OAId};
     """)
     void deleteSubmittedDate(@Param("OAId") Integer OAId);
+
+    @Transactional
+    @Update("""
+        <script>
+            UPDATE official_absences
+            <if test='type == "teacher"'>
+            SET teacher_check = #{check}
+            </if>
+            <if test='type == "career"'>
+            SET career_check = #{check}
+            </if>
+            WHERE official_absence_id = #{OAId};
+        </script>
+    """)
+    void updateCheck(@Param("OAId") Integer OAId,@Param("type") String type, @Param("check") boolean check);
+
+    @Select("""
+        SELECT teacher_check FROM official_absences WHERE official_absence_id = #{OAId};
+    """)
+    boolean teacherCheckCondition(Integer OAId);
+    @Select("""
+        SELECT career_check FROM official_absences WHERE official_absence_id = #{OAId};
+    """)
+    boolean careerCheckCondition(Integer OAId);
 }
