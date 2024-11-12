@@ -10,6 +10,7 @@ public record OAMainInfoDTO (
         String submittedDate,
         boolean careerCheckRequired,
         boolean teacherCheck,
-        Boolean careerCheck
+        Boolean careerCheck,
+        Integer version
 ){
 }

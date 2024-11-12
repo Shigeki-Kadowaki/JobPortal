@@ -79,17 +79,18 @@ public class TeacherController {
         }
         return "teacher_OAInfo";
     }
-    //teacherOA承認
+    //OA承認
     @PutMapping(value="teacher/{OAId}", params = "acceptance")
-    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType) {
-        //System.out.println(reportRequired);
-        //teacherType.equals("teacher")?servise.updateTeacherCheck(OAId):service.updateCareerCheck(OAId);
-
-        service.updateOAStatus(OAId,"acceptance");
+    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
+        service.updateCheck(OAId, teacherType, true);
+        if(careerCheckRequired) {
+            if(service.checkConditionJudge(OAId, true)){service.updateOAStatus(OAId, "acceptance");}
+        }else{
+            if(service.checkConditionJudge(OAId, false)){service.updateOAStatus(OAId, "acceptance");}
+        }
         service.updateReportRequired(OAId, reportRequired != null);
         return "redirect:/jobportal/teacher/OAList";
     }
-    //careerOA承認
     //OA却下
     @PutMapping(value = "teacher/{OAId}", params = "rejection")
     public String OAUnaccepted(@PathVariable("OAId") Integer OAId,@RequestParam(value = "reportRequired", required = false)String reasonForRejection) {

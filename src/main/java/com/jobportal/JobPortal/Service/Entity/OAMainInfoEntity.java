@@ -17,7 +17,8 @@ public record OAMainInfoEntity(
         LocalDate submittedDate,
         boolean careerCheckRequired,
         boolean teacherCheck,
-        Boolean careerCheck
+        Boolean careerCheck,
+        Integer version
 ) {
     public OAMainInfoDTO toInfoDTO() {
         return new OAMainInfoDTO(
@@ -30,7 +31,8 @@ public record OAMainInfoEntity(
             MainService.dateFormat(submittedDate),
             careerCheckRequired,
             teacherCheck,
-            careerCheck
+            careerCheck,
+            version
         );
     }
 

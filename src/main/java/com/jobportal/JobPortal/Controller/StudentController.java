@@ -261,7 +261,6 @@ public class StudentController {
     @GetMapping("/student/{studentId}/OAList/{OAId}")
     public String showStudentOAInfo(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId, Model model){
         //OAInfo取得
-//        List<OADateInfoDTO> allInfoDTO = service.findOAAllInfo(OAId);
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         //公欠日時をMapにする
@@ -269,7 +268,44 @@ public class StudentController {
             Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
-//        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
+            switch (mainInfoDTO.reason()){
+                case "就活" -> {
+                    JobSearchEntity  jobSearch = service.findJobSearchInfo(OAId);
+                    model.addAttribute("jobSearchInfo", jobSearch);
+                }
+                case "セミナー・合説" -> {
+                    SeminarEntity seminar = service.findSeminarInfo(OAId);
+                    model.addAttribute("seminarInfo", seminar);
+                }
+                case "忌引" -> {
+                    BereavementEntity bereavement = service.findBereavementInfo(OAId);
+                    model.addAttribute("bereavementInfo", bereavement);
+                }
+                case "出席停止" -> {
+                    AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
+                    model.addAttribute("attendanceBanInfo", attendanceBan);
+                }
+                case "その他" -> {
+                    OtherEntity other = service.findOtherInfo(OAId);
+                    model.addAttribute("otherInfo", other);
+                }
+            }
+            model.addAttribute("lessonInfo", lessonInfoEntities);
+            model.addAttribute("mainInfo", mainInfoDTO);
+        }
+        return "OAInfo";
+    }
+    //公欠届別バージョン詳細
+    @GetMapping("/student/{studentId}/OAList/{OAId}/{version}")
+    public String showStudentOAInfoVersion(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId,@PathVariable("version") Integer version, Model model){
+        //OAInfo取得
+        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        //公欠日時をMapにする
+        if(!dateInfoEntities.isEmpty()){
+            Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
+            OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
+//        //共通部分抽出
             switch (mainInfoDTO.reason()){
                 case "就活" -> {
                     JobSearchEntity  jobSearch = service.findJobSearchInfo(OAId);
@@ -359,6 +395,8 @@ public class StudentController {
         JobSearchEntity jobSearch = form.toJobSearchEntity(OAId);
         service.updateJobSearch(jobSearch);
         service.updateOAStatus(OAId, "unaccepted");
+        service.updateCheck(OAId, "teacher", false);
+        service.updateCheck(OAId, "career", false);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //セミナー再提出
@@ -374,6 +412,8 @@ public class StudentController {
         SeminarEntity seminar = form.toSeminarEntity(OAId);
         service.updateSeminar(seminar);
         service.updateOAStatus(OAId, "unaccepted");
+        service.updateCheck(OAId, "teacher", false);
+        service.updateCheck(OAId, "career", false);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //忌引再提出
@@ -389,6 +429,7 @@ public class StudentController {
         BereavementEntity bereavement = form.toBereavementEntity(OAId);
         service.updateBereavement(bereavement);
         service.updateOAStatus(OAId, "unaccepted");
+        service.updateCheck(OAId, "teacher", false);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //出席停止再提出
@@ -404,6 +445,7 @@ public class StudentController {
         AttendanceBanEntity attendanceBan = form.toAttendanceBanEntity(OAId);
         service.updateAttendanceBan(attendanceBan);
         service.updateOAStatus(OAId, "unaccepted");
+        service.updateCheck(OAId, "teacher", false);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
     //その他再提出
@@ -419,6 +461,7 @@ public class StudentController {
         OtherEntity other = form.toOtherEntity(OAId);
         service.updateOther(other);
         service.updateOAStatus(OAId, "unaccepted");
+        service.updateCheck(OAId, "teacher", false);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 

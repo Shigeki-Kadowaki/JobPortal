@@ -298,7 +298,18 @@ public class MainService {
     public void updateAttendanceBan(AttendanceBanEntity attendanceBan) {repository.updateAttendanceBan(attendanceBan);}
     public void updateOther(OtherEntity other) {repository.updateOther(other);}
 
+    public void updateCheck(Integer OAId, String type, boolean check) {
+        repository.updateCheck(OAId, type, check);
+    }
 
+
+    public boolean checkConditionJudge(Integer OAId, boolean type) {
+        if(type){
+            return repository.teacherCheckCondition(OAId) && repository.careerCheckCondition(OAId);
+        }else{
+            return repository.teacherCheckCondition(OAId);
+        }
+    }
 
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {

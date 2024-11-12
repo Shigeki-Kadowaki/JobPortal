@@ -9,10 +9,26 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>JobPortal</title>
+    <script th:src="@{/info.js}"></script>
 </head>
 <body>
 <section layout:fragment="content">
-    <a type="button" th:href="@{/jobportal/student/{id}/OAList(id=${studentId})}" class="btn btn-primary">戻る</a><br>
+    <script th:inline="javascript">
+        const OAId = /*[[${mainInfo.officialAbsenceId}]]*/"OAId";
+        const studentId = /*[[${mainInfo.studentId}]]*/"studentId";
+    </script>
+    <div class="d-flex justify-content-between">
+        <a type="button" th:href="@{/jobportal/student/{id}/OAList(id=${studentId})}" class="btn btn-primary">戻る</a>
+        <select class="form-select" aria-label="Default select example" onchange="versionChange(this.value)" style="width:200px;">
+            <option value="0">過去のバージョンを見る</option>
+            <th:block th:each="i:${#numbers.sequence(__${mainInfo.version}__-1,1)}">
+                <option th:value="${i}">version:[[${i}]]</option>
+            </th:block>
+        </select>
+    </div>
+    <br>
+    <div id="versionChangeButton" class="text-end"></div>
+    <br>
     <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
         <div>
             [[${mapEntry.key}]]<br>
@@ -53,6 +69,7 @@
             <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
         </th:block>
     </div>
+    <br><br><br>
     <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
@@ -95,6 +112,7 @@
             </div>
         </div>
     </div>
+    <br><br><br>
 </section>
 </body>
 </html>
