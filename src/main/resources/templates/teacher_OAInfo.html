@@ -30,26 +30,28 @@
       活動内容 : [[*{work.getJapaneseName()}]]<br>
       会社名 : [[*{companyName}]]<br>
       住所 : [[*{address}]]<br>
-      備考 : [[*{remarks}]]<br>
+      開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
       セミナー・合説名 : [[*{seminarName}]]<br>
       実施場所 : [[*{location}]]<br>
       会場名 : [[*{venueName}]]<br>
-      備考 : [[*{remarks}]]<br>
+      開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
       亡くなった方 : [[*{deceasedName}]]<br>
       続柄 : [[*{relationship}]]<br>
-      備考 : [[*{remarks}]]<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == '出席停止'" th:object="${attendanceBanInfo}">
       理由 : [[*{banReason}]]<br>
-      備考 : [[*{remarks}]]<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == 'その他'" th:object="${otherInfo}">
       理由 : [[*{otherReason}]]<br>
-      備考 : [[*{remarks}]]<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
   </div>
   <br><br><br>
