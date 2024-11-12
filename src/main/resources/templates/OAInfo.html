@@ -11,7 +11,7 @@
     <title>JobPortal</title>
     <script th:src="@{/info.js}"></script>
 </head>
-<body>
+<body id="container">
 <section layout:fragment="content">
     <script th:inline="javascript">
         const OAId = /*[[${mainInfo.officialAbsenceId}]]*/"OAId";
@@ -19,12 +19,14 @@
     </script>
     <div class="d-flex justify-content-between">
         <a type="button" th:href="@{/jobportal/student/{id}/OAList(id=${studentId})}" class="btn btn-primary">戻る</a>
-        <select class="form-select" aria-label="Default select example" onchange="versionChange(this.value)" style="width:200px;">
-            <option value="0">過去のバージョンを見る</option>
-            <th:block th:each="i:${#numbers.sequence(__${mainInfo.version}__-1,1)}">
-                <option th:value="${i}">version:[[${i}]]</option>
-            </th:block>
-        </select>
+        <th:block th:if="${mainInfo.version}>=2">
+            <select class="form-select" aria-label="Default select example" onchange="versionChange(this.value)" style="width:200px;">
+                <option value="0">過去のバージョンを見る</option>
+                <th:block th:each="i:${#numbers.sequence(__${mainInfo.version}__-1,1)}">
+                    <option th:value="${i}">version:[[${i}]]</option>
+                </th:block>
+            </select>
+        </th:block>
     </div>
     <br>
     <div id="versionChangeButton" class="text-end"></div>
