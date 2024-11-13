@@ -72,7 +72,7 @@ public class MainService {
     //過去versionInfo取得
     public OAMainInfoEntity findMainInfoByVersion(Integer oaId, Integer version) {return  repository.selectMainInfoByVersion(oaId, version);
     }
-    public List<OADateInfoEntity> selectInfoByVersion(Integer oaId, Integer version) {return repository.selectDateInfoByVersion(oaId, version);
+    public List<OADateInfoEntity> findDateInfoByVersion(Integer oaId, Integer version) {return repository.selectDateInfoByVersion(oaId, version);
     }
     public JobSearchEntity findJobSearchInfoByVersion(Integer oaId, Integer version) {return repository.selectJobSearchInfoByVersion(oaId, version);
     }

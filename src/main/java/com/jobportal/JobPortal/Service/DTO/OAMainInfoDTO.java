@@ -11,6 +11,7 @@ public record OAMainInfoDTO (
         boolean careerCheckRequired,
         boolean teacherCheck,
         Boolean careerCheck,
-        Integer version
+        Integer version,
+        Integer maxVersion
 ){
 }

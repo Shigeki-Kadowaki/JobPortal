@@ -18,7 +18,8 @@ public record OAMainInfoEntity(
         boolean careerCheckRequired,
         boolean teacherCheck,
         Boolean careerCheck,
-        Integer version
+        Integer version,
+        Integer maxVersion
 ) {
     public OAMainInfoDTO toInfoDTO() {
         return new OAMainInfoDTO(
@@ -32,7 +33,8 @@ public record OAMainInfoEntity(
             careerCheckRequired,
             teacherCheck,
             careerCheck,
-            version
+            version,
+            maxVersion
         );
     }
 
