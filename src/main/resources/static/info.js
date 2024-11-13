@@ -10,16 +10,19 @@
 
 window.addEventListener('load',()=>{
     console.log(`${OAId}`);
-    console.log(studentId);
-    document.getElementById('versionSelect').options[0].selected = true;
+    console.log(studentId)
 })
 function versionChange(value){
-    if(version === "0"){
-        fetch(`jobportal/student/${studentId}/OAList/${OAId}`)
+    if(value === "0"){
+        fetch(`/jobportal/student/${studentId}/OAList/${OAId}`)
             .then(response =>{
                 if(!response.ok){
-                    throw new Error('Network response was not ok');
+                    throw new Error('Network response was not ok 0');
                 }
+                return response.text();
+            })
+            .then(html =>{
+                document.getElementById('container').innerHTML=html;
             })
             .catch(error => console.error('Error:', error))
     }else(
@@ -32,7 +35,8 @@ function versionChange(value){
             })
             .then(html =>{
                 document.getElementById('container').innerHTML=html;
+                document.getElementById('versionSelect').options[parseInt(maxVersion)-parseInt(value)].selected = true;
             })
             .catch(error => console.error('Error:', error))
-    )
+    );
 }
