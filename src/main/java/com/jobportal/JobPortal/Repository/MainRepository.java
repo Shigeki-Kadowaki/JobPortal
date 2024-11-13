@@ -193,8 +193,7 @@ public interface MainRepository {
         SELECT  
             official_absence_date_histories.official_absence_date,
             official_absence_date_histories.period,
-            lesson_name,
-            version
+            lesson_name
         FROM official_absence_date_histories
         INNER JOIN lessons
         USING (lesson_id)
@@ -225,20 +224,17 @@ public interface MainRepository {
     JobSearchEntity selectJobSearchInfo(@Param("OAId") Integer OAId);
     @Select("""
         SELECT
-            official_absence_id,
-            seminar_name,
-            location,
-            venue_name,
-            remarks,
-            visit_start_hour,
-            visit_start_minute
-        FROM seminar_histories WHERE (official_absence_id, version) IN (
-            SELECT 
-                official_absence_id,
-                MAX(version)
-            FROM seminar_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        	official_absence_id,
+        	seminar_name,
+        	location,
+        	venue_name,
+        	remarks,
+        	visit_start_hour,
+        	visit_start_minute
+        FROM seminar_histories
+        WHERE official_absence_id = #{OAId}
+        ORDER BY version DESC
+        LIMIT 1;
     """)
     SeminarEntity selectSeminarInfo(@Param("OAId") Integer OAId);
     @Select("""
@@ -247,13 +243,10 @@ public interface MainRepository {
             deceased_name,
             relationship,
             remarks
-        FROM bereavement_histories WHERE (official_absence_id, version) IN (
-            SELECT 
-                official_absence_id,
-                MAX(version)
-            FROM bereavement_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM bereavement_histories 
+        WHERE official_absence_id = #{OAId}
+        ORDER BY version DESC
+        LIMIT 1;
     """)
     BereavementEntity selectBereavementInfo(@Param("OAId") Integer OAId);
     @Select("""
@@ -261,13 +254,10 @@ public interface MainRepository {
             official_absence_id,
             ban_reason,
             remarks
-        FROM attendance_ban_histories WHERE (official_absence_id, version) IN (
-            SELECT 
-                official_absence_id,
-                MAX(version)
-            FROM attendance_ban_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM attendance_ban_histories 
+        WHERE official_absence_id = #{OAId}
+        ORDER BY version DESC
+        LIMIT 1;
     """)
     AttendanceBanEntity selectAttendanceBanInfo(@Param("OAId") Integer OAId);
     @Select("""
@@ -275,13 +265,10 @@ public interface MainRepository {
             official_absence_id,
             other_reason,
             remarks
-        FROM other_histories WHERE (official_absence_id, version) IN (
-            SELECT 
-                official_absence_id,
-                MAX(version)
-            FROM other_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM other_histories
+        WHERE official_absence_id = #{OAId}
+        ORDER BY version DESC
+        LIMIT 1;
     """)
     OtherEntity selectOtherInfo(@Param("OAId") Integer OAId);
     //過去versionInfo取得
@@ -312,18 +299,12 @@ public interface MainRepository {
         SELECT
             official_absence_date_histories.official_absence_date,
             official_absence_date_histories.period,
-            lesson_name,
-            version
+            lesson_name
         FROM official_absence_date_histories
         INNER JOIN lessons
         USING (lesson_id)
-        WHERE (official_absence_id, version) IN (
-            SELECT
-                official_absence_id,
-                #{version}
-            FROM official_absence_date_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId}
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version}
         ORDER BY official_absence_date, period;
     """)
     List<OADateInfoEntity> selectDateInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
@@ -337,13 +318,8 @@ public interface MainRepository {
             visit_start_hour,
             visit_start_minute
         FROM job_search_histories
-        WHERE (official_absence_id, version) IN (
-            SELECT
-                official_absence_id,
-                #{version}
-            FROM job_search_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version};
     """)
     JobSearchEntity selectJobSearchInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
     @Select("""
@@ -355,13 +331,9 @@ public interface MainRepository {
             remarks,
             visit_start_hour,
             visit_start_minute
-        FROM seminar_histories WHERE (official_absence_id, version) IN (
-            SELECT
-                official_absence_id,
-                #{version}
-            FROM seminar_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM seminar_histories
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version};
     """)
     SeminarEntity selectSeminarInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
     @Select("""
@@ -370,13 +342,9 @@ public interface MainRepository {
             deceased_name,
             relationship,
             remarks
-        FROM bereavement_histories WHERE (official_absence_id, version) IN (
-            SELECT
-                official_absence_id,
-                #{version}
-            FROM bereavement_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM bereavement_histories 
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version};
     """)
     BereavementEntity selectBereavementInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
     @Select("""
@@ -384,13 +352,9 @@ public interface MainRepository {
             official_absence_id,
             ban_reason,
             remarks
-        FROM attendance_ban_histories WHERE (official_absence_id, version) IN (
-            SELECT
-                official_absence_id,
-                #{version}
-            FROM attendance_ban_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM attendance_ban_histories 
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version};
     """)
     AttendanceBanEntity selectAttendanceBanInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
     @Select("""
@@ -398,13 +362,9 @@ public interface MainRepository {
             official_absence_id,
             other_reason,
             remarks
-        FROM other_histories WHERE (official_absence_id, version) IN (
-            SELECT
-                official_absence_id,
-                #{version}
-            FROM other_histories
-            GROUP BY official_absence_id
-        ) AND official_absence_id = #{OAId};
+        FROM other_histories 
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version};
     """)
     OtherEntity selectOtherInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
     //削除

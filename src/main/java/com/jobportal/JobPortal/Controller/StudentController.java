@@ -292,48 +292,49 @@ public class StudentController {
             }
             model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
+            model.addAttribute("mode", "info");
         }
         return "OAInfo";
     }
     //公欠届別バージョン詳細
-//    @GetMapping("/student/{studentId}/OAList/{OAId}")
-//    public String showStudentOAInfoVersion(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId,@RequestParam("version") Integer version, Model model){
-//        //OAInfo取得
-//        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
-//        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId, version);
-//        //公欠日時をMapにする
-//        if(!dateInfoEntities.isEmpty()){
-//            Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
-//            OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
-////        //共通部分抽出
-//            switch (mainInfoDTO.reason()){
-//                case "就活" -> {
-//                    JobSearchEntity  jobSearch = service.findJobSearchInfo(OAId, version);
-//                    model.addAttribute("jobSearchInfo", jobSearch);
-//                }
-//                case "セミナー・合説" -> {
-//                    SeminarEntity seminar = service.findSeminarInfo(OAId, version);
-//                    model.addAttribute("seminarInfo", seminar);
-//                }
-//                case "忌引" -> {
-//                    BereavementEntity bereavement = service.findBereavementInfo(OAId, version);
-//                    model.addAttribute("bereavementInfo", bereavement);
-//                }
-//                case "出席停止" -> {
-//                    AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId, version);
-//                    model.addAttribute("attendanceBanInfo", attendanceBan);
-//                }
-//                case "その他" -> {
-//                    OtherEntity other = service.findOtherInfo(OAId, version);
-//                    model.addAttribute("otherInfo", other);
-//                }
-//            }
-//            model.addAttribute("lessonInfo", lessonInfoEntities);
-//            model.addAttribute("mainInfo", mainInfoDTO);
-//            model.addAttribute("mode", "reading");
-//        }
-//        return "OAInfo";
-//    }
+    @GetMapping("/student/{studentId}/{OAId}")
+    public String showStudentOAInfoByVersion(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("OAId") Integer OAId,@RequestParam("version") Integer version, Model model){
+        //OAInfo取得
+        OAMainInfoEntity mainInfoEntity = service.findMainInfoByVersion(OAId, version);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfoByVersion(OAId, version);
+        //公欠日時をMapにする
+        if(!dateInfoEntities.isEmpty()){
+            Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
+            OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
+//        //共通部分抽出
+            switch (mainInfoDTO.reason()){
+                case "就活" -> {
+                    JobSearchEntity  jobSearch = service.findJobSearchInfoByVersion(OAId, version);
+                    model.addAttribute("jobSearchInfo", jobSearch);
+                }
+                case "セミナー・合説" -> {
+                    SeminarEntity seminar = service.findSeminarInfoByVersion(OAId, version);
+                    model.addAttribute("seminarInfo", seminar);
+                }
+                case "忌引" -> {
+                    BereavementEntity bereavement = service.findBereavementInfoByVersion(OAId, version);
+                    model.addAttribute("bereavementInfo", bereavement);
+                }
+                case "出席停止" -> {
+                    AttendanceBanEntity attendanceBan = service.findAttendanceBanInfoByVersion(OAId, version);
+                    model.addAttribute("attendanceBanInfo", attendanceBan);
+                }
+                case "その他" -> {
+                    OtherEntity other = service.findOtherInfoByVersion(OAId, version);
+                    model.addAttribute("otherInfo", other);
+                }
+            }
+            model.addAttribute("lessonInfo", lessonInfoEntities);
+            model.addAttribute("mainInfo", mainInfoDTO);
+            model.addAttribute("mode", "reading");
+        }
+        return "OAInfo";
+    }
 
     @GetMapping("/student/{studentId}/reportInfo/{OAId}")
     public String showStudentReportInfo(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){

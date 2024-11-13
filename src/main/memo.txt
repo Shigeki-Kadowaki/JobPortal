@@ -103,4 +103,4 @@ map<String, List<Object>>をthymeleafで表示する
 </div>
 https://github.com/thymeleaf/thymeleaf/issues/748
 
-mapを昇順にするには、TreeMapを使う
+mapを昇順にするには、TreeMapを使う.

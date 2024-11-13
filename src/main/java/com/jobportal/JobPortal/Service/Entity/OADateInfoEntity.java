@@ -5,8 +5,6 @@ import java.time.LocalDate;
 public record OADateInfoEntity(
         LocalDate officialAbsenceDate,//Dates
         Integer period,//Dates
-        String lessonName,//lessons
-        Integer version
-
+        String lessonName//lessons
 ) {
 }
