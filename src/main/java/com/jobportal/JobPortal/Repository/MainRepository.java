@@ -1,5 +1,7 @@
 package com.jobportal.JobPortal.Repository;
 
+import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 
@@ -110,6 +112,7 @@ public interface MainRepository {
     void insertOther(@Param("entity") OtherEntity otherEntity);
     //List取得
     @Select("""
+        <script>
         SELECT
             official_absence_id,
             student_id,
@@ -133,10 +136,23 @@ public interface MainRepository {
             FROM official_absence_date_histories
             GROUP BY official_absence_id
         )
+        <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
+            AND official_absences.status IN
+                <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
+                    #{status}
+                </foreach>
+        </if>
+        <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
+            AND reports.status IN
+                <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                    #{reportStatus}
+                </foreach>
+        </if>
         GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_date_histories.period,report_required
         ORDER BY official_absence_id DESC, period;
+        </script>
     """)
-    List<OAListEntity> selectAll(@Param("studentId") Integer studentId);
+    List<OAListEntity> selectAll(@Param("studentId") Integer studentId, @Param("form")StudentOASearchForm form);
     @Select("""
         SELECT
             official_absence_id,
@@ -163,7 +179,7 @@ public interface MainRepository {
         GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
         ORDER BY official_absence_id DESC, period;
     """)
-    List<OAListEntity> teacherFindAllOAs();
+    List<OAListEntity> teacherFindAllOAs(@Param("form")TeacherOASearchForm form);
     //Info取得
     @Select("""
         SELECT
