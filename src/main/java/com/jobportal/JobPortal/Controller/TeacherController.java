@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -27,17 +28,18 @@ public class TeacherController {
     }
     //OAList
     @GetMapping("/teacher/OAList")
-    public String showTeacherOAList(Model model) {
+    public String showTeacherOAList(TeacherOASearchForm form, Model model) {
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
         colors.put("却下","list-group-item-danger");
         colors.put("未提出","list-group-item-dark");
-        List<OAListEntity> listEntity = service.teacherFindAllOAs();
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
+        model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         return "teacher_OAList";
     }

@@ -1,6 +1,7 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
+import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -236,14 +237,14 @@ public class StudentController {
 
     //提出済み公欠届List
     @GetMapping("/student/{studentId}/OAList")
-    public String showStudentOAList(@PathVariable("studentId") Integer studentId, Model model){
+    public String showStudentOAList(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
         colors.put("却下","list-group-item-danger");
         colors.put("未提出","list-group-item-dark");
         //OAList取得
-        List<OAListEntity> listEntity = service.findAllOAs(studentId);
+        List<OAListEntity> listEntity = service.findAllOAs(studentId, form);
         //公欠日時をMapにする
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
@@ -253,6 +254,7 @@ public class StudentController {
 //                e.lessons().forEach(System.out::println);
 //            });
         }
+        model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         return "OAList";
     }

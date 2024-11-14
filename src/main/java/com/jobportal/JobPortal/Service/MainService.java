@@ -1,6 +1,8 @@
 package com.jobportal.JobPortal.Service;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
+import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Service.DTO.*;
 import com.jobportal.JobPortal.Service.Entity.OtherEntity;
 import com.jobportal.JobPortal.Repository.MainRepository;
@@ -50,9 +52,9 @@ public class MainService {
         repository.createSubmittedDate(officialAbsenceId,LocalDate.now());
     }
     //List取得
-    public List<OAListEntity> findAllOAs(Integer studentId){return repository.selectAll(studentId);
+    public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
-    public List<OAListEntity> teacherFindAllOAs(){return repository.teacherFindAllOAs();
+    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form){return repository.teacherFindAllOAs(form);
     }
     //info取得
     public OAMainInfoEntity findMainInfo(Integer oaId) {return  repository.selectMainInfo(oaId);
