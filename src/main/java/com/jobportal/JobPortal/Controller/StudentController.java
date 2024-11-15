@@ -33,10 +33,16 @@ public class StudentController {
     private final MainService service;
 
     @GetMapping(value = "/")
-    public String showFormAgain(@ModelAttribute("student") Student student) throws IOException {
-            student.setId(40104);
-            student.setSurname("木谷");
-            return "redirect:/jobportal/student/" + student.getId();
+    public String showFormAgain() throws IOException {
+        //本番ではヘッダーから取得する
+        String group = "生徒";
+        if(group.equals("生徒")) {
+            //本番ではヘッダーから取得する
+            int id = 40104;
+            String name = "Kiya";
+            return "redirect:/jobportal/student/" + id;
+        }
+        else return "redirect:/jobportal/teacher";
     }
     @GetMapping(value= "/test", produces = "text/html; charset=UTF-8")
     public Map<String, String> test(HttpServletResponse response, HttpServletRequest request) throws IOException {
@@ -87,9 +93,11 @@ public class StudentController {
 
 
     @GetMapping(value="/student/{studentId}")
-    public String student(@ModelAttribute("student") Student student, @PathVariable("studentId") Integer studentId) {
-        student.setId(studentId);
-        student.setSurname("木谷");
+    public String student(HttpServletRequest request, @PathVariable("studentId") Integer studentId, Model model) {
+        Student student = (Student) request.getAttribute("student");
+        System.out.println(student.getId());
+        System.out.println(student.getSurname());
+        model.addAttribute("student", student);
         return "student";
     }
 
