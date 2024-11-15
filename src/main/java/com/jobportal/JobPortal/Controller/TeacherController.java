@@ -34,6 +34,7 @@ public class TeacherController {
         colors.put("未受理","list-group-item-warning");
         colors.put("却下","list-group-item-danger");
         colors.put("未提出","list-group-item-dark");
+        colors.put("不要","list-group-item-light");
         List<OAListEntity> listEntity = service.teacherFindAllOAs(form);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);

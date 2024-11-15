@@ -51,6 +51,11 @@ public class MainService {
     public void createSubmitted(Integer officialAbsenceId) {
         repository.createSubmittedDate(officialAbsenceId,LocalDate.now());
     }
+    //報告書作成(検索用仮データインサート)
+    @Transactional
+    public void createReport(Integer officialAbsenceId, boolean reportRequired) {
+        repository.createReport(officialAbsenceId, reportRequired);
+    }
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
@@ -343,6 +348,7 @@ public class MainService {
             return repository.teacherCheckCondition(OAId);
         }
     }
+
 
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {

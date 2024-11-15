@@ -63,12 +63,8 @@
       <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
         <ul class="list-group list-group-flush">
           <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[${value.status}]]</li>
-          <th:block th:if="${value.reportRequired}">
-            <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
-          </th:block>
-          <th:block th:unless="${value.reportRequired}">
-            <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center list-group-item-light">報告書 : 不要</li>
-          </th:block>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
+
         </ul>
       </li>
       <li class="list-group-item col-2 d-flex align-items-center justify-content-center"><h4>[[${value.reason}]]</h4></li>
@@ -89,14 +85,15 @@
       </th:block>
 
       <a th:href="@{/jobportal/student/{studentId}/OAList/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
-<!--      報告書未提出DOM-->
-      <th:block th:if="${value.reportStatus == '未提出'}">
-        <a th:href="@{/jobportal/student/{studentId}/reportform/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" th:classappend="|${(value.reportSubmissionFlag and value.reportRequired)?'btn-primary':'btn-secondary'} ${(value.reportSubmissionFlag and value.reportRequired)?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書提出</h5></a>
-      </th:block>
-<!--      報告書提出済みDOM-->
-      <th:block th:unless="${value.reportStatus == '未提出'}">
-        <a th:href="@{/jobportal/student/{studentId}/reportinfo/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}"  type="button" class="btn reportbtn btn-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
-      </th:block>
+<!--&lt;!&ndash;      報告書未提出&ndash;&gt;-->
+<!--      <th:block th:if="${value.reportRequired}">-->
+<!--        <a th:href="@{/jobportal/student/{studentId}/reportform/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" th:classappend="|${(value.reportSubmissionFlag and value.reportRequired)?'btn-primary':'btn-secondary'} ${(value.reportSubmissionFlag and value.reportRequired)?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書提出</h5></a>-->
+<!--      </th:block>-->
+<!--&lt;!&ndash;      報告書提出済み&ndash;&gt;-->
+<!--      <th:block th:unless="${value.reportRequired}">-->
+<!--        <a th:href="@{/jobportal/student/{studentId}/reportinfo/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}"  type="button" class="btn reportbtn btn-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>-->
+<!--      </th:block>-->
+      <a th:href="@{/jobportal/student/{studentId}/reportform/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" th:classappend="|${(value.reportSubmittedFlag and value.reportRequired)?'btn-primary':'btn-secondary'} ${(value.reportSubmittedFlag and value.reportRequired)?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5 th:text="${value.reportStatus == '未提出'?'報告書提出':'報告書詳細'}">報告書提出</h5></a>
     </ul>
   </div>
 
