@@ -161,6 +161,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         JobSearchEntity jobEntity = form.toJobSearchEntity(officialAbsenceId);
         service.createJobSearch(jobEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -178,6 +179,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         SeminarEntity seminarEntity = form.toSeminarEntity(officialAbsenceId);
         service.createSeminar(seminarEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -196,6 +198,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         BereavementEntity bereavementEntity = form.toBereavementEntity(officialAbsenceId);
         service.createBereavement(bereavementEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -213,6 +216,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         AttendanceBanEntity attendanceBanEntity = form.toAttendanceBanEntity(officialAbsenceId);
         service.createAttendanceBan(attendanceBanEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -230,6 +234,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         OtherEntity otherEntity = form.toOtherEntity(officialAbsenceId);
         service.createOther(otherEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -239,10 +244,11 @@ public class StudentController {
     @GetMapping("/student/{studentId}/OAList")
     public String showStudentOAList(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
         Map<String, String> colors = new HashMap<>();
-        colors.put("受理","list-group-item-success");
-        colors.put("未受理","list-group-item-warning");
-        colors.put("却下","list-group-item-danger");
-        colors.put("未提出","list-group-item-dark");
+        colors.put("受理", "list-group-item-success");
+        colors.put("未受理", "list-group-item-warning");
+        colors.put("却下", "list-group-item-danger");
+        colors.put("未提出", "list-group-item-dark");
+        colors.put("不要", "list-group-item-light");
         //OAList取得
         List<OAListEntity> listEntity = service.findAllOAs(studentId, form);
         //公欠日時をMapにする
