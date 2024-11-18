@@ -2,6 +2,7 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.api;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -13,15 +14,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -32,71 +34,33 @@ public class StudentController {
     @Autowired
     private final MainService service;
 
-    @GetMapping(value = "/")
-    public String showFormAgain() throws IOException {
-        //本番ではヘッダーから取得する
-        String group = "生徒";
-        if(group.equals("生徒")) {
-            //本番ではヘッダーから取得する
-            int id = 40104;
-            String name = "Kiya";
-            return "redirect:/jobportal/student/" + id;
-        }
-        else return "redirect:/jobportal/teacher";
+    @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
+    public String showFormAgain(HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student) throws IOException {
+            //本番ではssoから取得
+            student.setId(40104);
+            student.setSurname("YourName");
+            Map<String, String> m = service.getPersonInfo(response, request);
+            if(m.get("group").equals("学生")) return "redirect:/jobportal/student/" + student.getId();
+            else return "redirect:/jobportal/teacher/";
     }
-    @GetMapping(value= "/test", produces = "text/html; charset=UTF-8")
-    public Map<String, String> test(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        PrintWriter out = response.getWriter();
-        Map<String, String > map = new HashMap<>();
-        StringBuffer sb = new StringBuffer();
 
-        sb.append("<html>");
-        sb.append("<head>");
-        sb.append("<title>テスト</title>");
-        sb.append("</head>");
-        sb.append("<body>");
-        sb.append("<p>");
-        List<String> values = new ArrayList<>();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1),
-                    StandardCharsets.UTF_8);
-            sb.append(headerName);
-            sb.append(":");
-            sb.append(value);
-            sb.append("<br>");
-            values.add(value);
-            map.put(headerName, value);
-        }
-        String group;
-        if(values.contains("bdab862e-69fc-4932-ab21-96a46e05881f")){
-            group = "教職員";
-        }else {
-            group = "学生";
-        }
-        sb.append("group");
-        sb.append(":");
-        sb.append(group);
-        sb.append("<br>");
-        sb.append("</p>");
-
-        sb.append("</body>");
-        sb.append("</html>");
-
-        out.println(new String(sb));
-
-        out.close();
-        return map;
+    //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
+    public List<api> apiTest(Integer studentId){
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://172.16.0.3/api/students/" + studentId;
+        ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
+        //System.out.println(list);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
+
 
 
     @GetMapping(value="/student/{studentId}")
-    public String student(HttpServletRequest request, @PathVariable("studentId") Integer studentId, Model model) {
-        Student student = (Student) request.getAttribute("student");
-        System.out.println(student.getId());
-        System.out.println(student.getSurname());
+    public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
+        student.setId(studentId);
+        List<api> l = apiTest(studentId);
+        model.addAttribute("list", l);
+        student = (Student) request.getAttribute("student");
         model.addAttribute("student", student);
         return "student";
     }

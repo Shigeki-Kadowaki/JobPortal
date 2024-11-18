@@ -18,14 +18,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(StudentInterceptor())
-                .addPathPatterns("/jobportal/student/**")
+                .addPathPatterns("/**/student/**")
                 .excludePathPatterns(
                         "/index",
                         "/*.css",
                         "/*.js"
                         );
         registry.addInterceptor(TeacherInterceptor())
-                .addPathPatterns("/jobportal/teacher/**")
+                .addPathPatterns("/**/teacher/**")
                 .excludePathPatterns(
                         "/*.css",
                         "/*.js"
