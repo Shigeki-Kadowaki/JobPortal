@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -25,22 +26,24 @@ public class TeacherController {
     public String showTeacherPage() {
         return "teacher";
     }
+    //OAList
     @GetMapping("/teacher/OAList")
-    public String showTeacherOAList(Model model) {
+    public String showTeacherOAList(TeacherOASearchForm form, Model model) {
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
         colors.put("却下","list-group-item-danger");
         colors.put("未提出","list-group-item-dark");
-        List<OAListEntity> listEntity = service.teacherFindAllOAs();
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
+        model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         return "teacher_OAList";
     }
-    //
+    //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
@@ -80,9 +83,13 @@ public class TeacherController {
     }
     //OA承認
     @PutMapping(value="teacher/{OAId}", params = "acceptance")
-    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired) {
-        //System.out.println(reportRequired);
-        service.updateOAStatus(OAId,"acceptance");
+    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
+        service.updateCheck(OAId, teacherType, true);
+        if(careerCheckRequired) {
+            if(service.checkConditionJudge(OAId, true)){service.updateOAStatus(OAId, "acceptance");}
+        }else{
+            if(service.checkConditionJudge(OAId, false)){service.updateOAStatus(OAId, "acceptance");}
+        }
         service.updateReportRequired(OAId, reportRequired != null);
         return "redirect:/jobportal/teacher/OAList";
     }

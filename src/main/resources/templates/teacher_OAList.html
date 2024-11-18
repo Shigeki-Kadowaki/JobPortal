@@ -7,15 +7,71 @@
     <meta charset="UTF-8">
     <title>Teacher_OAList</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script th:src="@{/list.js}"></script>
 </head>
 <body>
 <section layout:fragment="content">
     <a type="button" th:href="@{/jobportal/teacher}" class="btn btn-primary">戻る</a><br>
 
     <div class="card">
-        <div class="card-header">並び替え</div>
+        <div class="card-header">検索</div>
         <div class="card-body">
-
+            <form class="row justify-content-md-center" th:action="@{/jobportal/teacher/OAList}" th:object="${searchForm}">
+                <div class="form-group col-md-auto">
+                    <label class="form-label">学年</label><br>
+                    <select class="form-select" aria-label="Default select example" name="grade">
+                        <option value="all" th:selected="*{grade == 'all'}">全て</option>
+                        <option value="1" th:selected="*{grade == '1'}">1</option>
+                        <option value="2" th:selected="*{grade == '2'}">2</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-auto border-end border-2 border-dark border-opacity-75 pe-4">
+                    <label class="form-label">クラス</label><br>
+                    <select class="form-select" aria-label="Default select example" name="classType">
+                        <option value="all" th:selected="*{classType == 'all'}">全て</option>
+                        <option value="A" th:selected="*{classType == 'A'}">A</option>
+                        <option value="B" th:selected="*{classType == 'B'}">B</option>
+                        <option value="C" th:selected="*{classType == 'C'}">C</option>
+                        <option value="D" th:selected="*{classType == 'D'}">D</option>
+                        <option value="E" th:selected="*{classType == 'E'}">E</option>
+                        <option value="F" th:selected="*{classType == 'F'}">F</option>
+                        <option value="G" th:selected="*{classType == 'G'}">G</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-auto ps-4">
+                    <label class="form-label">公欠届ステータス</label><br>
+                    <div class="btn-group">
+                        <input class="btn-check" type="checkbox" id="OAStatusAcceptance" name="OAStatus" value="acceptance" th:checked="*{isOAStatusChecked('acceptance')}">
+                        <label class="btn btn-outline-primary" for="OAStatusAcceptance">受理</label>
+                        <input class="btn-check" type="checkbox" id="OAStatusUnaccepted" name="OAStatus" value="unaccepted" th:checked="*{isOAStatusChecked('unaccepted')}">
+                        <label class="btn btn-outline-primary" for="OAStatusUnaccepted">未受理</label>
+                        <input class="btn-check" type="checkbox" id="OAStatusRejection" name="OAStatus" value="rejection" th:checked="*{isOAStatusChecked('rejection')}">
+                        <label class="btn btn-outline-primary" for="OAStatusRejection">却下</label>
+                    </div>
+                </div>
+                <div class="mt-4 form-group col-md-auto">
+                    <input type="checkbox" class="btn-check" id="andFlag" autocomplete="off" value="true" name="andFlag" th:checked="*{andFlag == true}">
+                    <label class="btn btn-outline-primary" style="width: 60px" for="andFlag" id="andFlagLabel" th:text="*{andFlag}?'OR':'AND'">AND</label><br>
+                </div>
+                <div class="form-group col-md-auto border-end border-2 border-dark border-opacity-75 pe-4">
+                    <label class="form-label">報告書ステータス</label><br>
+                    <div class="btn-group">
+                        <input class="btn-check" type="checkbox" id="reportStatusAcceptance" name="reportStatus" value="acceptance" th:checked="*{isReportStatusChecked('acceptance')}">
+                        <label class="btn btn-outline-primary" for="reportStatusAcceptance">受理</label>
+                        <input class="btn-check" type="checkbox" id="reportStatusUnaccepted" name="reportStatus" value="unaccepted" th:checked="*{isReportStatusChecked('unaccepted')}">
+                        <label class="btn btn-outline-primary" for="reportStatusUnaccepted">未受理</label>
+                        <input class="btn-check" type="checkbox" id="reportStatusUnsubmitted" name="reportStatus" value="unsubmitted" th:checked="*{isReportStatusChecked('unsubmitted')}">
+                        <label class="btn btn-outline-primary" for="reportStatusUnsubmitted">未提出</label>
+                    </div>
+                </div>
+                <div class="m-3 form-group col-md-auto ps-4">
+                    <input type="checkbox" class="btn-check" id="todayOAFlag" autocomplete="off" value="true" name="todayOAFlag" th:checked="*{todayOAFlag != null}">
+                    <label class="btn btn-outline-primary btn-lg" for="todayOAFlag">今日の公欠</label><br>
+                </div>
+                <div class="m-3 text-end col-md-auto">
+                    <button type="submit" class="btn btn-primary btn-lg">検索</button>
+                </div>
+            </form>
         </div>
     </div>
     <br>

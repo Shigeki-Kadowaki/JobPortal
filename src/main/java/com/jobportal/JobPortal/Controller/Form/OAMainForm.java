@@ -17,31 +17,31 @@ import java.util.Map;
 public class OAMainForm {
         //共通部分
 //        private Integer id;
-        @NotBlank
-        @Pattern(regexp = "jobSearch|seminar|bereavement|attendanceBan|other")
+        @NotBlank(message = "必須項目です")
+        //@Pattern(regexp = "jobSearch|seminar|bereavement|attendanceBan|other")
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
         private Map<String,List<String>> OAPeriods;
 //        private List<OADatesForm> OADates;
         private boolean reportRequired;
 //就活部分
-        @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
-        @Pattern(regexp = "briefing|test|visit|jobOther",groups = jobSearchFormGroup.class)
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
+        @Pattern(regexp = "briefing|test|visit|jobOther", groups = jobSearchFormGroup.class)
         private String work;
-        @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
         private String companyName;
-        @NotBlank(message = "必須項目です",groups = jobSearchFormGroup.class)
-        @Size(max = 256, message = "256文字以内で入力してください",groups = jobSearchFormGroup.class)
+        @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
+        @Size(max = 256, message = "256文字以内で入力してください", groups = jobSearchFormGroup.class)
         private String address;
-        @Size(max = 256, message = "256文字以内で入力してください")
+        @Size(max = 256, message = "256文字以内で入力してください", groups = jobSearchFormGroup.class)
         private String jobSearchRemarks;
         @NotNull(message = "必須項目です", groups = jobSearchFormGroup.class)
-        @Max(value = 23,groups = jobSearchFormGroup.class)
-        @Min(value = 0,groups = jobSearchFormGroup.class)
+        @Max(value = 23, groups = jobSearchFormGroup.class)
+        @Min(value = 0, groups = jobSearchFormGroup.class)
         private Integer jobSearchVisitStartHour;
         @NotNull(message = "必須項目です", groups = jobSearchFormGroup.class)
         @Max(value = 59, groups = jobSearchFormGroup.class)
-        @Min(value = 0,groups = jobSearchFormGroup.class)
+        @Min(value = 0, groups = jobSearchFormGroup.class)
         private Integer jobSearchVisitStartMinute;
 
 //セミナー部分
@@ -54,15 +54,15 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = seminarGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = seminarGroup.class)
         private String venueName;
-        @Size(max = 256, message = "256文字以内で入力してください")
+        @Size(max = 256, message = "256文字以内で入力してください",groups = seminarGroup.class)
         private String seminarRemarks;
-        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
-        @Max(23)
-        @Min(0)
+        @NotNull(message = "必須項目です", groups = seminarGroup.class)
+        @Max(value = 23, groups = seminarGroup.class)
+        @Min(value = 0, groups = seminarGroup.class)
         private Integer seminarVisitStartHour;
-        @NotBlank(message = "必須項目です", groups = seminarGroup.class)
-        @Max(59)
-        @Min(0)
+        @NotNull(message = "必須項目です", groups = seminarGroup.class)
+        @Max(value = 59, groups = seminarGroup.class)
+        @Min(value = 0, groups = seminarGroup.class)
         private Integer seminarVisitStartMinute;
 //忌引部分
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
@@ -71,19 +71,19 @@ public class OAMainForm {
         @NotBlank(message = "必須項目です",groups = bereavementGroup.class)
         @Size(max = 64, message = "64文字以内で入力してください",groups = bereavementGroup.class)
         private String relationship;
-        @Size(max = 256, message = "256文字以内で入力してください")
+        @Size(max = 256, message = "256文字以内で入力してください",groups = bereavementGroup.class)
         private String bereavementRemarks;
 //出席停止部分
         @NotBlank(message = "必須項目です",groups = attendanceBanGroup.class)
         @Size(max = 256, message = "256文字以内で入力してください",groups = attendanceBanGroup.class)
         private String banReason;
-        @Size(max = 256, message = "256文字以内で入力してください")
+        @Size(max = 256, message = "256文字以内で入力してください",groups = attendanceBanGroup.class)
         private String banRemarks;
 //その他部分
         @NotBlank(message = "必須項目です",groups = otherGroup.class)
         @Size(max = 128, message = "128文字以内で入力してください",groups = otherGroup.class)
         private String otherReason;
-        @Size(max = 256, message = "256文字以内で入力してください")
+        @Size(max = 256, message = "256文字以内で入力してください",groups = otherGroup.class)
         private String otherRemarks;
 
 
@@ -95,7 +95,9 @@ public class OAMainForm {
                         "unaccepted",
                         reasonForAbsence,
                         false,
-                        LocalDate.now()
+                        checkReportRequired(reasonForAbsence),
+                        false,
+                        checkReportRequired(reasonForAbsence)?false:null
                 );
         }
         public boolean checkReportRequired(String reasonForAbsence){
@@ -186,7 +188,7 @@ public class OAMainForm {
                 return yyyy + sep + mm + sep + dd;
         }
 
-        public OAMainForm(String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String work, String companyName, String address,String jobSearchRemarks, Integer jobSearchVisitStartHour, Integer jobSearchVisitStartMinute){
+        public OAMainForm(JobSearchEntity entity,String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String work, String companyName, String address,String jobSearchRemarks, Integer jobSearchVisitStartHour, Integer jobSearchVisitStartMinute){
                 this.reasonForAbsence = reasonForAbsence;
                 this.OAPeriods = lessonInfoEntities;
                 this.reportRequired = reportRequired;
@@ -196,6 +198,39 @@ public class OAMainForm {
                 this.jobSearchRemarks = jobSearchRemarks;
                 this.jobSearchVisitStartHour = jobSearchVisitStartHour;
                 this.jobSearchVisitStartMinute = jobSearchVisitStartMinute;
+        }
+        public OAMainForm(SeminarEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String seminarName, String location, String venueName, String remarks, Integer seminarVisitStartHour, Integer seminarVisitStartMinute){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.seminarName = seminarName;
+                this.location = location;
+                this.venueName = venueName;
+                this.seminarRemarks = remarks;
+                this.seminarVisitStartHour = seminarVisitStartHour;
+                this.seminarVisitStartMinute = seminarVisitStartMinute;
+        }
+        public OAMainForm(BereavementEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String remarks, String deceasedName, String relationship){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.bereavementRemarks = remarks;
+                this.deceasedName = deceasedName;
+                this.relationship = relationship;
+        }
+        public OAMainForm(AttendanceBanEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String banRemarks, String banReason){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.banReason = banReason;
+                this.banRemarks = banRemarks;
+        }
+        public OAMainForm(OtherEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String otherRemarks, String otherReason){
+                this.reasonForAbsence = reasonForAbsence;
+                this.OAPeriods = lessonInfoEntities;
+                this.reportRequired = reportRequired;
+                this.otherReason = otherReason;
+                this.otherRemarks = otherRemarks;
         }
 //        public static  toDatesEntity(OAMainForm form) {
 //

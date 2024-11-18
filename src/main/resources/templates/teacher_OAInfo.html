@@ -30,23 +30,31 @@
       活動内容 : [[*{work.getJapaneseName()}]]<br>
       会社名 : [[*{companyName}]]<br>
       住所 : [[*{address}]]<br>
+      開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
       セミナー・合説名 : [[*{seminarName}]]<br>
       実施場所 : [[*{location}]]<br>
       会場名 : [[*{venueName}]]<br>
+      開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
       亡くなった方 : [[*{deceasedName}]]<br>
       続柄 : [[*{relationship}]]<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == '出席停止'" th:object="${attendanceBanInfo}">
       理由 : [[*{banReason}]]<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == 'その他'" th:object="${otherInfo}">
       理由 : [[*{otherReason}]]<br>
+      <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
     </th:block>
   </div>
+  <br><br><br>
   <div class="d-flex justify-content-between">
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
@@ -88,13 +96,31 @@
         </div>
 <!--            modalボディー-->
         <form th:action="@{/jobportal/teacher/{OAId}(OAId=${mainInfo.officialAbsenceId})}" th:method="put">
+          <input type="hidden" name="careerCheckRequired" th:value="${mainInfo.careerCheckRequired}">
           <div class="modal-body modalContainer">
+            <th:block th:if="${mainInfo.careerCheckRequired}">
+              <h5 class="form-check">
+                <input class="form-check-input" type="checkbox" value="necessary" name="reportRequired" id="reportRequired" th:checked="${mainInfo.reportRequired}">
+                <label class="form-check-label" for="reportRequired">
+                  報告書必要
+                </label>
+              </h5>
+              <span class="vr mx-3" style="height: 50px;width: 2px;color: black"></span>
+            </th:block>
             <h5 class="form-check">
-              <input class="form-check-input" type="checkbox" value="necessary" name="reportRequired" id="reportRequired">
-              <label class="form-check-label" for="reportRequired">
-                報告書必要
+              <input class="form-check-input" type="radio" name="teacherType" value="teacher" id="teacher" checked>
+              <label class="form-check-label" for="teacher">
+                担任
               </label>
             </h5>
+            <th:block th:if="${mainInfo.careerCheckRequired}">
+            <h5 class="form-check ms-3">
+              <input class="form-check-input" type="radio" name="teacherType" value="career" id="career">
+              <label class="form-check-label" for="career">
+                キャリア
+              </label>
+            </h5>
+            </th:block>
           </div>
 <!--            modalフッター-->
           <div class="modal-footer">
@@ -105,6 +131,7 @@
       </div>
     </div>
   </div>
+  <br><br><br>
 </section>
 </body>
 </html>
