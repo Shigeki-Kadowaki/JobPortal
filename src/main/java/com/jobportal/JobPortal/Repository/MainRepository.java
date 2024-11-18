@@ -20,7 +20,10 @@ public interface MainRepository {
             reason,
             career_check_required,
             teacher_check,
-            career_check
+            career_check,
+            grade,
+            classroom,
+            sutudent_name
         ) VALUES (
             #{entity.studentId},
             #{entity.reportRequired},

@@ -97,7 +97,11 @@ public class OAMainForm {
                         false,
                         checkReportRequired(reasonForAbsence),
                         false,
-                        checkReportRequired(reasonForAbsence)?false:null
+                        checkReportRequired(reasonForAbsence)?false:null,
+                        null,
+                        null,
+                        null
+
                 );
         }
         public boolean checkReportRequired(String reasonForAbsence){

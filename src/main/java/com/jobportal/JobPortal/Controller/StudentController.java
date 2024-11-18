@@ -14,17 +14,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,21 +44,10 @@ public class StudentController {
             else return "redirect:/jobportal/teacher/";
     }
 
-    //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
-    public List<api> apiTest(Integer studentId){
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://172.16.0.3/api/students/" + studentId;
-        ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
-        //System.out.println(list);
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
-    }
-
-
-
     @GetMapping(value="/student/{studentId}")
     public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
         student.setId(studentId);
-        List<api> l = apiTest(studentId);
+        List<api> l = service.getStudentInfo(studentId);
         model.addAttribute("list", l);
         student = (Student) request.getAttribute("student");
         model.addAttribute("student", student);
