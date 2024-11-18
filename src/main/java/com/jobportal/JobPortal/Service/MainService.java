@@ -3,11 +3,13 @@ package com.jobportal.JobPortal.Service;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Service.DTO.*;
-import com.jobportal.JobPortal.Service.Entity.OtherEntity;
 import com.jobportal.JobPortal.Repository.MainRepository;
+import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
+import com.jobportal.JobPortal.Service.DTO.OAListDTO;
+import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import static java.lang.Integer.parseInt;
 public class MainService {
 
     private final MainRepository repository;
+    private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     //OA作成
     @Transactional
@@ -348,7 +351,6 @@ public class MainService {
             return repository.teacherCheckCondition(OAId);
         }
     }
-
 
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
