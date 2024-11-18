@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -38,50 +36,32 @@ public class StudentController {
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student) throws IOException {
+            //本番ではssoから取得
             student.setId(40104);
-            student.setSurname("木谷");
-            Map<String, String> m = test(response, request);
+            student.setSurname("YourName");
+            Map<String, String> m = service.getPersonInfo(response, request);
             if(m.get("group").equals("学生")) return "redirect:/jobportal/student/" + student.getId();
             else return "redirect:/jobportal/teacher/";
     }
-    public List<api> apiTest(){
+
+    //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
+    public List<api> apiTest(Integer studentId){
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://172.16.0.3/api/students/40104";
+        String url = "http://172.16.0.3/api/students/" + studentId;
         ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
-        List<api> list = Arrays.asList(Objects.requireNonNull(response.getBody()));
-        System.out.println(list);
-        return list;
+        //System.out.println(list);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
-    @GetMapping(value= "/test", produces = "text/html; charset=UTF-8")
-    public Map<String, String> test(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        Map<String, String > map = new HashMap<>();
-        List<String> values = new ArrayList<>();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1),
-                    StandardCharsets.UTF_8);
-            values.add(value);
-            map.put(headerName, value);
-        }
-        String group;
-        if(values.contains("bdab862e-69fc-4932-ab21-96a46e05881f")){
-            group = "教職員";
-        }else {
-            group = "学生";
-        }
-        map.put("group", group);
-        return map;
-    }
+
 
 
     @GetMapping(value="/student/{studentId}")
-    public String student(@ModelAttribute("student") Student student, @PathVariable("studentId") Integer studentId, Model model) {
+    public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
         student.setId(studentId);
-        student.setSurname("木谷");
-        List<api> l = apiTest();
+        List<api> l = apiTest(studentId);
         model.addAttribute("list", l);
+        student = (Student) request.getAttribute("student");
+        model.addAttribute("student", student);
         return "student";
     }
 
