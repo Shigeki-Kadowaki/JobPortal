@@ -18,5 +18,6 @@ public class OAMainEntity {
     final Boolean careerCheck;
     final Integer grade;
     final String classroom;
+    final String course;
     final String studentName;
 }

@@ -197,6 +197,10 @@ public class MainService {
                 listDTO.add(new OAListDTO(
                         listEntity.get(index).officialAbsenceId(),
                         listEntity.get(index).studentId(),
+                        listEntity.get(index).grade(),
+                        listEntity.get(index).classroom(),
+                        listEntity.get(index).course(),
+                        listEntity.get(index).name(),
                         existsReport(listEntity.get(index).status()),
                         listEntity.get(index).reason().getJapaneseName(),
                         existsReport(listEntity.get(index).reportStatus()),
@@ -214,6 +218,10 @@ public class MainService {
         listDTO.add(new OAListDTO(
                 listEntity.get(index).officialAbsenceId(),
                 listEntity.get(index).studentId(),
+                listEntity.get(index).grade(),
+                listEntity.get(index).classroom(),
+                listEntity.get(index).course(),
+                listEntity.get(index).name(),
                 existsReport(listEntity.get(index).status()),
                 listEntity.get(index).reason().getJapaneseName(),
                 existsReport(listEntity.get(index).reportStatus()),
@@ -387,12 +395,13 @@ public class MainService {
     }
 
     //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
-    public List<api> getStudentInfo(Integer studentId){
+    public api getStudentInfo(Integer studentId){
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://172.16.0.3/api/students/" + studentId;
         ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
         //System.out.println(list);
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+        List<api> al = Arrays.asList(Objects.requireNonNull(response.getBody()));
+        return al.getFirst();
     }
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {

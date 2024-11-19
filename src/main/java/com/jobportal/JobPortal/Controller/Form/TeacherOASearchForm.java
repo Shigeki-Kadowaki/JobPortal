@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 public record TeacherOASearchForm(
-        String grade,
-        String classType,
+        Integer grade,
+        String classroom,
         List<String> OAStatus,
         Boolean andFlag,
         List<String> reportStatus,

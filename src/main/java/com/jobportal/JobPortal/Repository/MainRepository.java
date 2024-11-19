@@ -23,7 +23,8 @@ public interface MainRepository {
             career_check,
             grade,
             classroom,
-            sutudent_name
+            course,
+            student_name
         ) VALUES (
             #{entity.studentId},
             #{entity.reportRequired},
@@ -31,7 +32,11 @@ public interface MainRepository {
             #{entity.reason},
             #{entity.careerCheckRequired},
             #{entity.teacherCheck},
-            #{entity.careerCheck}
+            #{entity.careerCheck},
+            #{entity.grade},
+            #{entity.classroom},
+            #{entity.course},
+            #{entity.studentName}
         );
     """)
     @Options(useGeneratedKeys = true, keyProperty = "entity.officialAbsenceId")
@@ -119,6 +124,10 @@ public interface MainRepository {
         SELECT
             official_absence_id,
             student_id,
+            grade,
+            classroom,
+            course,
+            student_name,
             official_absences.status,
             reason,
             reports.status AS reportStatus,
@@ -151,15 +160,20 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
         </if>
-        GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,official_absence_date_histories.period,report_required
+        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,official_absences.status,reason,reportStatus,official_absence_date_histories.period,report_required
         ORDER BY official_absence_id DESC, period;
         </script>
     """)
     List<OAListEntity> selectAll(@Param("studentId") Integer studentId, @Param("form")StudentOASearchForm form);
     @Select("""
+    <script>
         SELECT
             official_absence_id,
             student_id,
+            grade,
+            classroom,
+            course,
+            student_name,
             official_absences.status,
             reason,
             reports.status AS reportStatus,
@@ -179,8 +193,36 @@ public interface MainRepository {
             FROM official_absence_date_histories
             GROUP BY official_absence_id
         )
-        GROUP BY official_absence_id,student_id,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
+        <if test='form.grade != 0 and form.grade != null'>
+            AND grade = #{form.grade}
+        </if>
+        <if test='form.classroom != "all" and form.classroom != null'>
+            AND classroom = #{form.classroom}
+        </if>
+        <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
+            AND official_absences.status IN
+                <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
+                    #{status}
+                </foreach>
+        </if>
+        <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
+            <if test='form.andFlag == null'>
+                AND
+            </if>
+            <if test='form.andFlag'>
+                OR
+            </if>
+                reports.status IN
+                    <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                        #{reportStatus}
+                    </foreach>
+        </if>
+        <if test='form.todayOAFlag'>
+            AND official_absence_date = CURRENT_DATE
+        </if>
+        GROUP BY official_absence_id,student_id,course,student_name,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
         ORDER BY official_absence_id DESC, period;
+    </script>
     """)
     List<OAListEntity> teacherFindAllOAs(@Param("form")TeacherOASearchForm form);
     //Info取得

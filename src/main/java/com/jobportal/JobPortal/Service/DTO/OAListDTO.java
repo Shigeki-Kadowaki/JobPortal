@@ -5,6 +5,10 @@ import java.util.List;
 public record OAListDTO(
         Integer officialAbsenceId,
         Integer studentId,
+        Integer grade,
+        String classroom,
+        String course,
+        String name,
         String status,
         String reason,
         String reportStatus,
