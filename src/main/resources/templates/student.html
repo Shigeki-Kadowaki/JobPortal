@@ -12,7 +12,13 @@
         <a th:href="@{/jobportal/teacher}">先生</a><br>
         <h1>[[${student.surname}]]さん、こんにちは</h1>
         <a th:href="@{/jobportal/student/{id}/OACreationForm(id = ${student.id})}">新規公欠届作成</a><br>
-        <a th:href="@{/jobportal/student/{id}/OAList(id = ${student.id})}">提出済み公欠届</a>
+        <a th:href="@{/jobportal/student/{id}/OAList(id = ${student.id})}">提出済み公欠届</a><br>
+        [[${list[0].gno}]]<br>
+        [[${list[0].grade}]]<br>
+        [[${list[0].classroom}]]<br>
+        [[${list[0].cno}]]<br>
+        [[${list[0].department}]]<br>
+        [[${list[0].course}]]<br>
     </section>
 </body>
 </html>

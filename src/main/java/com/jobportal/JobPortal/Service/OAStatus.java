@@ -4,7 +4,8 @@ public enum OAStatus {
     acceptance("受理"),
     unaccepted("未受理"),
     rejection("却下"),
-    unsubmitted("未提出");
+    unsubmitted("未提出"),
+    unnecessary("不要");
 
     private final String japanese;
 

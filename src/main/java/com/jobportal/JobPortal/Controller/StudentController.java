@@ -2,6 +2,7 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.api;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -13,15 +14,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -32,64 +34,34 @@ public class StudentController {
     @Autowired
     private final MainService service;
 
-    @GetMapping(value = "/")
-    public String showFormAgain(@ModelAttribute("student") Student student) throws IOException {
+    @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
+    public String showFormAgain(HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student) throws IOException {
+            //本番ではssoから取得
             student.setId(40104);
-            student.setSurname("木谷");
-            return "redirect:/jobportal/student/" + student.getId();
+            student.setSurname("YourName");
+            Map<String, String> m = service.getPersonInfo(response, request);
+            if(m.get("group").equals("学生")) return "redirect:/jobportal/student/" + student.getId();
+            else return "redirect:/jobportal/teacher/";
     }
-    @GetMapping(value= "/test", produces = "text/html; charset=UTF-8")
-    public Map<String, String> test(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        PrintWriter out = response.getWriter();
-        Map<String, String > map = new HashMap<>();
-        StringBuffer sb = new StringBuffer();
 
-        sb.append("<html>");
-        sb.append("<head>");
-        sb.append("<title>テスト</title>");
-        sb.append("</head>");
-        sb.append("<body>");
-        sb.append("<p>");
-        List<String> values = new ArrayList<>();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1),
-                    StandardCharsets.UTF_8);
-            sb.append(headerName);
-            sb.append(":");
-            sb.append(value);
-            sb.append("<br>");
-            values.add(value);
-            map.put(headerName, value);
-        }
-        String group;
-        if(values.contains("bdab862e-69fc-4932-ab21-96a46e05881f")){
-            group = "教職員";
-        }else {
-            group = "学生";
-        }
-        sb.append("group");
-        sb.append(":");
-        sb.append(group);
-        sb.append("<br>");
-        sb.append("</p>");
-
-        sb.append("</body>");
-        sb.append("</html>");
-
-        out.println(new String(sb));
-
-        out.close();
-        return map;
+    //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
+    public List<api> apiTest(Integer studentId){
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://172.16.0.3/api/students/" + studentId;
+        ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
+        //System.out.println(list);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
+
 
 
     @GetMapping(value="/student/{studentId}")
-    public String student(@ModelAttribute("student") Student student, @PathVariable("studentId") Integer studentId) {
+    public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
         student.setId(studentId);
-        student.setSurname("木谷");
+        List<api> l = apiTest(studentId);
+        model.addAttribute("list", l);
+        student = (Student) request.getAttribute("student");
+        model.addAttribute("student", student);
         return "student";
     }
 
@@ -161,6 +133,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         JobSearchEntity jobEntity = form.toJobSearchEntity(officialAbsenceId);
         service.createJobSearch(jobEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -178,6 +151,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         SeminarEntity seminarEntity = form.toSeminarEntity(officialAbsenceId);
         service.createSeminar(seminarEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -196,6 +170,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         BereavementEntity bereavementEntity = form.toBereavementEntity(officialAbsenceId);
         service.createBereavement(bereavementEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -213,6 +188,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         AttendanceBanEntity attendanceBanEntity = form.toAttendanceBanEntity(officialAbsenceId);
         service.createAttendanceBan(attendanceBanEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -230,6 +206,7 @@ public class StudentController {
         List<OADatesEntity> dateList = form.toDatesEntity();
         service.createSubmitted(officialAbsenceId);
         service.createOADates(dateList, officialAbsenceId);
+        service.createReport(officialAbsenceId, mainEntity.getReportRequired());
         OtherEntity otherEntity = form.toOtherEntity(officialAbsenceId);
         service.createOther(otherEntity);
         return "redirect:/jobportal/student/{studentId}/OAList";
@@ -239,10 +216,11 @@ public class StudentController {
     @GetMapping("/student/{studentId}/OAList")
     public String showStudentOAList(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
         Map<String, String> colors = new HashMap<>();
-        colors.put("受理","list-group-item-success");
-        colors.put("未受理","list-group-item-warning");
-        colors.put("却下","list-group-item-danger");
-        colors.put("未提出","list-group-item-dark");
+        colors.put("受理", "list-group-item-success");
+        colors.put("未受理", "list-group-item-warning");
+        colors.put("却下", "list-group-item-danger");
+        colors.put("未提出", "list-group-item-dark");
+        colors.put("不要", "list-group-item-light");
         //OAList取得
         List<OAListEntity> listEntity = service.findAllOAs(studentId, form);
         //公欠日時をMapにする

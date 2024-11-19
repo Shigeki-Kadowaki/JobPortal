@@ -3,14 +3,20 @@ package com.jobportal.JobPortal.Service;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Service.DTO.*;
-import com.jobportal.JobPortal.Service.Entity.OtherEntity;
 import com.jobportal.JobPortal.Repository.MainRepository;
+import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
+import com.jobportal.JobPortal.Service.DTO.OAListDTO;
+import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -21,6 +27,7 @@ import static java.lang.Integer.parseInt;
 public class MainService {
 
     private final MainRepository repository;
+    private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     //OA作成
     @Transactional
@@ -50,6 +57,11 @@ public class MainService {
     @Transactional
     public void createSubmitted(Integer officialAbsenceId) {
         repository.createSubmittedDate(officialAbsenceId,LocalDate.now());
+    }
+    //報告書作成(検索用仮データインサート)
+    @Transactional
+    public void createReport(Integer officialAbsenceId, boolean reportRequired) {
+        repository.createReport(officialAbsenceId, reportRequired);
     }
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
@@ -344,6 +356,31 @@ public class MainService {
         }
     }
 
+    public Map<String, String> getPersonInfo(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Map<String, String > map = new HashMap<>();
+        List<String> values = new ArrayList<>();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String value = new String(request.getHeader(headerName).getBytes(StandardCharsets.ISO_8859_1),
+                    StandardCharsets.UTF_8);
+            values.add(value);
+            map.put(headerName, value);
+        }
+        String group;
+        if(values.contains("bdab862e-69fc-4932-ab21-96a46e05881f")){
+            group = "教職員";
+        }else {
+            group = "学生";
+        }
+        map.put("group", group);
+//        map.forEach((k,v)->{
+//            System.out.println("k: " + k);
+//            System.out.println("v: " + v);
+//        });
+        return map;
+    }
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

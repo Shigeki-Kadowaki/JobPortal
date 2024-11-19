@@ -104,3 +104,13 @@ map<String, List<Object>>をthymeleafで表示する
 https://github.com/thymeleaf/thymeleaf/issues/748
 
 mapを昇順にするには、TreeMapを使う.
+
+Interceptor
+Controllerの呼び出し前や呼び出し後に実行され、認証などができる。
+1,HandlerInterceptorを継承する。
+2,実行したい関数を作成する。戻り値は真偽値。falseなら失敗。
+関数名がpreHandleならController呼び出し前実行、postHandleなら呼び出し後実行。
+3,WebMvcConfigurerを継承したクラスで実行するInterceptorや除外するURLを指定する。
+registry.addInterceptor()でInterceptor関数追加。
+registry.addPathPatterns()でInterceptor対象URL追加。
+registry.excludePathPatterns()でInterceptor対象外URL追加。

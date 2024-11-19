@@ -11,7 +11,7 @@ public record OAListDTO(
         boolean reportRequired,
         String startDate,
         String endDate,
-        boolean reportSubmissionFlag,
+        boolean reportSubmittedFlag,
         List<Integer> lessons
 ){
 //    public String checkColor (String status) {
