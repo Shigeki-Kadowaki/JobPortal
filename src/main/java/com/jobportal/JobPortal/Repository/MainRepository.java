@@ -493,6 +493,21 @@ public interface MainRepository {
         );
     """)
     void updateOther(@Param("entity") OtherEntity other);
+    //報告書インサート
+    @Insert("""
+        <script>
+            INSERT INTO reports (official_absence_id, status) VALUES(
+                #{OAId},
+            <if test='reportRequired'>
+                'unsubmitted'
+            </if>
+            <if test='!reportRequired'>
+                'unnecessary'
+            </if>
+            );
+        </script>
+    """)
+    void createReport(@Param("OAId") Integer officialAbsenceId,@Param("reportRequired") boolean reportRequired);
     //ステータス更新
     @Update("""
         <script>
@@ -528,4 +543,5 @@ public interface MainRepository {
         SELECT career_check FROM official_absences WHERE official_absence_id = #{OAId};
     """)
     boolean careerCheckCondition(Integer OAId);
+
 }
