@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Controller.Form;
 
+import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.Entity.*;
 import com.jobportal.JobPortal.Service.JobSearchWork;
@@ -87,7 +88,7 @@ public class OAMainForm {
         private String otherRemarks;
 
 
-        public OAMainEntity toMainEntity(Integer studentId){
+        public OAMainEntity toMainEntity(Integer studentId, Student student){
                 return new OAMainEntity(
                         null,
                         studentId,
@@ -97,7 +98,11 @@ public class OAMainForm {
                         false,
                         checkReportRequired(reasonForAbsence),
                         false,
-                        checkReportRequired(reasonForAbsence)?false:null
+                        checkReportRequired(reasonForAbsence)?false:null,
+                        student.getGrade(),
+                        student.getClassroom(),
+                        student.getCourse(),
+                        student.getSurname()+" "+student.getGivenname()
                 );
         }
         public boolean checkReportRequired(String reasonForAbsence){

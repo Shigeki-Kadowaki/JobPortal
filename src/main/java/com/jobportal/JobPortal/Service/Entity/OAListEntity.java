@@ -9,6 +9,10 @@ import java.time.LocalDate;
 public record OAListEntity (
         Integer officialAbsenceId,
         Integer studentId,
+        Integer grade,
+        String classroom,
+        String course,
+        String name,
         OAStatus status,
         OAReason reason,
         OAStatus reportStatus,
