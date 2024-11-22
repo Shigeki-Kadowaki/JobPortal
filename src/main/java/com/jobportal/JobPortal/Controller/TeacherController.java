@@ -6,7 +6,9 @@ import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
 import com.jobportal.JobPortal.Service.MainService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,10 @@ import java.util.Map;
 @RequestMapping("/jobportal")
 public class TeacherController {
 
-    public final MainService service;
+    @Autowired
+    public MainService service;
+    @Autowired
+    public HttpSession session;
 
     @GetMapping("/teacher")
     public String showTeacherPage() {
@@ -29,6 +34,12 @@ public class TeacherController {
     //OAList
     @GetMapping("/teacher/OAList")
     public String showTeacherOAList(TeacherOASearchForm form, Model model) {
+        if(session.getAttribute("searchForm") != null) {
+            form = (TeacherOASearchForm) session.getAttribute("searchForm");
+        }else{
+            session.removeAttribute("searchForm");
+        }
+        session.setAttribute("searchForm", form);
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
@@ -47,6 +58,8 @@ public class TeacherController {
     //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
+
+
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         //公欠日時をMapにする

@@ -21,8 +21,15 @@ public class StudentInterceptor implements HandlerInterceptor {
         System.out.println("studentPreHandle");
         Student student = new Student();
         //localでテスト用
-        student.setId(40104);
-        student.setSurname("YourName");
+        student.setId(99999);
+        student.setSurname("YourSurName");
+        student.setGivenname("YourGivenName");
+        student.setGroup("生徒");
+        student.setGrade(0);
+        student.setClassroom("X");
+        student.setCno(0);
+        student.setDepartment("YourDepartment");
+        student.setCourse("YourCourse");
 
         //ssoから取得する用
 //        Map<String, String> map = service.getPersonInfo(response, request);
