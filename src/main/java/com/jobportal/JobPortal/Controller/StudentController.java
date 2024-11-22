@@ -2,7 +2,6 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.api;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -14,17 +13,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -35,31 +35,22 @@ public class StudentController {
     private final MainService service;
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
-    public String showFormAgain(HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student) throws IOException {
+    public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             //本番ではssoから取得
-            student.setId(40104);
+            student.setId(99999);
             student.setSurname("YourName");
             Map<String, String> m = service.getPersonInfo(response, request);
-            if(m.get("group").equals("学生")) return "redirect:/jobportal/student/" + student.getId();
+            if(m.get("group").equals("学生")) {
+                r.addFlashAttribute("test","test");
+                return "redirect:/jobportal/student/" + student.getId();
+            }
             else return "redirect:/jobportal/teacher/";
     }
 
-    //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
-    public List<api> apiTest(Integer studentId){
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://172.16.0.3/api/students/" + studentId;
-        ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
-        //System.out.println(list);
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
-    }
-
-
-
     @GetMapping(value="/student/{studentId}")
-    public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
+    public String student(@ModelAttribute("test") String test, HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
+        System.out.println(test);
         student.setId(studentId);
-        List<api> l = apiTest(studentId);
-        model.addAttribute("list", l);
         student = (Student) request.getAttribute("student");
         model.addAttribute("student", student);
         return "student";
@@ -122,12 +113,13 @@ public class StudentController {
 
     //就活公欠届提出
     @PostMapping(value = "/student/{studentId}", params = "jobSearch")
-    public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+    public String postJobForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return showForm(studentId, form, model);
         }
-        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        Student student = (Student) request.getAttribute("student");
+        OAMainEntity mainEntity = form.toMainEntity(studentId, student);
         service.createOA(mainEntity);
         Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
         List<OADatesEntity> dateList = form.toDatesEntity();
@@ -140,12 +132,13 @@ public class StudentController {
     }
     //セミナー公欠届提出
     @PostMapping(value = "/student/{studentId}", params = "seminar")
-    public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+    public String postSeminarForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return showForm(studentId, form, model);
         }
-        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        Student student = (Student) request.getAttribute("student");
+        OAMainEntity mainEntity = form.toMainEntity(studentId, student);
         service.createOA(mainEntity);
         Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
         List<OADatesEntity> dateList = form.toDatesEntity();
@@ -158,13 +151,14 @@ public class StudentController {
     }
     //忌引公欠届提出
     @PostMapping(value = "/student/{studentId}", params = "bereavement")
-    public String postBereavementForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+    public String postBereavementForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return showForm(studentId, form, model);
         }
-        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        Student student = (Student) request.getAttribute("student");
+        OAMainEntity mainEntity = form.toMainEntity(studentId, student);
         service.createOA(mainEntity);
         Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
         List<OADatesEntity> dateList = form.toDatesEntity();
@@ -177,12 +171,13 @@ public class StudentController {
     }
     //出席停止公欠届提出
     @PostMapping(value = "/student/{studentId}", params = "attendanceBan")
-    public String postBanForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+    public String postBanForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return showForm(studentId, form, model);
         }
-        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        Student student = (Student) request.getAttribute("student");
+        OAMainEntity mainEntity = form.toMainEntity(studentId, student);
         service.createOA(mainEntity);
         Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
         List<OADatesEntity> dateList = form.toDatesEntity();
@@ -195,12 +190,13 @@ public class StudentController {
     }
     //その他公欠届提出
     @PostMapping(value = "/student/{studentId}", params = "other")
-    public String postOtherForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+    public String postOtherForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return showForm(studentId, form, model);
         }
-        OAMainEntity mainEntity = form.toMainEntity(studentId);
+        Student student = (Student) request.getAttribute("student");
+        OAMainEntity mainEntity = form.toMainEntity(studentId, student);
         service.createOA(mainEntity);
         Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
         List<OADatesEntity> dateList = form.toDatesEntity();

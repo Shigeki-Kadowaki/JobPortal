@@ -20,21 +20,21 @@
                 <div class="form-group col-md-auto">
                     <label class="form-label">学年</label><br>
                     <select class="form-select" aria-label="Default select example" name="grade">
-                        <option value="all" th:selected="*{grade == 'all'}">全て</option>
-                        <option value="1" th:selected="*{grade == '1'}">1</option>
-                        <option value="2" th:selected="*{grade == '2'}">2</option>
+                        <option value=0 th:selected="*{grade == 0}">全て</option>
+                        <option value=1 th:selected="*{grade == 1}">1</option>
+                        <option value=2 th:selected="*{grade == 2}">2</option>
                     </select>
                 </div>
                 <div class="form-group col-md-auto border-end border-2 border-dark border-opacity-75 pe-4">
                     <label class="form-label">クラス</label><br>
-                    <select class="form-select" aria-label="Default select example" name="classType">
-                        <option value="all" th:selected="*{classType == 'all'}">全て</option>
-                        <option value="A" th:selected="*{classType == 'A'}">A</option>
-                        <option value="B" th:selected="*{classType == 'N'}">B</option>
-                        <option value="N" th:selected="*{classType == 'N'}">N</option>
-                        <option value="N" th:selected="*{classType == 'N'}">N</option>
-                        <option value="N" th:selected="*{classType == 'N'}">N</option>
-                        <option value="N" th:selected="*{classType == 'N'}">N</option>
+                    <select class="form-select" aria-label="Default select example" name="classroom">
+                        <option value="all" th:selected="*{classroom == 'all'}">全て</option>
+                        <option value="A" th:selected="*{classroom == 'A'}">A</option>
+                        <option value="B" th:selected="*{classroom == 'B'}">B</option>
+                        <option value="N" th:selected="*{classroom == 'N'}">N</option>
+                        <option value="N" th:selected="*{classroom == 'N'}">N</option>
+                        <option value="N" th:selected="*{classroom == 'N'}">N</option>
+                        <option value="N" th:selected="*{classroom == 'N'}">N</option>
                     </select>
                 </div>
                 <div class="form-group col-md-auto ps-4">
@@ -94,7 +94,7 @@
             <th:block th:unless="${value.startDate} == ${value.endDate}">
                 <li class="list-group-item col-4 d-flex align-items-center justify-content-center"><h5 class="">[[*{startDate}]] - [[*{endDate}]]</h5></li>
             </th:block>
-            <li class="list-group-item col-4 text-center d-flex align-items-center justify-content-center"><h4>NNNNN NNNNNNNNNN NNNNNN</h4></li>
+            <li class="list-group-item col-4 text-center d-flex align-items-center justify-content-center"><h4>[[*{grade}]][[*{classroom}]]   [[*{course}]]   [[*{name}]]</h4></li>
             <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
 <!--            <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未提出'?'btn-secondary':'btn-primary'} ${value.reportStatus == '未提出'?'disabled':''}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>-->
             <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
