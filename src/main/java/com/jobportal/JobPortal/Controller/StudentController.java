@@ -470,4 +470,13 @@ public class StudentController {
         String studentId = mainInfoEntity.studentId().toString();
         return "redirect:/jobportal/student/" + studentId + "/OAList";
     }
+
+    @GetMapping("/student/{studentId}/reportform/{oaId}")
+    public String editReportForm (@PathVariable("studentId") Integer studentId,
+                                  @PathVariable("oaId") Integer oaId,
+                                  Model model){
+        model.addAttribute("studentId", studentId);
+        model.addAttribute("oaId", oaId);
+        return "reportform";
+    }
 }
