@@ -1,9 +1,11 @@
 package com.jobportal.JobPortal.Service;
 
+import com.jobportal.JobPortal.Controller.Classification;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.api;
+import com.jobportal.JobPortal.Controller.Occupation;
+import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -395,13 +397,25 @@ public class MainService {
     }
 
     //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
-    public api getStudentInfo(Integer studentId){
+    public Student getStudentInfo(Integer studentId){
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://172.16.0.3/api/students/" + studentId;
-        ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
+        ResponseEntity<Student[]> response = restTemplate.exchange(url, HttpMethod.GET, null, Student[].class);
         //System.out.println(list);
-        List<api> al = Arrays.asList(Objects.requireNonNull(response.getBody()));
-        return al.getFirst();
+        List<Student> sl = Arrays.asList(Objects.requireNonNull(response.getBody()));
+        System.out.println(sl.getFirst());
+        return sl.getFirst();
+    }
+
+    public Occupation getOccupation(Integer studentId) {
+        return repository.selectOccupation(studentId);
+    }
+
+    public List<String> getLessons(Classification classification) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://172.16.0.3/api/subjects/" + classification.getGrade().toString() + classification.getClassroom();
+
+        return new ArrayList<>();
     }
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {

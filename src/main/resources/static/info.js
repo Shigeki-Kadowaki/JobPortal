@@ -3,11 +3,6 @@
 //     else document.getElementById('versionChangeButton').innerHTML= `<a type="button" href="/jobportal/student/${studentId}/OAList/${OAId}/${value}" class="btn btn-primary">確認</a>`;
 // }
 
-//0:現バージョン
-//1:2
-//2:1
-//max:3
-
 window.addEventListener('load',()=>{
     console.log(`${OAId}`);
     console.log(studentId)

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -38,7 +39,6 @@ public class TeacherController {
         if(session.getAttribute("searchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("searchForm");
         }
-        System.out.println("modoru");
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
@@ -58,7 +58,6 @@ public class TeacherController {
     @GetMapping(value = "/teacher/OAList", params = "search")
     public String showTeacherOAListSearch(TeacherOASearchForm form, Model model){
         session.setAttribute("searchForm", form);
-        System.out.println("kensaku");
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
@@ -77,8 +76,6 @@ public class TeacherController {
     //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
-
-
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         //公欠日時をMapにする
@@ -115,7 +112,7 @@ public class TeacherController {
         return "teacher_OAInfo";
     }
     //OA承認
-    @PutMapping(value="teacher/{OAId}", params = "acceptance")
+    @PutMapping(value="/teacher/{OAId}", params = "acceptance")
     public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
         service.updateCheck(OAId, teacherType, true);
         if(careerCheckRequired) {
@@ -127,10 +124,20 @@ public class TeacherController {
         return "redirect:/jobportal/teacher/OAList";
     }
     //OA却下
-    @PutMapping(value = "teacher/{OAId}", params = "rejection")
+    @PutMapping(value = "/teacher/{OAId}", params = "rejection")
     public String OAUnaccepted(@PathVariable("OAId") Integer OAId,@RequestParam(value = "reportRequired", required = false)String reasonForRejection) {
         service.updateOAStatus(OAId,"rejection");
         System.out.println(reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
+    }
+
+    @GetMapping("/teacher/classification")
+    public String showScheduleClassification() {
+        return "classification";
+    }
+    @PostMapping("/teacher/classification")
+    public String postScheduleClassification(@Validated Classification classification){
+        List<String> lessons = service.getLessons(classification);
+        return "scheduleForm";
     }
 }
