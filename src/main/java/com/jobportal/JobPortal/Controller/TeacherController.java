@@ -38,7 +38,6 @@ public class TeacherController {
         if(session.getAttribute("searchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("searchForm");
         }
-        System.out.println("modoru");
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
@@ -58,7 +57,6 @@ public class TeacherController {
     @GetMapping(value = "/teacher/OAList", params = "search")
     public String showTeacherOAListSearch(TeacherOASearchForm form, Model model){
         session.setAttribute("searchForm", form);
-        System.out.println("kensaku");
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");

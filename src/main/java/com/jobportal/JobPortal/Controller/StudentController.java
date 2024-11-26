@@ -35,15 +35,24 @@ public class StudentController {
     @Autowired
     private final MainService service;
     @Autowired
-    public HttpSession session;
+    public final HttpSession session;
+    public final Map<String, String> colors = new HashMap<>(){
+        {
+            put("受理", "list-group-item-success");
+            put("未受理", "list-group-item-warning");
+            put("却下", "list-group-item-danger");
+            put("未提出", "list-group-item-dark");
+            put("不要", "list-group-item-light");
+        }
+    };
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             //本番ではssoから取得
             student.setId(99999);
             student.setSurname("YourName");
-            Map<String, String> m = service.getPersonInfo(response, request);
-            if(m.get("group").equals("学生")) {
+            Map<String, String> person = service.getPersonInfo(response, request);
+            if(person.get("group").equals("学生")) {
                 return "redirect:/jobportal/student/" + student.getId();
             }
             else return "redirect:/jobportal/teacher/";
@@ -53,10 +62,18 @@ public class StudentController {
     public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
         student.setId(studentId);
         student = (Student) request.getAttribute("student");
+        Occupation occupation = service.getOccupation(studentId);
         model.addAttribute("student", student);
+        model.addAttribute("occupation", occupation);
         return "student";
     }
 
+    @GetMapping("/student/{studentId}/desiredOccupation")
+    public String desiredOccupation(@PathVariable("studentId") Integer studentId, Model model) {
+        Occupation occupation = service.getOccupation(studentId);
+        model.addAttribute("occupation", occupation);
+        return "desiredOccupation";
+    }
 
 //
 //    @PostMapping(value="/test", params="button1")
@@ -211,16 +228,11 @@ public class StudentController {
     //提出済み公欠届List
     @GetMapping("/student/{studentId}/OAList")
     public String showStudentOAList(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
-        Map<String, String> colors = new HashMap<>();
-        colors.put("受理", "list-group-item-success");
-        colors.put("未受理", "list-group-item-warning");
-        colors.put("却下", "list-group-item-danger");
-        colors.put("未提出", "list-group-item-dark");
-        colors.put("不要", "list-group-item-light");
-        //OAList取得
+        //session取得
         if(session.getAttribute("searchForm") != null){
             form = (StudentOASearchForm) session.getAttribute("searchForm");
         }
+        //OAList取得
         List<OAListEntity> listEntity = service.findAllOAs(studentId, form);
         //公欠日時をMapにする
         if(!listEntity.isEmpty()) {
@@ -238,12 +250,6 @@ public class StudentController {
     //OAList検索
     @GetMapping(value = "/student/{studentId}/OAList", params = "search")
     public String showStudentOAListSearch(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
-        Map<String, String> colors = new HashMap<>();
-        colors.put("受理", "list-group-item-success");
-        colors.put("未受理", "list-group-item-warning");
-        colors.put("却下", "list-group-item-danger");
-        colors.put("未提出", "list-group-item-dark");
-        colors.put("不要", "list-group-item-light");
         session.setAttribute("searchForm", form);
         //OAList取得
         List<OAListEntity> listEntity = service.findAllOAs(studentId, form);

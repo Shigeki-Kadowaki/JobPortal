@@ -19,6 +19,11 @@
         出席番号:[[${student.cno}]]<br>
         学科:[[${student.department}]]<br>
         コース:[[${student.course}]]<br>
+        <a th:href="@{/jobportal/student/{id}/desiredOccupation(id = ${student.id})}">希望職業を変更する</a>
+        希望業種:
+        <span th:text="${occupation != null}?${occupation.business}:'未選択'"></span><br>
+        希望職種:
+        <span th:text="${occupation != null}?${occupation.occupation}:'未選択'"></span>
     </section>
 </body>
 </html>

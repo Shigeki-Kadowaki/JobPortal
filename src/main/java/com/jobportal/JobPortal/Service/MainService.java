@@ -4,6 +4,7 @@ import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.api;
+import com.jobportal.JobPortal.Controller.Occupation;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -402,6 +403,10 @@ public class MainService {
         //System.out.println(list);
         List<api> al = Arrays.asList(Objects.requireNonNull(response.getBody()));
         return al.getFirst();
+    }
+
+    public Occupation getOccupation(Integer studentId) {
+        return repository.selectOccupation(studentId);
     }
 
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {

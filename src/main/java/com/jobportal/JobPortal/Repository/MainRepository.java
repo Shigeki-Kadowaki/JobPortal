@@ -2,6 +2,7 @@ package com.jobportal.JobPortal.Repository;
 
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
+import com.jobportal.JobPortal.Controller.Occupation;
 import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 
@@ -589,4 +590,8 @@ public interface MainRepository {
     """)
     boolean careerCheckCondition(Integer OAId);
 
+    @Select("""
+        SELECT * FROM desired_occupations WHERE student_id = #{studentId};
+    """)
+    Occupation selectOccupation(@Param("studentId") Integer studentId);
 }
