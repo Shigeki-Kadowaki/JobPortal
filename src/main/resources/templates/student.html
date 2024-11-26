@@ -13,12 +13,12 @@
         <h1>[[${student.surname}]]さん、こんにちは</h1>
         <a th:href="@{/jobportal/student/{id}/OACreationForm(id = ${student.id})}">新規公欠届作成</a><br>
         <a th:href="@{/jobportal/student/{id}/OAList(id = ${student.id})}">提出済み公欠届</a><br>
-        [[${student.id}]]<br>
-        [[${student.grade}]]<br>
-        [[${student.classroom}]]<br>
-        [[${student.cno}]]<br>
-        [[${student.department}]]<br>
-        [[${student.course}]]<br>
+        学籍番号:[[${student.id}]]<br>
+        学年:[[${student.grade}]]<br>
+        クラス:[[${student.classroom}]]<br>
+        出席番号:[[${student.cno}]]<br>
+        学科:[[${student.department}]]<br>
+        コース:[[${student.course}]]<br>
     </section>
 </body>
 </html>

@@ -25,9 +25,9 @@ public class StudentInterceptor implements HandlerInterceptor {
         student.setSurname("YourSurName");
         student.setGivenname("YourGivenName");
         student.setGroup("生徒");
-        student.setGrade(0);
-        student.setClassroom("X");
-        student.setCno(0);
+        student.setGrade(2);
+        student.setClassroom("A");
+        student.setCno(99);
         student.setDepartment("YourDepartment");
         student.setCourse("YourCourse");
 
@@ -47,7 +47,6 @@ public class StudentInterceptor implements HandlerInterceptor {
             response.sendRedirect("/jobportal/");
             return false;
         }
-        request.setAttribute("test", "test");
         request.setAttribute("student",student);
         return true;
     }
