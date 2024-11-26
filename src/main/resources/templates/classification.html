@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>授業分類</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <form th:action="@{/jobport/classification}" th:method="post"></form>
+  <h3>学年</h3>
+  <select class="form-select" aria-label="Default select example">
+    <option selected>学年</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+  </select>
+  <h3>クラス</h3>
+  <select class="form-select" aria-label="Default select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>
+  <h3>コース</h3>
+  <select class="form-select" aria-label="Default select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>
+  <h3>期</h3>
+  <select class="form-select" aria-label="Default select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>
+</section>
+</body>
+</html>

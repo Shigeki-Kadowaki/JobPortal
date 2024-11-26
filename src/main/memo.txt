@@ -114,3 +114,8 @@ Controllerの呼び出し前や呼び出し後に実行され、認証などが�
 registry.addInterceptor()でInterceptor関数追加。
 registry.addPathPatterns()でInterceptor対象URL追加。
 registry.excludePathPatterns()でInterceptor対象外URL追加。
+
+api呼び出し
+ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.GET, null, Object.class);
+でapiから呼び出したデータをObjectに入れる場合、Objectにあってapiからのデータに含まれない変数はnullになる。
+Objectにはないがapiからのデータには含まれる場合は、何も起きない。

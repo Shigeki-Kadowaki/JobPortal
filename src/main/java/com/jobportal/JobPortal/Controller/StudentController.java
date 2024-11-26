@@ -49,18 +49,20 @@ public class StudentController {
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             //本番ではssoから取得
-            student.setId(99999);
-            student.setSurname("YourName");
+            student.setGno(40104);
+//            student.setSurname("YourName");
+            //ssoから取得用
             Map<String, String> person = service.getPersonInfo(response, request);
+//            student.setId(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
-                return "redirect:/jobportal/student/" + student.getId();
+                return "redirect:/jobportal/student/" + student.getGno();
             }
             else return "redirect:/jobportal/teacher/";
     }
 
     @GetMapping(value="/student/{studentId}")
     public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
-        student.setId(studentId);
+        student.setGno(studentId);
         student = (Student) request.getAttribute("student");
         Occupation occupation = service.getOccupation(studentId);
         model.addAttribute("student", student);
