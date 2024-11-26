@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -131,12 +133,18 @@ public class TeacherController {
         return "redirect:/jobportal/teacher/OAList";
     }
 
-    @GetMapping("/teacher/classification")
-    public String showScheduleClassification() {
-        return "classification";
+    //授業区分入力フォーム
+    @GetMapping("/teacher/classificationForm")
+    public String showScheduleClassification(@ModelAttribute("classification") ClassificationForm classification) {
+        return "classificationForm";
     }
+    //授業区分ポスト、授業区分別時間割入力フォーム
     @PostMapping("/teacher/classification")
-    public String postScheduleClassification(@Validated Classification classification){
+    public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "classificationForm";
+        }
         List<String> lessons = service.getLessons(classification);
         return "scheduleForm";
     }

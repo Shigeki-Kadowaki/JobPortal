@@ -48,11 +48,10 @@ public class StudentController {
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
-            //本番ではssoから取得
-            student.setGno(40104);
-//            student.setSurname("YourName");
-            //ssoから取得用
             Map<String, String> person = service.getPersonInfo(response, request);
+            //localでテスト用
+            student.setGno(99999);
+            //ssoから取得用
 //            student.setId(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
                 return "redirect:/jobportal/student/" + student.getGno();
@@ -64,16 +63,16 @@ public class StudentController {
     public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
         student.setGno(studentId);
         student = (Student) request.getAttribute("student");
-        Occupation occupation = service.getOccupation(studentId);
+        DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("student", student);
-        model.addAttribute("occupation", occupation);
+        model.addAttribute("desiredOccupation", desiredOccupation);
         return "student";
     }
 
     @GetMapping("/student/{studentId}/desiredOccupation")
     public String desiredOccupation(@PathVariable("studentId") Integer studentId, Model model) {
-        Occupation occupation = service.getOccupation(studentId);
-        model.addAttribute("occupation", occupation);
+        DesiredOccupation desiredOccupation = service.getOccupation(studentId);
+        model.addAttribute("desiredOccupation", desiredOccupation);
         return "desiredOccupation";
     }
 
