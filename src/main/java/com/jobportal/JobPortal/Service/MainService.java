@@ -1,10 +1,10 @@
 package com.jobportal.JobPortal.Service;
 
-import com.jobportal.JobPortal.Controller.Classification;
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.Occupation;
+import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
@@ -407,11 +407,11 @@ public class MainService {
         return sl.getFirst();
     }
 
-    public Occupation getOccupation(Integer studentId) {
+    public DesiredOccupation getOccupation(Integer studentId) {
         return repository.selectOccupation(studentId);
     }
 
-    public List<String> getLessons(Classification classification) {
+    public List<String> getLessons(ClassificationForm classification) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://172.16.0.3/api/subjects/" + classification.getGrade().toString() + classification.getClassroom();
 

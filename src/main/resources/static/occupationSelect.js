@@ -135,31 +135,20 @@ array["IT・ソフトウェア・情報処理"] = [
     {cd:"3", label:"インターネット・WEB・スマートフォンアプリ"},
     {cd:"4", label:"ゲームソフト"}
 ];
-// /*
-// * <select class="form-select" id="business" aria-label="Default select example">
-//   <option selected>未選択</option>
-//   <option value="水産・農林業">水産・農林業</option>
-//   <option value="メーカー">メーカー</option>
-//   <option value="サービス・インフラ">サービス・インフラ</option>
-//   <option value="商社（総合・専門）">商社（総合・専門）</option>
-//   <option value="銀行・証券・保険・金融">銀行・証券・保険・金融</option>
-//   <option value="情報（広告・通信・マスコミ）">情報（広告・通信・マスコミ）</option>
-//   <option value="百貨店・専門店・流通・小売">百貨店・専門店・流通・小売</option>
-//   <option value="IT・ソフトウェア・情報処理">IT・ソフトウェア・情報処理</option>
-// </select>*/
-//
+
 window.addEventListener('load',()=>{
     document.getElementById('business').onchange = function(){
         let occupation = document.getElementById("occupation");
-        occupation.options.length = 0
-        let changedPref = document.getElementById('business').value;
-        let value;
-        for (let i = 0; i < array[changedPref].length; i++) {
-            let op = document.createElement("option");
-            value = array[changedPref][i]
-            op.value = value.cd;
-            op.text = value.label;
+        occupation.options.length = 0;
+        let businessPref = document.getElementById('business').value;
+        let occupationValue;
+        for (let i = 0; i < array[businessPref].length; i++) {
+            let op = document.createElement('option');
+            occupationValue = array[businessPref][i];
+            op.value = occupationValue.cd;
+            op.text = occupationValue.label;
             occupation.appendChild(op);
         }
     }
-})
+
+});
