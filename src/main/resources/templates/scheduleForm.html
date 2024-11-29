@@ -9,6 +9,188 @@
 </head>
 <body>
 <section layout:fragment="content">
+    <div th:each="lesson : ${lessonInfos}">
+        [[${lesson.id}]] [[${lesson.name}]] [[${lesson.teacher}]] <br>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">月曜日</th>
+            <th scope="col">火曜日</th>
+            <th scope="col">水曜日</th>
+            <th scope="col">木曜日</th>
+            <th scope="col">金曜日</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="row">1限</th>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson ,stat: ${lessonInfos}">
+                    <option th:name="" th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+        </tr>
+        <tr>
+            <th scope="row">2限</th>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+        </tr>
+        <tr>
+            <th scope="row">3限</th>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+        </tr>
+        <tr>
+            <th scope="row">4限</th>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+        </tr>
+        <tr>
+            <th scope="row">5限</th>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+            <td><select class="form-select" aria-label="Default select example">
+                <option value="" selected>なし</option>
+                <div th:each="lesson : ${lessonInfos}">
+                    <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                </div>
+            </select></td>
+        </tr>
+        </tbody>
+    </table>
 </section>
 </body>
 </html>
