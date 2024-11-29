@@ -140,12 +140,20 @@ public class TeacherController {
     }
     //授業区分ポスト、授業区分別時間割入力フォーム
     @PostMapping("/teacher/classification")
-    public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult) {
+    public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "classificationForm";
         }
         List<String> lessons = service.getLessons(classification);
+        List<Lesson> lessonInfos = service.toLessonInfos(lessons, classification);
+        model.addAttribute("lessonInfos", lessonInfos);
+        model.addAttribute("classification", classification);
         return "scheduleForm";
+    }
+
+    @PostMapping("/teacher/schedule")
+    public String postSchedule(){
+        return "redirect:/teacher";
     }
 }
