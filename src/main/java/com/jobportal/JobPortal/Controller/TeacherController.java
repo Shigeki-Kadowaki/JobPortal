@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
+import com.jobportal.JobPortal.Controller.Form.ExceptionDate;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TimeTable;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
@@ -159,7 +160,7 @@ public class TeacherController {
         model.addAttribute("classification", classification);
         return "scheduleForm";
     }
-
+    //時間割ポスト
     @PostMapping("/teacher/timeTable")
     public String postSchedule(@ModelAttribute TimeTable timeTable){
         System.out.println(timeTable);
@@ -174,7 +175,21 @@ public class TeacherController {
         System.out.println(json);
         return "redirect:/jobportal/teacher";
     }
-
-
+    //例外時間割
+    @GetMapping("/teacher/exceptionDate")
+    public String exceptionDate(@ModelAttribute("exceptionDate") ExceptionDate exceptionDate) {
+        return "exceptionDate";
+    }
+    //例外時間割ポスト
+    @PostMapping("/teacher/postExceptionDate")
+    public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDate exceptionDate, BindingResult bindingResult, Model model) {
+        model.addAttribute("exceptionDate", exceptionDate);
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "exceptionDate";
+        }
+        System.out.println("success");
+        return "redirect:exceptionDate";
+    }
 
 }
