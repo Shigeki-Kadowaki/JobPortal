@@ -365,8 +365,8 @@ public class MainService {
                 other.remarks()
         );
     }
-    public boolean checkConditionJudge(Integer OAId, boolean type) {
-        if(type){
+    public boolean checkConditionJudge(Integer OAId, boolean flag) {
+        if(flag){
             return repository.teacherCheckCondition(OAId) && repository.careerCheckCondition(OAId);
         }else{
             return repository.teacherCheckCondition(OAId);
@@ -426,21 +426,21 @@ public class MainService {
         Pattern roundParenthesesPattern = Pattern.compile("\\((.*?)\\)");
         Pattern squareParenthesessPattern = Pattern.compile("\\[(.*?)]");
         lessons.forEach(e->{
-            //id:[id] name(course) (teacher) => id
+            //[id] name(course) (teacher) => id
             Matcher idMatcher = squareParenthesessPattern.matcher(e.split(" ")[0]);
             int lessonId = -1;
             if(idMatcher.find()){
                 lessonId = Integer.parseInt(idMatcher.group(1));
             }
-            //name:[id] name(course) (teacher) => name(course)
+            //[id] name(course) (teacher) => name(course)
             String lessonInfo = e.split(" ")[1];
-            //teacher:[id] name(course) (teacher) => teacher
+            //[id] name(course) (teacher) => teacher
             Matcher teacherMatcher = roundParenthesesPattern.matcher(e.split(" ")[2]);
             String lessonTeacher = "nanashi";
             if(teacherMatcher.find()){
                 lessonTeacher = teacherMatcher.group(1);
             }
-            //course:[id] name(course) (teacher) => course
+            //[id] name(course) (teacher) => course
             Matcher courseMatcher = roundParenthesesPattern.matcher(lessonInfo);
             if(courseMatcher.find()){
                 if(Objects.equals(courseMatcher.group(1), classification.getCourse())){
