@@ -1,7 +1,11 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.TimeTable;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -16,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,15 +150,31 @@ public class TeacherController {
             System.out.println("error");
             return "classificationForm";
         }
-        List<String> lessons = service.getLessons(classification);
+        //学校で取得する用
+//        List<String> lessons = service.getLessons(classification);
+        //テスト用
+        List<String> lessons = new ArrayList<>(List.of("[0] HR (鈴木)","[1] システム開発(SE) (田中)","[2] システム開発Ⅱ(SE) (佐藤)","[4] キャリア (後藤)"));
         List<Lesson> lessonInfos = service.toLessonInfos(lessons, classification);
         model.addAttribute("lessonInfos", lessonInfos);
         model.addAttribute("classification", classification);
         return "scheduleForm";
     }
 
-    @PostMapping("/teacher/schedule")
-    public String postSchedule(){
-        return "redirect:/teacher";
+    @PostMapping("/teacher/timeTable")
+    public String postSchedule(@ModelAttribute TimeTable timeTable){
+        System.out.println(timeTable);
+        //json化
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        String json;
+        try {
+            json = mapper.writeValueAsString(timeTable);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(json);
+        return "redirect:/jobportal/teacher";
     }
+
+
+
 }

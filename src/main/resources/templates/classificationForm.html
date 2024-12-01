@@ -42,8 +42,8 @@
       <span th:errors="*{semester}"></span>
       <select class="form-select" name="semester" aria-label="Default select example">
         <option value="" selected>期</option>
-        <option value="前期" th:selected="*{semester == '前期'}">前期</option>
-        <option value="後期" th:selected="*{semester == '後期'}">後期</option>
+        <option value="first" th:selected="*{semester == 'first'}">前期</option>
+        <option value="second" th:selected="*{semester == 'second'}">後期</option>
       </select>
       <div class="d-flex justify-content-between mt-3">
         <a th:href="@{/jobportal/teacher}" class="btn btn-danger">中止</a>
