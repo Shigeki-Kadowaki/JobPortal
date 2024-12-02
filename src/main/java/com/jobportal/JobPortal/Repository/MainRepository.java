@@ -3,6 +3,7 @@ package com.jobportal.JobPortal.Repository;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
 import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 
@@ -595,16 +596,14 @@ public interface MainRepository {
     """)
     DesiredOccupation selectOccupation(@Param("studentId") Integer studentId);
 
-//    @Insert("""
-//        <script>
-//        INSERT INTO time_tables VALUES
-//            <foreach item=weekdayNumber index=key collection=timeTableForm.timeTable >
-//                <foreach item=subjectId collection=weekdayNumber >
-//
-//                </foreach>
-//                #{timeTable.grade}, #{timeTable.classroom}, #{timeTable.course}, #{timeTable.semester},
-//            </foreach>
-//        </script>
-//    """)
-//    void createTimeTable(@Param("timeTableForm") TimeTableForm timeTableForm);
+    @Insert("""
+    <script>
+        INSERT INTO time_tables VALUES
+            <foreach item='date' collection='timeTableList' separator=','>
+                (#{timeTableInfo.grade}, #{timeTableInfo.classroom}, #{timeTableInfo.course}, #{timeTableInfo.semester}, #{date.weekdayNumber}, #{date.period}, #{date.subjectId})
+            </foreach>
+        ;
+    </script>
+    """)
+    void createTimeTable(@Param("timeTableInfo") TimeTableInfoForm timeTableInfo, @Param("timeTableList") List<TimeTableEntity> timeTableList);
 }

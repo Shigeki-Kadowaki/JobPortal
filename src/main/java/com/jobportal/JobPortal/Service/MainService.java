@@ -452,8 +452,8 @@ public class MainService {
         return lessonInfos;
     }
 
-    public void createTimeTable(TimeTableForm timeTable) {
-//        repository.createTimeTable(timeTable);
+    public void createTimeTable(TimeTableInfoForm timeTableInfo, List<TimeTableEntity> timeTableEntity) {
+        repository.createTimeTable(timeTableInfo, timeTableEntity);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

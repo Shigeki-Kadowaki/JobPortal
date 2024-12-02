@@ -3,7 +3,7 @@ package com.jobportal.JobPortal.Controller;
 import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.ExceptionDate;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.TimeTableForm;
+import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -158,10 +158,10 @@ public class TeacherController {
     }
     //時間割ポスト
     @PostMapping("/teacher/timeTable")
-    public String postSchedule(@ModelAttribute TimeTableForm timeTable){
+    public String postSchedule(@ModelAttribute TimeTableInfoForm timeTableInfo){
 
-//        timeTable.toTineTableEntity();
-        service.createTimeTable(timeTable);
+        List<TimeTableEntity> timeTable = timeTableInfo.toTimeTableEntity();
+        service.createTimeTable(timeTableInfo, timeTable);
         //json化
 //        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 //        String json;

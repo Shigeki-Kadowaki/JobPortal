@@ -50,9 +50,9 @@ public class StudentController {
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-//            student.setGno(99999);
+            student.setGno(99999);
             //ssoから取得用
-            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
+//            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
                 return "redirect:/jobportal/student/" + student.getGno();
             }
@@ -123,9 +123,11 @@ public class StudentController {
 
     //Form画面
     @GetMapping("/student/{studentId}/OACreationForm")
-    public String showForm(@PathVariable("studentId") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
+    public String showForm(HttpServletRequest request, @PathVariable("studentId") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
         model.addAttribute("studentId",studentId);
         model.addAttribute("mode", "create");
+        Student student = (Student) request.getAttribute("student");
+        //service.getTimeTable(student.getGrade(), student.getClassroom(), student.getCourse(), "first");
         return "OAForm";
     }
 
@@ -134,7 +136,7 @@ public class StudentController {
     public String postJobForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -153,7 +155,7 @@ public class StudentController {
     public String postSeminarForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -173,7 +175,7 @@ public class StudentController {
         model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -192,7 +194,7 @@ public class StudentController {
     public String postBanForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -211,7 +213,7 @@ public class StudentController {
     public String postOtherForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
