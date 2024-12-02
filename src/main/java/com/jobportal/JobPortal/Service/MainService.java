@@ -2,7 +2,6 @@ package com.jobportal.JobPortal.Service;
 
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
-import com.jobportal.JobPortal.Controller.Lesson;
 import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
@@ -389,10 +388,10 @@ public class MainService {
             group = "学生";
         }
         map.put("group", group);
-        map.forEach((k,v)->{
-            System.out.println("k: " + k);
-            System.out.println("v: " + v);
-        });
+//        map.forEach((k,v)->{
+//            System.out.println("k: " + k);
+//            System.out.println("v: " + v);
+//        });
         return map;
     }
 
@@ -411,15 +410,15 @@ public class MainService {
         return repository.selectOccupation(studentId);
     }
 
-    public List<String> getLessons(ClassificationForm classification) {
+    public List<String> getSubjects(ClassificationForm classification) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://172.16.0.3/api/subjects/" + classification.getGrade()+ "/" + classification.getClassroom();
         ResponseEntity<String[]> response = restTemplate.exchange(url, HttpMethod.GET, null, String[].class);
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
-    public List<Lesson> toLessonInfos(List<String> lessons, ClassificationForm classification) {
-        List<Lesson> lessonInfos= new ArrayList<>();
+    public Map<Integer, String> toSubjectInfos(List<String> lessons, ClassificationForm classification) {
+        Map<Integer, String> subjectMap = new HashMap<>();
         Pattern roundParenthesesPattern = Pattern.compile("\\((.*?)\\)");
         Pattern squareParenthesessPattern = Pattern.compile("\\[(.*?)]");
         lessons.forEach(e->{
@@ -443,17 +442,28 @@ public class MainService {
             Matcher courseMatcher = roundParenthesesPattern.matcher(lessonInfo);
             if(courseMatcher.find()){
                 if(Objects.equals(courseMatcher.group(1), classification.getCourse())){
-                    lessonInfos.add(new Lesson(lessonId, lessonInfo, lessonTeacher));
+                    subjectMap.put(lessonId, lessonInfo);
                 }
             }else{
-                lessonInfos.add(new Lesson(lessonId, lessonInfo, lessonTeacher));
+                subjectMap.put(lessonId, lessonInfo);
             }
         });
-        return lessonInfos;
+        return subjectMap;
     }
 
     public void createTimeTable(TimeTableInfoForm timeTableInfo, List<TimeTableEntity> timeTableEntity) {
         repository.createTimeTable(timeTableInfo, timeTableEntity);
+    }
+
+    public String semesterBetween(LocalDate today) {
+        int month = today.getMonthValue();
+        //4月から9月の間
+        if( 4 <= month && month <= 9) return "second";
+        return "first";
+    }
+
+    public List<TimeTableEntity> getTimeTable(ClassificationForm classification) {
+        return repository.selectTimeTable(classification);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

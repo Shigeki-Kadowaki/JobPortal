@@ -1,6 +1,7 @@
 package com.jobportal.JobPortal.Repository;
 
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
@@ -606,4 +607,15 @@ public interface MainRepository {
     </script>
     """)
     void createTimeTable(@Param("timeTableInfo") TimeTableInfoForm timeTableInfo, @Param("timeTableList") List<TimeTableEntity> timeTableList);
+
+    @Select("""
+            SELECT
+                weekday_number,
+                period,
+                subject_id
+            FROM time_tables
+            WHERE
+                grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester};
+    """)
+    List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
 }

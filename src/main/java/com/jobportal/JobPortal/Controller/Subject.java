@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class Lesson {
+public class Subject {
     final Integer id;
     final String name;
-    final String teacher;
 }

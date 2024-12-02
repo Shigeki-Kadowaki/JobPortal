@@ -148,10 +148,10 @@ public class TeacherController {
             return "classificationForm";
         }
         //学校で取得する用
-        List<String> lessons = service.getLessons(classification);
+        List<String> lessons = service.getSubjects(classification);
         //テスト用
 //        List<String> lessons = new ArrayList<>(List.of("[0] HR (鈴木)","[1] システム開発(SE) (田中)","[2] システム開発Ⅱ(SE) (佐藤)","[4] キャリア (後藤)"));
-        List<Lesson> lessonInfos = service.toLessonInfos(lessons, classification);
+        Map<Integer, String> lessonInfos = service.toSubjectInfos(lessons, classification);
         model.addAttribute("lessonInfos", lessonInfos);
         model.addAttribute("classification", classification);
         return "scheduleForm";

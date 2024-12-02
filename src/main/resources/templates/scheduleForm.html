@@ -39,8 +39,8 @@
                     <div th:each="j : ${#numbers.sequence(1,5)}">
                         <td><select th:name="'timeTable[' + ${i} + '][]'" class="form-select" aria-label="Default select example">
                             <option value="" selected>なし</option>
-                            <div th:each="lesson ,stat: ${lessonInfos}">
-                                <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                            <div th:each="lesson: ${lessonInfos}">
+                                <option th:value="${lesson.key}" th:text="${lesson.value}"></option>
                             </div>
                         </select></td>
                     </div>
