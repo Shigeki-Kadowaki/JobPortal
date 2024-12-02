@@ -50,9 +50,9 @@ public class StudentController {
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-            student.setGno(99999);
+//            student.setGno(99999);
             //ssoから取得用
-//            student.setId(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
+            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
                 return "redirect:/jobportal/student/" + student.getGno();
             }
