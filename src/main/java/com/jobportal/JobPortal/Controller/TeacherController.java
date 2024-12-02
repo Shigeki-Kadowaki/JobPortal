@@ -1,6 +1,12 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
+import com.jobportal.JobPortal.Controller.Form.ExceptionDate;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.TimeTable;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -11,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +40,31 @@ public class TeacherController {
     public String showTeacherPage() {
         return "teacher";
     }
+
     //OAList
     @GetMapping("/teacher/OAList")
     public String showTeacherOAList(TeacherOASearchForm form, Model model) {
         if(session.getAttribute("searchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("searchForm");
-        }else{
-            session.removeAttribute("searchForm");
         }
+        Map<String, String> colors = new HashMap<>();
+        colors.put("受理","list-group-item-success");
+        colors.put("未受理","list-group-item-warning");
+        colors.put("却下","list-group-item-danger");
+        colors.put("未提出","list-group-item-dark");
+        colors.put("不要","list-group-item-light");
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form);
+        if(!listEntity.isEmpty()) {
+            List<OAListDTO> listDTO = service.toListEntity(listEntity);
+            model.addAttribute("mainList", listDTO);
+        }
+        model.addAttribute("searchForm", form);
+        model.addAttribute("colors", colors);
+        return "teacher_OAList";
+    }
+    //OAList検索
+    @GetMapping(value = "/teacher/OAList", params = "search")
+    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model){
         session.setAttribute("searchForm", form);
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
@@ -58,8 +84,6 @@ public class TeacherController {
     //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
-
-
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         //公欠日時をMapにする
@@ -96,7 +120,7 @@ public class TeacherController {
         return "teacher_OAInfo";
     }
     //OA承認
-    @PutMapping(value="teacher/{OAId}", params = "acceptance")
+    @PutMapping(value="/teacher/{OAId}", params = "acceptance")
     public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
         service.updateCheck(OAId, teacherType, true);
         if(careerCheckRequired) {
@@ -108,10 +132,64 @@ public class TeacherController {
         return "redirect:/jobportal/teacher/OAList";
     }
     //OA却下
-    @PutMapping(value = "teacher/{OAId}", params = "rejection")
+    @PutMapping(value = "/teacher/{OAId}", params = "rejection")
     public String OAUnaccepted(@PathVariable("OAId") Integer OAId,@RequestParam(value = "reportRequired", required = false)String reasonForRejection) {
         service.updateOAStatus(OAId,"rejection");
         System.out.println(reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
     }
+
+    //授業区分入力フォーム
+    @GetMapping("/teacher/classificationForm")
+    public String showScheduleClassification(@ModelAttribute("classification") ClassificationForm classification) {
+        return "classificationForm";
+    }
+    //授業区分ポスト、授業区分別時間割入力フォーム
+    @PostMapping("/teacher/classification")
+    public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "classificationForm";
+        }
+        //学校で取得する用
+//        List<String> lessons = service.getLessons(classification);
+        //テスト用
+        List<String> lessons = new ArrayList<>(List.of("[0] HR (鈴木)","[1] システム開発(SE) (田中)","[2] システム開発Ⅱ(SE) (佐藤)","[4] キャリア (後藤)"));
+        List<Lesson> lessonInfos = service.toLessonInfos(lessons, classification);
+        model.addAttribute("lessonInfos", lessonInfos);
+        model.addAttribute("classification", classification);
+        return "scheduleForm";
+    }
+    //時間割ポスト
+    @PostMapping("/teacher/timeTable")
+    public String postSchedule(@ModelAttribute TimeTable timeTable){
+        System.out.println(timeTable);
+        //json化
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        String json;
+        try {
+            json = mapper.writeValueAsString(timeTable);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(json);
+        return "redirect:/jobportal/teacher";
+    }
+    //例外時間割
+    @GetMapping("/teacher/exceptionDate")
+    public String exceptionDate(@ModelAttribute("exceptionDate") ExceptionDate exceptionDate) {
+        return "exceptionDate";
+    }
+    //例外時間割ポスト
+    @PostMapping("/teacher/postExceptionDate")
+    public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDate exceptionDate, BindingResult bindingResult, Model model) {
+        model.addAttribute("exceptionDate", exceptionDate);
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "exceptionDate";
+        }
+        System.out.println("success");
+        return "redirect:exceptionDate";
+    }
+
 }

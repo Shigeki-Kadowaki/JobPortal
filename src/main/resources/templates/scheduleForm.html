@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>時間割作成</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <h1>時間割入力フォーム</h1>
+    <h5 class="m-3">
+    学年 : [[${classification.grade}]]<br>
+    クラス : [[${classification.classroom}]]<br>
+    コース : [[${classification.course}]]<br>
+    <span th:text="${classification.semester == 'first'}?'前期':'後期'"><br></span>
+    </h5>
+    <form th:action="@{/jobportal/teacher/timeTable}" th:method="post">
+        <input type="hidden" name="grade" th:value="${classification.grade}">
+        <input type="hidden" name="classroom" th:value="${classification.classroom}">
+        <input type="hidden" name="course" th:value="${classification.course}">
+        <input type="hidden" name="semester" th:value="${classification.semester}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">月曜日</th>
+                <th scope="col">火曜日</th>
+                <th scope="col">水曜日</th>
+                <th scope="col">木曜日</th>
+                <th scope="col">金曜日</th>
+            </tr>
+            </thead>
+            <tbody>
+            <div th:each="i : ${#numbers.sequence(1,5)}">
+                <tr>
+                    <th scope="row">[[${i}]]限</th>
+                    <div th:each="j : ${#numbers.sequence(1,5)}">
+                        <td><select th:name="'timeTable[' + ${i} + '][]'" class="form-select" aria-label="Default select example">
+                            <option value="" selected>なし</option>
+                            <div th:each="lesson ,stat: ${lessonInfos}">
+                                <option th:value="*{lesson.id}" th:text="*{lesson.name}"></option>
+                            </div>
+                        </select></td>
+                    </div>
+                </tr>
+            </div>
+
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between">
+            <a th:href="@{/jobportal/teacher/classificationForm}" class="btn btn-danger">戻る</a>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">送信</button>
+            </div>
+        </div>
+    </form>
+</section>
+</body>
+</html>

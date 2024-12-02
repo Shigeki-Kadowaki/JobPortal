@@ -1,9 +1,12 @@
 package com.jobportal.JobPortal.Service;
 
+import com.jobportal.JobPortal.Controller.DesiredOccupation;
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.api;
+import com.jobportal.JobPortal.Controller.Lesson;
+import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -23,6 +26,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 
@@ -360,8 +365,8 @@ public class MainService {
                 other.remarks()
         );
     }
-    public boolean checkConditionJudge(Integer OAId, boolean type) {
-        if(type){
+    public boolean checkConditionJudge(Integer OAId, boolean flag) {
+        if(flag){
             return repository.teacherCheckCondition(OAId) && repository.careerCheckCondition(OAId);
         }else{
             return repository.teacherCheckCondition(OAId);
@@ -395,15 +400,58 @@ public class MainService {
     }
 
     //学生データ取得api呼び出し(javaバージョン。jsバージョンはlist.jsにあります)
-    public api getStudentInfo(Integer studentId){
+    public Student getStudentInfo(Integer studentId){
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://172.16.0.3/api/students/" + studentId;
-        ResponseEntity<api[]> response = restTemplate.exchange(url, HttpMethod.GET, null, api[].class);
+        ResponseEntity<Student[]> response = restTemplate.exchange(url, HttpMethod.GET, null, Student[].class);
         //System.out.println(list);
-        List<api> al = Arrays.asList(Objects.requireNonNull(response.getBody()));
-        return al.getFirst();
+        List<Student> sl = Arrays.asList(Objects.requireNonNull(response.getBody()));
+        System.out.println(sl.getFirst());
+        return sl.getFirst();
     }
 
+    public DesiredOccupation getOccupation(Integer studentId) {
+        return repository.selectOccupation(studentId);
+    }
+
+    public List<String> getLessons(ClassificationForm classification) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://172.16.0.3/api/subjects/" + classification.getGrade()+ "/" + classification.getClassroom();
+        ResponseEntity<String[]> response = restTemplate.exchange(url, HttpMethod.GET, null, String[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
+
+    public List<Lesson> toLessonInfos(List<String> lessons, ClassificationForm classification) {
+        List<Lesson> lessonInfos= new ArrayList<>();
+        Pattern roundParenthesesPattern = Pattern.compile("\\((.*?)\\)");
+        Pattern squareParenthesessPattern = Pattern.compile("\\[(.*?)]");
+        lessons.forEach(e->{
+            //[id] name(course) (teacher) => id
+            Matcher idMatcher = squareParenthesessPattern.matcher(e.split(" ")[0]);
+            int lessonId = -1;
+            if(idMatcher.find()){
+                lessonId = Integer.parseInt(idMatcher.group(1));
+            }
+            //[id] name(course) (teacher) => name(course)
+            String lessonInfo = e.split(" ")[1];
+            //[id] name(course) (teacher) => teacher
+            Matcher teacherMatcher = roundParenthesesPattern.matcher(e.split(" ")[2]);
+            String lessonTeacher = "nanashi";
+            if(teacherMatcher.find()){
+                lessonTeacher = teacherMatcher.group(1);
+            }
+            //[id] name(course) (teacher) => course
+            Matcher courseMatcher = roundParenthesesPattern.matcher(lessonInfo);
+            if(courseMatcher.find()){
+                if(Objects.equals(courseMatcher.group(1), classification.getCourse())){
+                    lessonInfos.add(new Lesson(lessonId, lessonInfo, lessonTeacher));
+                }
+            }else{
+                lessonInfos.add(new Lesson(lessonId, lessonInfo, lessonTeacher));
+            }
+        });
+        return lessonInfos;
+    }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
 //        List<Integer> lessonList = new ArrayList<>();

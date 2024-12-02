@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>授業分類</title>
+  <script th:src="@{/classificationSelect.js}"></script>
+</head>
+<body>
+<section layout:fragment="content">
+  <script th:inline="javascript">
+    const selectedCourse = /*[[${classification.course}]]*/"selectedCourse";
+  </script>
+  <form th:action="@{/jobportal/teacher/classification}" th:method="post" th:object="${classification}">
+    <div class="w-50 mx-auto">
+      <h3>学年</h3>
+      <span th:errors="*{grade}"></span>
+      <select class="form-select" id="grade" name="grade" aria-label="Default select example">
+        <option value="" selected>学年</option>
+        <option value="1" th:selected="*{grade == 1}">1</option>
+        <option value="2" th:selected="*{grade == 2}">2</option>
+      </select>
+      <h3>クラス</h3>
+      <span th:errors="*{classroom}"></span>
+      <select id="classroom" class="form-select" name="classroom" aria-label="Default select example">
+        <option value="" selected>クラス</option>
+        <option value="A" th:selected="*{classroom == 'A'}">A</option>
+        <option value="B" th:selected="*{classroom == 'B'}">B</option>
+        <option value="J" th:selected="*{classroom == 'J'}">J</option>
+        <option value="M" th:selected="*{classroom == 'M'}">M</option>
+        <option value="F" th:selected="*{classroom == 'F'}">F</option>
+        <option value="G" th:selected="*{classroom == 'G'}">G</option>
+      </select>
+      <h3>コース</h3>
+      <span th:errors="*{course}"></span>
+      <select id="course" class="form-select" name="course" aria-label="Default select example">
+        <option value="" selected>クラスを選択してください</option>
+      </select>
+      <h3>期</h3>
+      <span th:errors="*{semester}"></span>
+      <select class="form-select" name="semester" aria-label="Default select example">
+        <option value="" selected>期</option>
+        <option value="first" th:selected="*{semester == 'first'}">前期</option>
+        <option value="second" th:selected="*{semester == 'second'}">後期</option>
+      </select>
+      <div class="d-flex justify-content-between mt-3">
+        <a th:href="@{/jobportal/teacher}" class="btn btn-danger">中止</a>
+        <div class="text-end">
+          <button class="btn btn-primary" type="submit">次へ</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+</body>
+</html>

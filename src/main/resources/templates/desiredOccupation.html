@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>希望職業変更</title>
+    <script th:src="@{/occupationSelect.js}"></script>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <form th:action>
+
+    </form>
+    <div class="box2">
+        <h2>希望業種を選択してください</h2>
+        <select class="form-select" id="business" aria-label="Default select example">
+            <option value="未選択" selected>未選択</option>
+            <option value="水産・農林業">水産・農林業</option>
+            <option value="メーカー">メーカー</option>
+            <option value="サービス・インフラ">サービス・インフラ</option>
+            <option value="商社（総合・専門）">商社（総合・専門）</option>
+            <option value="銀行・証券・保険・金融">銀行・証券・保険・金融</option>
+            <option value="情報（広告・通信・マスコミ）">情報（広告・通信・マスコミ）</option>
+            <option value="百貨店・専門店・流通・小売">百貨店・専門店・流通・小売</option>
+            <option value="IT・ソフトウェア・情報処理">IT・ソフトウェア・情報処理</option>
+        </select><br>
+        <h2>希望職種を選択してください</h2>
+        <select class="form-select" id="occupation" aria-label="Default select example">
+            <option selected>未選択</option>
+        </select>
+      </div>
+    </section>
+</body>
+</html>

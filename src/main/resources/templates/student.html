@@ -11,14 +11,19 @@
     <section layout:fragment="content">
         <a th:href="@{/jobportal/teacher}">先生</a><br>
         <h1>[[${student.surname}]]さん、こんにちは</h1>
-        <a th:href="@{/jobportal/student/{id}/OACreationForm(id = ${student.id})}">新規公欠届作成</a><br>
-        <a th:href="@{/jobportal/student/{id}/OAList(id = ${student.id})}">提出済み公欠届</a><br>
-        [[${student.id}]]<br>
-        [[${student.grade}]]<br>
-        [[${student.classroom}]]<br>
-        [[${student.cno}]]<br>
-        [[${student.department}]]<br>
-        [[${student.course}]]<br>
+        <a th:href="@{/jobportal/student/{id}/OACreationForm(id = ${student.gno})}">新規公欠届作成</a><br>
+        <a th:href="@{/jobportal/student/{id}/OAList(id = ${student.gno})}">提出済み公欠届</a><br>
+        学籍番号:[[${student.gno}]]<br>
+        学年:[[${student.grade}]]<br>
+        クラス:[[${student.classroom}]]<br>
+        出席番号:[[${student.cno}]]<br>
+        学科:[[${student.department}]]<br>
+        コース:[[${student.course}]]<br>
+        <a th:href="@{/jobportal/student/{id}/desiredOccupation(id = ${student.gno})}">希望職業を変更する</a>
+        希望業種:
+        <span th:text="${desiredOccupation != null}?${desiredOccupation.business}:'未選択'"></span><br>
+        希望職種:
+        <span th:text="${desiredOccupation != null}?${desiredOccupation.occupation}:'未選択'"></span>
     </section>
 </body>
 </html>
