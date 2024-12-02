@@ -1,8 +1,9 @@
 package com.jobportal.JobPortal.Repository;
 
+import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.DesiredOccupation;
+import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
 import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 
@@ -348,13 +349,13 @@ public interface MainRepository {
             career_check,
             submitted_date_histories.version,
             (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
-    FROM official_absences
-    LEFT OUTER JOIN reports
-    USING (official_absence_id)
-    INNER JOIN submitted_date_histories
-    USING (official_absence_id)
-    WHERE official_absence_id = #{OAId}
-    AND version = #{version};
+        FROM official_absences
+        LEFT OUTER JOIN reports
+        USING (official_absence_id)
+        INNER JOIN submitted_date_histories
+        USING (official_absence_id)
+        WHERE official_absence_id = #{OAId}
+        AND version = #{version};
     """)
     OAMainInfoEntity selectMainInfoByVersion(@Param("OAId") Integer OAId, @Param("version") Integer version);
     @Select("""
@@ -594,4 +595,15 @@ public interface MainRepository {
         SELECT * FROM desired_occupations WHERE student_id = #{studentId};
     """)
     DesiredOccupation selectOccupation(@Param("studentId") Integer studentId);
+
+    @Insert("""
+    <script>
+        INSERT INTO time_tables VALUES
+            <foreach item='date' collection='timeTableList' separator=','>
+                (#{timeTableInfo.grade}, #{timeTableInfo.classroom}, #{timeTableInfo.course}, #{timeTableInfo.semester}, #{date.weekdayNumber}, #{date.period}, #{date.subjectId})
+            </foreach>
+        ;
+    </script>
+    """)
+    void createTimeTable(@Param("timeTableInfo") TimeTableInfoForm timeTableInfo, @Param("timeTableList") List<TimeTableEntity> timeTableList);
 }

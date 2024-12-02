@@ -1,10 +1,7 @@
 package com.jobportal.JobPortal.Service;
 
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
-import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
-import com.jobportal.JobPortal.Controller.Form.OAMainForm;
-import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
+import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Controller.Lesson;
 import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Repository.MainRepository;
@@ -392,10 +389,10 @@ public class MainService {
             group = "学生";
         }
         map.put("group", group);
-//        map.forEach((k,v)->{
-//            System.out.println("k: " + k);
-//            System.out.println("v: " + v);
-//        });
+        map.forEach((k,v)->{
+            System.out.println("k: " + k);
+            System.out.println("v: " + v);
+        });
         return map;
     }
 
@@ -435,10 +432,12 @@ public class MainService {
             //[id] name(course) (teacher) => name(course)
             String lessonInfo = e.split(" ")[1];
             //[id] name(course) (teacher) => teacher
-            Matcher teacherMatcher = roundParenthesesPattern.matcher(e.split(" ")[2]);
-            String lessonTeacher = "nanashi";
-            if(teacherMatcher.find()){
-                lessonTeacher = teacherMatcher.group(1);
+            String lessonTeacher = "";
+            if(e.split(" ").length >= 3){
+                Matcher teacherMatcher = roundParenthesesPattern.matcher(e.split(" ")[2]);
+                if(teacherMatcher.find()){
+                    lessonTeacher = teacherMatcher.group(1);
+                }
             }
             //[id] name(course) (teacher) => course
             Matcher courseMatcher = roundParenthesesPattern.matcher(lessonInfo);
@@ -451,6 +450,10 @@ public class MainService {
             }
         });
         return lessonInfos;
+    }
+
+    public void createTimeTable(TimeTableInfoForm timeTableInfo, List<TimeTableEntity> timeTableEntity) {
+        repository.createTimeTable(timeTableInfo, timeTableEntity);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
