@@ -29,7 +29,7 @@ public class StudentInterceptor implements HandlerInterceptor {
         student.setClassroom("A");
         student.setCno(99);
         student.setDepartment("YourDepartment");
-        student.setCourse("SE");
+        student.setCourse("SE・プログラマ");
 
         //ssoから取得する用
         //ssoには、学籍番号、名前が含まれている。
