@@ -531,11 +531,26 @@ public class StudentController {
     }
 
     @GetMapping("/student/{studentId}/reportform/{oaId}")
-    public String editReportForm (@PathVariable("studentId") Integer studentId,
-                                  @PathVariable("oaId") Integer oaId,
-                                  Model model){
+    public String editReportForm(@PathVariable("studentId") Integer studentId,
+                                 @PathVariable("oaId") Integer OAId,
+                                 Model model) {
         model.addAttribute("studentId", studentId);
-        model.addAttribute("oaId", oaId);
+        model.addAttribute("oaId", OAId);
+        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
+        switch (mainInfoDTO.reason()) {
+            case "就活" -> {
+                JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+                model.addAttribute("selectReport",jobSearch);
+
+            }
+            case "セミナー・合説" -> {
+                SeminarEntity seminar = service.findSeminarInfo(OAId);
+                model.addAttribute("selectReport", seminar);
+            }
+        }
         return "reportform";
     }
 }
