@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
@@ -22,10 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class StudentController {
             //localでテスト用
             student.setGno(99999);
             //ssoから取得用
-//            student.setId(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
+//            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
                 return "redirect:/jobportal/student/" + student.getGno();
             }
@@ -123,9 +122,36 @@ public class StudentController {
 
     //Form画面
     @GetMapping("/student/{studentId}/OACreationForm")
-    public String showForm(@PathVariable("studentId") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
+    public String showForm(HttpServletRequest request, @PathVariable("studentId") Integer studentId, @ModelAttribute("oAMainForm") OAMainForm form, Model model){
         model.addAttribute("studentId",studentId);
         model.addAttribute("mode", "create");
+        Student student = (Student) request.getAttribute("student");
+        LocalDate today = LocalDate.now();
+        //今日が前期か後期か取得
+        String semester = service.semesterBetween(today);
+        //学生情報セット
+        ClassificationForm classification = new ClassificationForm();
+        classification.setGrade(student.getGrade());
+        classification.setClassroom(student.getClassroom());
+        classification.setCourse(student.getCourse());
+        classification.setSemester(semester);
+        //該当区分時間割(id)取得
+        List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
+        //該当区分授業情報取得
+        List<String> subjectAllList = service.getSubjects(classification);
+        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList, classification);
+        ArrayList<Subject[]> subjectList = new ArrayList<>();
+        Subject[][] subjects = new Subject[5][5];
+        for (int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                subjects[i][j] = new Subject(-1, "");
+            }
+        }
+        timeTableEntities.forEach(e->{
+            subjects[e.weekdayNumber()-1][e.period()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
+        });
+        System.out.println(Arrays.deepToString(subjects));
+        model.addAttribute("subjects", subjects);
         return "OAForm";
     }
 
@@ -134,7 +160,7 @@ public class StudentController {
     public String postJobForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -153,7 +179,7 @@ public class StudentController {
     public String postSeminarForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -173,7 +199,7 @@ public class StudentController {
         model.addAttribute("studentId", studentId);
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -192,7 +218,7 @@ public class StudentController {
     public String postBanForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
@@ -211,7 +237,7 @@ public class StudentController {
     public String postOtherForm(HttpServletRequest request, @ModelAttribute("studentId") @PathVariable("studentId") Integer studentId, @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             System.out.println("error");
-            return showForm(studentId, form, model);
+            return showForm(request, studentId, form, model);
         }
         Student student = (Student) request.getAttribute("student");
         OAMainEntity mainEntity = form.toMainEntity(studentId, student);
