@@ -1,6 +1,7 @@
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
+const subjectMap = new Map();
 const exceptionMap = new Map();
 function addOADate(selectedDate) {
     if (document.getElementById('OATime_' + selectedDate)) {
@@ -18,31 +19,29 @@ function addOADate(selectedDate) {
     let OADateBody=document.createElement('div');
     console.log(selectedDate);
     OADateBody.className="card-body";
-    let today = new Date(formatDate(selectedDate, "-"));
+    let strToday = formatDate(selectedDate, "-");
+    let dateToday = new Date(strToday);
     let weekdayNumber;
 
-    if(exceptionMap.has(today.toString())){
+    if(exceptionMap.has(strToday)){
         console.log("exception!")
-        weekdayNumber = exceptionMap.get(selectedDate);
+        weekdayNumber = exceptionMap.get(strToday) - 1;
     }else{
         console.log("normal")
-        weekdayNumber = today.getDay();
+        weekdayNumber = dateToday.getDay() - 1;
     }
-    console.log(weekdayNumber);
+    if(weekdayNumber === -1 || weekdayNumber === 5) return false;
     let text=`<input type="hidden" name="OADates[]" value="${selectedDate}">`;
-    for (let index = 1; index < 6; index++) {
-     text+=`
-     <input type="checkbox" class="btn-check" id="${selectedDate}` + index + `" name="OAPeriods[${selectedDate}][]" value="` + index + `" autocomplete="off">
-     <label class="btn btn-outline-primary" for="${selectedDate}` + index + `">` + index + `限目</label>
-     `;
+    let index = 1;
+    for(let subject of subjects[weekdayNumber]){
+        if(subject["id"] !== -1){
+            text+=`
+                <input type="checkbox" class="btn-check" id="${selectedDate}${index}" name="OAPeriods[${selectedDate}][]" value="${index}" autocomplete="off">
+                <label class="btn btn-outline-primary" for="${selectedDate}${index}">${index}限目 : ${subject["name"]}</label>
+            `;
+        }
+        index++;
     }
-
-    // for(let subject of subjects){
-    //     text += `
-    //         <input type="checkbox" class="btn-check" id="${selectedDate}` + index + `" name="OAPeriods[${selectedDate}][]" value="` + index + `" autocomplete="off">
-    //         <label class
-    //     `
-    // }
     OADateBody.innerHTML=text;
     OADate.appendChild(OADateHeader);
     OADate.appendChild(OADateBody);
