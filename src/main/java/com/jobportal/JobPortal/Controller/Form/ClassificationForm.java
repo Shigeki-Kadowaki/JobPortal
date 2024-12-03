@@ -14,4 +14,11 @@ public class ClassificationForm {
     String course;
     @NotEmpty(message = "入力してください")
     String semester;
+
+//    public ClassificationForm(Integer grade, String classroom, String course, String semester) {
+//        this.grade = grade;
+//        this.classroom = classroom;
+//        this.course = course;
+//        this.semester = semester;
+//    }
 }

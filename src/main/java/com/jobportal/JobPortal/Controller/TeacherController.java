@@ -137,7 +137,9 @@ public class TeacherController {
 
     //授業区分入力フォーム
     @GetMapping("/teacher/classificationForm")
-    public String showScheduleClassification(@ModelAttribute("classification") ClassificationForm classification) {
+    public String showScheduleClassification(@ModelAttribute("classification") ClassificationForm classification, Model model) {
+        List<String> courses = service.getCourses();
+        model.addAttribute("courses", courses);
         return "classificationForm";
     }
     //授業区分ポスト、授業区分別時間割入力フォーム
@@ -148,10 +150,10 @@ public class TeacherController {
             return "classificationForm";
         }
         //学校で取得する用
-        List<String> lessons = service.getLessons(classification);
+        List<String> lessons = service.getSubjects(classification);
         //テスト用
 //        List<String> lessons = new ArrayList<>(List.of("[0] HR (鈴木)","[1] システム開発(SE) (田中)","[2] システム開発Ⅱ(SE) (佐藤)","[4] キャリア (後藤)"));
-        List<Lesson> lessonInfos = service.toLessonInfos(lessons, classification);
+        Map<Integer, String> lessonInfos = service.toSubjectInfos(lessons);
         model.addAttribute("lessonInfos", lessonInfos);
         model.addAttribute("classification", classification);
         return "scheduleForm";

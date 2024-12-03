@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
@@ -22,10 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -127,7 +126,34 @@ public class StudentController {
         model.addAttribute("studentId",studentId);
         model.addAttribute("mode", "create");
         Student student = (Student) request.getAttribute("student");
-        //service.getTimeTable(student.getGrade(), student.getClassroom(), student.getCourse(), "first");
+        LocalDate today = LocalDate.now();
+        //今日が前期か後期か取得
+        String semester = service.semesterBetween(today);
+        //学生情報セット
+        ClassificationForm classification = new ClassificationForm();
+        classification.setGrade(student.getGrade());
+        classification.setClassroom(student.getClassroom());
+        classification.setCourse(student.getCourse());
+        classification.setSemester(semester);
+        //該当区分時間割(id)取得
+        List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
+        //該当区分授業情報取得
+        List<String> subjectAllList = service.getSubjects(classification);
+        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList);
+        Subject[][] subjects = new Subject[5][5];
+        for (int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                subjects[i][j] = new Subject(-1, "");
+            }
+        }
+        timeTableEntities.forEach(e->{
+            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
+        });
+        System.out.println(Arrays.deepToString(subjects));
+        List<Map<String, Integer>> exceptionDates = service.getExceptionDates();
+        System.out.println(exceptionDates);
+        model.addAttribute("subjects", subjects);
+        model.addAttribute("exceptionDates", exceptionDates);
         return "OAForm";
     }
 

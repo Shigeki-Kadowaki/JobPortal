@@ -1,6 +1,7 @@
 package com.jobportal.JobPortal.Repository;
 
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
+import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
@@ -9,6 +10,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
@@ -606,4 +608,25 @@ public interface MainRepository {
     </script>
     """)
     void createTimeTable(@Param("timeTableInfo") TimeTableInfoForm timeTableInfo, @Param("timeTableList") List<TimeTableEntity> timeTableList);
+
+    @Select("""
+            SELECT
+                weekday_number,
+                period,
+                subject_id
+            FROM time_tables
+            WHERE
+                grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester};
+    """)
+    List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
+
+    @Select("""
+        SELECT * FROM exception_dates;
+    """)
+    List<Map<String, Integer>> selectExceptionDates();
+
+    @Select("""
+        SELECT course FROM classifications; 
+    """)
+    List<String> selectCourses();
 }
