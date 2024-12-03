@@ -47,19 +47,18 @@ public class StudentController {
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
-            Map<String, String> person = service.getPersonInfo(response, request);
-            //localでテスト用
-            student.setGno(99999);
-            //ssoから取得用
+        Map<String, String> person = service.getPersonInfo(response, request);
+        //localでテスト用
+        student.setGno(99999);
+        //ssoから取得用
 //            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
-            if(person.get("group").equals("学生")) {
-                return "redirect:/jobportal/student/" + student.getGno();
-            }
-            else return "redirect:/jobportal/teacher/";
+        if (person.get("group").equals("学生")) {
+            return "redirect:/jobportal/student/" + student.getGno();
+        } else return "redirect:/jobportal/teacher/";
     }
 
-    @GetMapping(value="/student/{studentId}")
-    public String student(HttpServletRequest request,Student student, @PathVariable("studentId") Integer studentId, Model model) {
+    @GetMapping(value = "/student/{studentId}")
+    public String student(HttpServletRequest request, Student student, @PathVariable("studentId") Integer studentId, Model model) {
         student.setGno(studentId);
         student = (Student) request.getAttribute("student");
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
@@ -139,7 +138,8 @@ public class StudentController {
         List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
         //該当区分授業情報取得
         List<String> subjectAllList = service.getSubjects(classification);
-        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList);
+        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList, classification);
+        ArrayList<Subject[]> subjectList = new ArrayList<>();
         Subject[][] subjects = new Subject[5][5];
         for (int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
@@ -147,13 +147,10 @@ public class StudentController {
             }
         }
         timeTableEntities.forEach(e->{
-            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
+            subjects[e.weekdayNumber()-1][e.period()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
         });
         System.out.println(Arrays.deepToString(subjects));
-        List<Map<String, Integer>> exceptionDates = service.getExceptionDates();
-        System.out.println(exceptionDates);
         model.addAttribute("subjects", subjects);
-        model.addAttribute("exceptionDates", exceptionDates);
         return "OAForm";
     }
 
@@ -534,11 +531,26 @@ public class StudentController {
     }
 
     @GetMapping("/student/{studentId}/reportform/{oaId}")
-    public String editReportForm (@PathVariable("studentId") Integer studentId,
-                                  @PathVariable("oaId") Integer oaId,
-                                  Model model){
+    public String editReportForm(@PathVariable("studentId") Integer studentId,
+                                 @PathVariable("oaId") Integer OAId,
+                                 Model model) {
         model.addAttribute("studentId", studentId);
-        model.addAttribute("oaId", oaId);
+        model.addAttribute("oaId", OAId);
+        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
+        switch (mainInfoDTO.reason()) {
+            case "就活" -> {
+                JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+                model.addAttribute("selectReport",jobSearch);
+
+            }
+            case "セミナー・合説" -> {
+                SeminarEntity seminar = service.findSeminarInfo(OAId);
+                model.addAttribute("selectReport", seminar);
+            }
+        }
         return "reportform";
     }
 }
