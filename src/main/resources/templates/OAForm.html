@@ -17,11 +17,10 @@
 <body>
 <a type="button" th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
 <section layout:fragment="content">
-    <div th:each="subject : ${subjects}">
-        <div th:each="value : ${subject}">
-            id : [[${value.id}]], name : [[${value.name}]]<br>
-        </div>
-    </div>
+    <script th:inline="javascript">
+        const subjects = /*[[${subjects}]]*/"subjects";
+        const exceptionDates = /*[[${exceptionDates}]]*/"exceptionDates";
+    </script>
     <form th:action="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" th:method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
             <h3><label class="form-label" for="reasonAbsence">公欠理由</label></h3>

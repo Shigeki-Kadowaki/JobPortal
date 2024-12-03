@@ -139,8 +139,7 @@ public class StudentController {
         List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
         //該当区分授業情報取得
         List<String> subjectAllList = service.getSubjects(classification);
-        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList, classification);
-        ArrayList<Subject[]> subjectList = new ArrayList<>();
+        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList);
         Subject[][] subjects = new Subject[5][5];
         for (int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
@@ -148,10 +147,13 @@ public class StudentController {
             }
         }
         timeTableEntities.forEach(e->{
-            subjects[e.weekdayNumber()-1][e.period()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
+            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
         });
         System.out.println(Arrays.deepToString(subjects));
+        List<Map<String, Integer>> exceptionDates = service.getExceptionDates();
+        System.out.println(exceptionDates);
         model.addAttribute("subjects", subjects);
+        model.addAttribute("exceptionDates", exceptionDates);
         return "OAForm";
     }
 

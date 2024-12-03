@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
@@ -618,4 +619,14 @@ public interface MainRepository {
                 grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester};
     """)
     List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
+
+    @Select("""
+        SELECT * FROM exception_dates;
+    """)
+    List<Map<String, Integer>> selectExceptionDates();
+
+    @Select("""
+        SELECT course FROM classifications; 
+    """)
+    List<String> selectCourses();
 }

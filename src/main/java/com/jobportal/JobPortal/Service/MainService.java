@@ -417,7 +417,8 @@ public class MainService {
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
-    public Map<Integer, String> toSubjectInfos(List<String> lessons, ClassificationForm classification) {
+    //授業一覧を授業idと授業タイトルに変換
+    public Map<Integer, String> toSubjectInfos(List<String> lessons) {
         Map<Integer, String> subjectMap = new HashMap<>();
         Pattern roundParenthesesPattern = Pattern.compile("\\((.*?)\\)");
         Pattern squareParenthesessPattern = Pattern.compile("\\[(.*?)]");
@@ -430,23 +431,26 @@ public class MainService {
             }
             //[id] name(course) (teacher) => name(course)
             String lessonInfo = e.split(" ")[1];
+            subjectMap.put(lessonId, lessonInfo);
+            //先生取得は無し
             //[id] name(course) (teacher) => teacher
-            String lessonTeacher = "";
-            if(e.split(" ").length >= 3){
-                Matcher teacherMatcher = roundParenthesesPattern.matcher(e.split(" ")[2]);
-                if(teacherMatcher.find()){
-                    lessonTeacher = teacherMatcher.group(1);
-                }
-            }
+//            String lessonTeacher = "";
+//            if(e.split(" ").length >= 3){
+//                Matcher teacherMatcher = roundParenthesesPattern.matcher(e.split(" ")[2]);
+//                if(teacherMatcher.find()){
+//                    lessonTeacher = teacherMatcher.group(1);
+//                }
+//            }
+            //コース取得は無し
             //[id] name(course) (teacher) => course
-            Matcher courseMatcher = roundParenthesesPattern.matcher(lessonInfo);
-            if(courseMatcher.find()){
-                if(Objects.equals(courseMatcher.group(1), classification.getCourse())){
-                    subjectMap.put(lessonId, lessonInfo);
-                }
-            }else{
-                subjectMap.put(lessonId, lessonInfo);
-            }
+//            Matcher courseMatcher = roundParenthesesPattern.matcher(lessonInfo);
+//            if(courseMatcher.find()){
+//                if(Objects.equals(courseMatcher.group(1), classification.getCourse())){
+//                    subjectMap.put(lessonId, lessonInfo);
+//                }
+//            }else{
+//                subjectMap.put(lessonId, lessonInfo);
+//            }
         });
         return subjectMap;
     }
@@ -464,6 +468,14 @@ public class MainService {
 
     public List<TimeTableEntity> getTimeTable(ClassificationForm classification) {
         return repository.selectTimeTable(classification);
+    }
+
+    public List<Map<String, Integer>> getExceptionDates() {
+        return repository.selectExceptionDates();
+    }
+
+    public List<String> getCourses() {
+        return repository.selectCourses();
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
