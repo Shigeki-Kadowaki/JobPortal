@@ -138,7 +138,7 @@ public class StudentController {
         List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
         //該当区分授業情報取得
         List<String> subjectAllList = service.getSubjects(classification);
-        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList, classification);
+        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList);
         ArrayList<Subject[]> subjectList = new ArrayList<>();
         Subject[][] subjects = new Subject[5][5];
         for (int i = 0; i < 5; i++){
@@ -543,7 +543,8 @@ public class StudentController {
         switch (mainInfoDTO.reason()) {
             case "就活" -> {
                 JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-                model.addAttribute("selectReport",jobSearch);
+                model.addAttribute("work",jobSearch.work());
+                model.addAttribute("companyName",jobSearch.companyName());
 
             }
             case "セミナー・合説" -> {
