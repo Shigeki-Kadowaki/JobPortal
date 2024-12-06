@@ -13,24 +13,26 @@ function addOADate(selectedDate) {
     OADate.className="card";
     let OADateHeader=document.createElement('div');
     OADateHeader.className="card-header";
+
+    let strToday = formatDate(selectedDate, "-");
+    let dateToday = new Date(strToday);
+    let weekdayNumber;
+    let exceptionFlag;
+    if(exceptionMap.has(strToday)){
+        console.log("exception!")
+        weekdayNumber = exceptionMap.get(strToday) - 1;
+        exceptionFlag = true;
+    }else{
+        console.log("normal")
+        weekdayNumber = dateToday.getDay() - 1;
+        exceptionFlag = false;
+    }
+    if(weekdayNumber === -1 || weekdayNumber === 5) return false;
     OADateHeader.innerHTML=`<div class="d-flex justify-content-between">${formatedDate} の公欠授業を選択<div class="text-end">
                             <button type="button" class="btn btn-danger" onclick="removeOADate(${selectedDate})">削除</button>
                             </div></div>`;
     let OADateBody=document.createElement('div');
-    console.log(selectedDate);
     OADateBody.className="card-body";
-    let strToday = formatDate(selectedDate, "-");
-    let dateToday = new Date(strToday);
-    let weekdayNumber;
-
-    if(exceptionMap.has(strToday)){
-        console.log("exception!")
-        weekdayNumber = exceptionMap.get(strToday) - 1;
-    }else{
-        console.log("normal")
-        weekdayNumber = dateToday.getDay() - 1;
-    }
-    if(weekdayNumber === -1 || weekdayNumber === 5) return false;
     let text=`<input type="hidden" name="OADates[]" value="${selectedDate}">`;
     let index = 1;
     for(let subject of subjects[weekdayNumber]){
@@ -49,7 +51,6 @@ function addOADate(selectedDate) {
  }
 
 function removeOADate(removeOADate){
-    console.log(removeOADate);
     document.getElementById("OATime_" + removeOADate).remove();
 }
 
@@ -67,7 +68,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     let formRadio = document.getElementsByName('reasonForAbsence');
     formRadio.forEach((target)=>{
         target.addEventListener('change',()=>{
-          console.log(prevSelected);
           document.getElementsByClassName(prevSelected)[0].style.display='none';
           document.getElementsByClassName(target.value)[0].style.display='block';
           document.getElementsByClassName(prevSelected)[1].style.display='none';
@@ -81,7 +81,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
     if(prevSelected==="firstLoad"){
         prevSelected=document.getElementsByName("reasonForAbsence")[0].value;
-        console.log(prevSelected)
     }
 //    document.getElementById('jobSearchForm').style.display='none';
 //    document.getElementById('seminarForm').style.display='none';
@@ -101,7 +100,8 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.getElementsByClassName('other')[1].style.display='none';
     document.getElementsByClassName(prevSelected)[1].style.display='block';
 
-    for(let exceptionDate of exceptionDates){
-        exceptionMap.set(exceptionDate["exception_day"], exceptionDate["weekday_number"]);
+
+    for (let exceptionDate of exceptionDates){
+        exceptionMap.set(exceptionDate.exceptionDate, exceptionDate.weekdayNumber);
     }
 })

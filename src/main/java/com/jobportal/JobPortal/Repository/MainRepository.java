@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 
 @Mapper
@@ -621,12 +620,24 @@ public interface MainRepository {
     List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
 
     @Select("""
-        SELECT * FROM exception_dates;
+        SELECT * FROM exception_dates
+        ORDER BY exception_day;
     """)
-    List<Map<String, Integer>> selectExceptionDates();
+    List<ExceptionDateEntity> selectExceptionDates();
 
     @Select("""
         SELECT course FROM classifications; 
     """)
     List<String> selectCourses();
+
+    @Insert("""
+        INSERT INTO exception_dates VALUES(#{exceptionDateEntity.exceptionDate}, #{exceptionDateEntity.weekdayNumber});
+    """)
+    void insertExceptionDate(@Param("exceptionDateEntity") ExceptionDateEntity exceptionDateEntity);
+
+    @Delete("""
+        DELETE FROM exception_dates
+        WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day LIMIT 1 OFFSET #{id});
+    """)
+    void deleteExceptionDate(@Param("id") Integer id);
 }
