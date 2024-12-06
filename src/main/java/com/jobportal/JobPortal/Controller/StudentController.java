@@ -33,7 +33,6 @@ public class StudentController {
 
     @Autowired
     private final MainService service;
-    private final MailController mailController;
     @Autowired
     public final HttpSession session;
     public final Map<String, String> colors = new HashMap<>(){
@@ -66,7 +65,6 @@ public class StudentController {
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("student", student);
         model.addAttribute("desiredOccupation", desiredOccupation);
-        mailController.register();
         return "student";
     }
 
