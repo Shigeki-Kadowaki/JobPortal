@@ -68,7 +68,7 @@ public class StudentController {
         model.addAttribute("desiredOccupation", desiredOccupation);
 
 
-        mailController.sendMail("JobPortalTest@outlook.jp", student.getMail(), "test");
+        mailController.sendMail(student.getMail(), student.getMail(), "test");
 
 
 
