@@ -1,9 +1,10 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
-import com.jobportal.JobPortal.Controller.Form.ExceptionDate;
+import com.jobportal.JobPortal.Controller.Form.ExceptionDateForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
+import com.jobportal.JobPortal.Service.DTO.ExceptionDateDTO;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -177,19 +178,31 @@ public class TeacherController {
     }
     //例外時間割
     @GetMapping("/teacher/exceptionDate")
-    public String exceptionDate(@ModelAttribute("exceptionDate") ExceptionDate exceptionDate) {
+    public String exceptionDate(@ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, Model model) {
+        List<ExceptionDateEntity> exceptionDateList = service.getExceptionDates();
+        List<ExceptionDateDTO> exceptionDateDTO = exceptionDateList.stream()
+                        .map(e->new ExceptionDateDTO(MainService.dateFormat(e.exceptionDate()), MainService.weekDayFormat(e.weekdayNumber())))
+                        .toList();
+        System.out.println(exceptionDateDTO);
+        model.addAttribute("exceptionDateList", exceptionDateDTO);
         return "exceptionDate";
     }
     //例外時間割ポスト
-    @PostMapping("/teacher/postExceptionDate")
-    public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDate exceptionDate, BindingResult bindingResult, Model model) {
+    @PostMapping("/teacher/exceptionDate/post")
+    public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, BindingResult bindingResult, Model model) {
         model.addAttribute("exceptionDate", exceptionDate);
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "exceptionDate";
         }
+        service.createExceptionDate(exceptionDate.toLocalDate());
         System.out.println("success");
-        return "redirect:exceptionDate";
+        return "redirect:/jobportal/teacher/exceptionDate";
     }
-
+    @GetMapping("/teacher/exceptionDate/delete/id")
+    public String deleteExceptionDate(@RequestParam("id") Integer id) {
+        System.out.println(id);
+        service.deleteExceptionDate(id);
+        return "redirect:/jobportal/teacher/exceptionDate";
+    }
 }

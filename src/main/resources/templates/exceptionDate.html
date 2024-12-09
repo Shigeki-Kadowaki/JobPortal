@@ -13,41 +13,67 @@
 <body>
 <section layout:fragment="content">
   <a th:href="@{/jobportal/teacher}" class="btn btn-danger">戻る</a>
-  <div class="w-50 mx-auto">
-  <form th:action="@{/jobportal/teacher/postExceptionDate}" method="post" class="mt-3" th:object="${exceptionDate}">
-      <label>
-        <h5>例外日を追加</h5>
-        <div th:errors="*{exceptionDay}"></div>
-        <input type="text" id="exceptionDay" name="exceptionDay" th:value="*{exceptionDay}" placeholder="yyyy/mm/dd">
-      </label><br>
-      <div th:errors="*{weekdayNumber}"></div>
-      <select class="form-select w-50" name="weekdayNumber" aria-label="Default select example" style="display: inline">
-        <option value="" selected>変更後の曜日を選択</option>
-        <option value="1" th:selected="*{weekdayNumber == 1}">月</option>
-        <option value="2" th:selected="*{weekdayNumber == 2}">火</option>
-        <option value="3" th:selected="*{weekdayNumber == 3}">水</option>
-        <option value="4" th:selected="*{weekdayNumber == 4}">木</option>
-        <option value="5" th:selected="*{weekdayNumber == 5}">金</option>
-      </select>
-    <button type="submit" class="btn btn-primary">追加</button>
-    <script>
-      $(document).ready(function() {
-        $("#exceptionDay").datepicker({
-          dateFormat: "yy/mm/dd",
-          onClose: function() {
-            $(this).datepicker("destroy");
-          }
-        });
+  <div class="card w-50 mx-auto">
+    <h5 class="card-header">例外日を追加</h5>
+    <div class="card-body">
+      <form th:action="@{/jobportal/teacher/exceptionDate/post}" method="post" th:object="${exceptionDate}">
+        <div class="d-flex justify-content-between">
+          <label>
+            <div th:errors="*{exceptionDay}"></div>
+            <input type="text" id="exceptionDay" class="mt-1" name="exceptionDay" th:value="*{exceptionDay}" placeholder="yyyy/mm/dd" readonly>
+          </label><br>
+          <select class="form-select w-50" name="weekdayNumber" aria-label="Default select example" style="display: inline">
+            <option value="" selected>変更後の曜日を選択</option>
+            <option value="1" th:selected="*{weekdayNumber == 1}">月</option>
+            <option value="2" th:selected="*{weekdayNumber == 2}">火</option>
+            <option value="3" th:selected="*{weekdayNumber == 3}">水</option>
+            <option value="4" th:selected="*{weekdayNumber == 4}">木</option>
+            <option value="5" th:selected="*{weekdayNumber == 5}">金</option>
+          </select>
+          <button type="submit" class="btn btn-primary">追加</button>
+          <script>
+            $(document).ready(function() {
+              $("#exceptionDay").datepicker({
+                dateFormat: "yy/mm/dd",
+                onClose: function() {
+                  $(this).datepicker("destroy");
+                }
+              });
 
-        $("#exceptionDay").on("focus", function() {
-          $(this).datepicker({
-            dateFormat: "yy/mm/dd"
-          }).datepicker("show");
-        });
-      });
-    </script>
-  </form>
+              $("#exceptionDay").on("focus", function() {
+                $(this).datepicker({
+                  dateFormat: "yy/mm/dd"
+                }).datepicker("show");
+              });
+            });
+          </script>
+        </div>
+      </form>
+    </div>
   </div>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">日付</th>
+      <th scope="col">変更後の曜日</th>
+      <th scope="col">削除</th>
+    </tr>
+    </thead>
+    <tbody>
+    <div th:each="exceptionDate, stat : ${exceptionDateList}">
+      <tr>
+        <th scope="row" class="align-content-center">[[${stat.index}]]</th>
+        <div th:each="exception : ${exceptionDate}">
+          <td class="align-content-center">[[${exception.exceptionDate}]]</td>
+          <td class="align-content-center">[[${exception.weekdayNumber}]]</td>
+          <td  class="align-content-center p-0"><a th:href="@{/jobportal/teacher/exceptionDate/delete/id(id=${stat.index})}" class="btn btn-danger">削除</a></td>
+        </div>
+      </tr>
+    </div>
+    </tbody>
+  </table>
 </section>
 </body>
 </html>

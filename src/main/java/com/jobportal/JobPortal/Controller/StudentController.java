@@ -150,7 +150,7 @@ public class StudentController {
             subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
         });
         System.out.println(Arrays.deepToString(subjects));
-        List<Map<String, Integer>> exceptionDates = service.getExceptionDates();
+        List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
         System.out.println(exceptionDates);
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
