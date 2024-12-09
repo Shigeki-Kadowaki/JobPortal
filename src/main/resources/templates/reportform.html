@@ -1,12 +1,35 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
+    <style type="text/css" ></style>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>createReport</title>
 </head>
 <body>
-<section>
-  <h1>test</h1>
-</section>
+    <section layout:fragment="content">
+        <a type="button" th:href="@{/jobportal/student/{studentId}/OAList(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
+        <form th:action="@{jobportal/student/{studentId}/reportform/{oaId}(studentId=${studentId},oaId=${OAId})}" th:method="post">
+            <h3><label>訪問企業:</label><label th:text="${companyName}"></label></h3>
+            <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
+
+            <th:block th:switch="${work}">
+                <span th:case="'説明会'">
+
+                </span>
+                <span th:case="'試験'">
+                    <h2>bbb</h2>
+                </span>
+                <span th:case="'訪問'">
+                    <h3>ccc</h3>
+                </span>
+                <span th:case="'その他'">
+                    <h4>ddd</h4>
+                </span>
+            </th:block>
+        </form>
+    </section>
 </body>
 </html>
