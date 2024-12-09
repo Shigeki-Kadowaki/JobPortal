@@ -37,6 +37,7 @@ function addOADate(selectedDate) {
         if(subject["id"] !== -1){
             text+=`
                 <input type="checkbox" class="btn-check" id="${selectedDate}${index}" name="OAPeriods[${selectedDate}][]" value="${index}" autocomplete="off">
+  
                 <label class="btn btn-outline-primary" for="${selectedDate}${index}">${index}限目 : ${subject["name"]}</label>
             `;
         }
