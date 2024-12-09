@@ -31,6 +31,7 @@ import java.util.*;
 @RequestMapping("/jobportal")
 public class StudentController {
 
+    private final MailController mailController;
     @Autowired
     private final MainService service;
     @Autowired
@@ -65,6 +66,12 @@ public class StudentController {
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("student", student);
         model.addAttribute("desiredOccupation", desiredOccupation);
+
+
+        mailController.sendMail(student.getMail(), student.getMail(), "test");
+
+
+
         return "student";
     }
 
@@ -534,11 +541,27 @@ public class StudentController {
     }
 
     @GetMapping("/student/{studentId}/reportform/{oaId}")
-    public String editReportForm (@PathVariable("studentId") Integer studentId,
-                                  @PathVariable("oaId") Integer oaId,
-                                  Model model){
+    public String editReportForm(@PathVariable("studentId") Integer studentId,
+                                 @PathVariable("oaId") Integer OAId,
+                                 Model model) {
         model.addAttribute("studentId", studentId);
-        model.addAttribute("oaId", oaId);
+        model.addAttribute("oaId", OAId);
+        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
+        switch (mainInfoDTO.reason()) {
+            case "就活" -> {
+                JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+                model.addAttribute("work",jobSearch.work());
+                model.addAttribute("companyName",jobSearch.companyName());
+
+            }
+            case "セミナー・合説" -> {
+                SeminarEntity seminar = service.findSeminarInfo(OAId);
+                model.addAttribute("selectReport", seminar);
+            }
+        }
         return "reportform";
     }
 }

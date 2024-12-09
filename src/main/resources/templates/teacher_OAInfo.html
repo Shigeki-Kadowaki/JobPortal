@@ -71,6 +71,7 @@
 <!--          modalボディー-->
         <form th:action="@{/jobportal/teacher/{OAId}(OAId=${mainInfo.officialAbsenceId})}" th:method="put">
           <div class="modal-body">
+            <input type="hidden" th:value="${mainInfo.studentEmail}" name="studentEmail">
               <div class="mb-3">
                 <label for="reasonForRejection" class="col-form-label">却下理由:</label>
                 <textarea class="form-control" id="reasonForRejection" name="reasonForRejection"></textarea>

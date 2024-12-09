@@ -30,7 +30,7 @@ public class StudentInterceptor implements HandlerInterceptor {
         student.setCno(99);
         student.setDepartment("YourDepartment");
         student.setCourse("SE・プログラマ");
-
+        student.setMail("40104kk@saisen.ac.jp");
         //ssoから取得する用
         //ssoには、学籍番号、名前が含まれている。
         //apiからのデータには、学年、クラス、出席番号、学科、コースが含まれている。
@@ -40,6 +40,7 @@ public class StudentInterceptor implements HandlerInterceptor {
 //        Student student = service.getStudentInfo(Integer.parseInt(ssoStudentId));
 //        student.setSurname(map.get("mellon-surname"));
 //        student.setGivenname(map.get("mellon-givenname"));
+//        student.setMail(map.get("mellon-email"));
 //        System.out.println(ssoStudentId);
 
 

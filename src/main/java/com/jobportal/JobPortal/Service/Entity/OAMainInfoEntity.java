@@ -19,7 +19,8 @@ public record OAMainInfoEntity(
         boolean teacherCheck,
         Boolean careerCheck,
         Integer version,
-        Integer maxVersion
+        Integer maxVersion,
+        String studentEmail
 ) {
     public OAMainInfoDTO toInfoDTO() {
         return new OAMainInfoDTO(
@@ -34,7 +35,8 @@ public record OAMainInfoEntity(
             teacherCheck,
             careerCheck,
             version,
-            maxVersion
+            maxVersion,
+            studentEmail
         );
     }
 

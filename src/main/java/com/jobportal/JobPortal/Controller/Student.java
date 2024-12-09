@@ -15,4 +15,5 @@ public class Student {
     private String group;
     private String surname;
     private String givenname;
+    private String mail;
 }
