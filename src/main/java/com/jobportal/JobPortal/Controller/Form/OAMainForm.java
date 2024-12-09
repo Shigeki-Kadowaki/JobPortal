@@ -102,7 +102,8 @@ public class OAMainForm {
                         student.getGrade(),
                         student.getClassroom(),
                         student.getCourse(),
-                        student.getSurname()+" "+student.getGivenname()
+                        student.getSurname()+" "+student.getGivenname(),
+                        student.getMail()
                 );
         }
         public boolean checkReportRequired(String reasonForAbsence){

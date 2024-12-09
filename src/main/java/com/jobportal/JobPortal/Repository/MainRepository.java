@@ -27,7 +27,8 @@ public interface MainRepository {
             grade,
             classroom,
             course,
-            student_name
+            student_name,
+            student_email
         ) VALUES (
             #{entity.studentId},
             #{entity.reportRequired},
@@ -39,7 +40,8 @@ public interface MainRepository {
             #{entity.grade},
             #{entity.classroom},
             #{entity.course},
-            #{entity.studentName}
+            #{entity.studentName},
+            #{entity.studentEmail}
         );
     """)
     @Options(useGeneratedKeys = true, keyProperty = "entity.officialAbsenceId")
@@ -242,7 +244,8 @@ public interface MainRepository {
         	teacher_check,
         	career_check,
         	submitted_date_histories.version,
-        	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
+        	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+    	    student_email
         FROM official_absences
         LEFT OUTER JOIN reports
         USING (official_absence_id)

@@ -31,6 +31,7 @@ import java.util.*;
 @RequestMapping("/jobportal")
 public class StudentController {
 
+    private final MailController mailController;
     @Autowired
     private final MainService service;
     @Autowired
@@ -65,6 +66,12 @@ public class StudentController {
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("student", student);
         model.addAttribute("desiredOccupation", desiredOccupation);
+
+
+        mailController.sendMail("JobPortalTest@outlook.jp", student.getMail(), "test");
+
+
+
         return "student";
     }
 

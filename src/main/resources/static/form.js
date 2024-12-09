@@ -21,11 +21,9 @@ function addOADate(selectedDate) {
     if(exceptionMap.has(strToday)){
         console.log("exception!")
         weekdayNumber = exceptionMap.get(strToday) - 1;
-        exceptionFlag = true;
     }else{
         console.log("normal")
         weekdayNumber = dateToday.getDay() - 1;
-        exceptionFlag = false;
     }
     if(weekdayNumber === -1 || weekdayNumber === 5) return false;
     OADateHeader.innerHTML=`<div class="d-flex justify-content-between">${formatedDate} の公欠授業を選択<div class="text-end">

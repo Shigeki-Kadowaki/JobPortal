@@ -399,10 +399,10 @@ public class MainService {
             group = "学生";
         }
         map.put("group", group);
-//        map.forEach((k,v)->{
-//            System.out.println("k: " + k);
-//            System.out.println("v: " + v);
-//        });
+        map.forEach((k,v)->{
+            System.out.println("k: " + k);
+            System.out.println("v: " + v);
+        });
         return map;
     }
 

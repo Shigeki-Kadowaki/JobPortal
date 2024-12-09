@@ -10,6 +10,7 @@ import com.jobportal.JobPortal.Service.DTO.OAListDTO;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
 import com.jobportal.JobPortal.Service.MainService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.util.Map;
 @RequestMapping("/jobportal")
 public class TeacherController {
 
+    private final MailController mailController;
     @Autowired
     public MainService service;
     @Autowired
@@ -130,9 +132,12 @@ public class TeacherController {
     }
     //OA却下
     @PutMapping(value = "/teacher/{OAId}", params = "rejection")
-    public String OAUnaccepted(@PathVariable("OAId") Integer OAId,@RequestParam(value = "reportRequired", required = false)String reasonForRejection) {
+    public String OAUnaccepted(HttpServletRequest request, @PathVariable("OAId") Integer OAId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
         service.updateOAStatus(OAId,"rejection");
         System.out.println(reasonForRejection);
+        String teacherEmail = request.getAttribute("mail").toString();
+        System.out.println(teacherEmail);
+        mailController.sendMail(teacherEmail, studentEmail, reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
     }
 

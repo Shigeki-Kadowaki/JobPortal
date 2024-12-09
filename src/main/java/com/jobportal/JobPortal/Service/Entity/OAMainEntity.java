@@ -20,4 +20,5 @@ public class OAMainEntity {
     final String classroom;
     final String course;
     final String studentName;
+    final String studentEmail;
 }

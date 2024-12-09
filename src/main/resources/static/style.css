@@ -24,3 +24,14 @@
     margin: 0;
     padding: 0;
 }
+
+.field {
+    display: flex;
+    justify-content: center;
+}
+
+hr {
+    height: 5px;
+    background-color: black;
+    width: 100%;
+}
