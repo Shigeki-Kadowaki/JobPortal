@@ -12,10 +12,10 @@
     <section layout:fragment="content">
         <a type="button" th:href="@{/jobportal/student/{studentId}/OAList(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
         <form th:action="@{jobportal/student/{studentId}/reportform/{oaId}(studentId=${studentId},oaId=${OAId})}" th:method="post">
-            <h3><label class="form-label">訪問企業</label></h3>
-            <label th:text="${selectReport.company}"></label>
+            <h3><label>訪問企業:</label><label th:text="${companyName}"></label></h3>
+            <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
 
-            <th:block th:switch="${selectReport.work}">
+            <th:block th:switch="${work}">
                 <span th:case="'説明会'">
 
                 </span>

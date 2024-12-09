@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 
 @Mapper
@@ -28,7 +27,8 @@ public interface MainRepository {
             grade,
             classroom,
             course,
-            student_name
+            student_name,
+            student_email
         ) VALUES (
             #{entity.studentId},
             #{entity.reportRequired},
@@ -40,7 +40,8 @@ public interface MainRepository {
             #{entity.grade},
             #{entity.classroom},
             #{entity.course},
-            #{entity.studentName}
+            #{entity.studentName},
+            #{entity.studentEmail}
         );
     """)
     @Options(useGeneratedKeys = true, keyProperty = "entity.officialAbsenceId")
@@ -243,7 +244,8 @@ public interface MainRepository {
         	teacher_check,
         	career_check,
         	submitted_date_histories.version,
-        	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
+        	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+    	    student_email
         FROM official_absences
         LEFT OUTER JOIN reports
         USING (official_absence_id)
@@ -621,12 +623,24 @@ public interface MainRepository {
     List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
 
     @Select("""
-        SELECT * FROM exception_dates;
+        SELECT * FROM exception_dates
+        ORDER BY exception_day;
     """)
-    List<Map<String, Integer>> selectExceptionDates();
+    List<ExceptionDateEntity> selectExceptionDates();
 
     @Select("""
         SELECT course FROM classifications; 
     """)
     List<String> selectCourses();
+
+    @Insert("""
+        INSERT INTO exception_dates VALUES(#{exceptionDateEntity.exceptionDate}, #{exceptionDateEntity.weekdayNumber});
+    """)
+    void insertExceptionDate(@Param("exceptionDateEntity") ExceptionDateEntity exceptionDateEntity);
+
+    @Delete("""
+        DELETE FROM exception_dates
+        WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day LIMIT 1 OFFSET #{id});
+    """)
+    void deleteExceptionDate(@Param("id") Integer id);
 }

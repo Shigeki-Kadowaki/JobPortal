@@ -34,6 +34,17 @@ public class MainService {
     private final MainRepository repository;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
+    public static String weekDayFormat(Integer number) {
+        return switch (number) {
+            case 1 -> "月";
+            case 2 -> "火";
+            case 3 -> "水";
+            case 4 -> "木";
+            case 5 -> "金";
+            default -> "";
+        };
+    }
+
     //OA作成
     @Transactional
     public void createOA(OAMainEntity entity){repository.insertMainOA(entity);
@@ -388,10 +399,10 @@ public class MainService {
             group = "学生";
         }
         map.put("group", group);
-//        map.forEach((k,v)->{
-//            System.out.println("k: " + k);
-//            System.out.println("v: " + v);
-//        });
+        map.forEach((k,v)->{
+            System.out.println("k: " + k);
+            System.out.println("v: " + v);
+        });
         return map;
     }
 
@@ -427,7 +438,7 @@ public class MainService {
             Matcher idMatcher = squareParenthesessPattern.matcher(e.split(" ")[0]);
             int lessonId = -1;
             if(idMatcher.find()){
-                lessonId = Integer.parseInt(idMatcher.group(1));
+                lessonId = parseInt(idMatcher.group(1));
             }
             //[id] name(course) (teacher) => name(course)
             String lessonInfo = e.split(" ")[1];
@@ -470,12 +481,20 @@ public class MainService {
         return repository.selectTimeTable(classification);
     }
 
-    public List<Map<String, Integer>> getExceptionDates() {
+    public List<ExceptionDateEntity> getExceptionDates() {
         return repository.selectExceptionDates();
     }
 
     public List<String> getCourses() {
         return repository.selectCourses();
+    }
+
+    public void createExceptionDate(ExceptionDateEntity exceptionDateEntity) {
+        repository.insertExceptionDate(exceptionDateEntity);
+    }
+
+    public void deleteExceptionDate(Integer id) {
+        repository.deleteExceptionDate(id);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

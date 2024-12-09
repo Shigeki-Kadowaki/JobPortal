@@ -12,6 +12,7 @@ public record OAMainInfoDTO (
         boolean teacherCheck,
         Boolean careerCheck,
         Integer version,
-        Integer maxVersion
+        Integer maxVersion,
+        String studentEmail
 ){
 }
