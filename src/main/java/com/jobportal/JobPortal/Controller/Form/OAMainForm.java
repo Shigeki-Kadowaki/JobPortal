@@ -22,7 +22,8 @@ public class OAMainForm {
         //@Pattern(regexp = "jobSearch|seminar|bereavement|attendanceBan|other")
         private String reasonForAbsence;
         @NotEmpty(message = "日付が未選択です")
-        private Map<String,List<String>> OAPeriods;
+        private Map<String, List<String>> OAPeriods;
+        private Map<String, List<String>> OASubjects;
 //        private List<OADatesForm> OADates;
         private boolean reportRequired;
 //就活部分
@@ -163,16 +164,18 @@ public class OAMainForm {
 
         //日付Formを日付Entityにする。
         public List<OADatesEntity> toDatesEntity(){
-                var map = getOAPeriods();
+                var periodMap = getOAPeriods();
+                var subjectMap = getOASubjects();
                 ArrayList<OADatesEntity> dates = new ArrayList<>();
-                        map.forEach((date,periods)->{
+                periodMap.forEach((date,periods)->{
+                        final int[] index = {0};
                                 periods.forEach(period->{
                                         //(String date(yyyymmdd), String period)を(LocalDate date(yyyy-mm-dd), Integer period)にする。
                                         dates.add(new OADatesEntity(
-                                                1,
                                                 Integer.parseInt(period),
-                                                LocalDate.parse(formatDate(date,"-"))
-                                                ));
+                                                LocalDate.parse(formatDate(date,"-")),
+                                                subjectMap.get(date).get(index[0]++))
+                                                );
                                 });
                         });
                 return dates;

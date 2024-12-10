@@ -35,6 +35,8 @@ public class TeacherController {
     @Autowired
     public HttpSession session;
 
+    public final String sendAddress = "";
+
     @GetMapping("/teacher")
     public String showTeacherPage() {
         return "teacher";
@@ -135,9 +137,7 @@ public class TeacherController {
     public String OAUnaccepted(HttpServletRequest request, @PathVariable("OAId") Integer OAId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
         service.updateOAStatus(OAId,"rejection");
         System.out.println(reasonForRejection);
-        String teacherEmail = request.getAttribute("mail").toString();
-        System.out.println(teacherEmail);
-        mailController.sendMail(teacherEmail, studentEmail, reasonForRejection);
+        mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
     }
 
