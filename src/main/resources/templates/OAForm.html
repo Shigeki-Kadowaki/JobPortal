@@ -274,6 +274,22 @@
                 <label class="form-label mt-3" for="date">公欠日を選択:</label>
                 <input class="form-control" type="text" id="date" onchange="addOADate(this.value.replaceAll('/',''))" readonly>
                 <div id="OADates">
+                    <th:block th:if="*{OAPeriods != null}">
+                        <div th:each="mapEntry : *{OAPeriods}">
+                            <div class="card" th:id="'OATime_' + ${mapEntry.key}">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">formatedDate の公欠授業を選択
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-danger" onclick="removeOADate()">削除</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body" th:each="v : ${mapEntry.value}">
+                                    [[${v}]]
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
                 </div>
                 <br><br>
             </div>
