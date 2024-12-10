@@ -641,4 +641,10 @@ public interface MainRepository {
         WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day LIMIT 1 OFFSET #{id});
     """)
     void deleteExceptionDate(@Param("id") Integer id);
+
+    @Delete("""
+        DELETE FROM reports
+        WHERE official_absence_id = #{oaId};
+    """)
+    void deleteReport(@Param("oaId") Integer oaId);
 }

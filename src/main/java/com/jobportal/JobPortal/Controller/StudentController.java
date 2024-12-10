@@ -513,8 +513,8 @@ public class StudentController {
     }
 
     //破棄
-    @DeleteMapping("/student/OAList/{OAId}/cansel")
-    public String deleteOA(@PathVariable("OAId")Integer OAId){
+    @DeleteMapping("/student/{studentId}/OAList/{OAId}/cansel")
+    public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         switch (mainInfoEntity.reason()){
             case jobSearch -> {
@@ -535,9 +535,9 @@ public class StudentController {
         }
         service.deleteDate(OAId);
         service.deleteSubmittedDate(OAId);
+        service.deleteReport(OAId);
         service.deleteMain(OAId);
-        String studentId = mainInfoEntity.studentId().toString();
-        return "redirect:/jobportal/student/" + studentId + "/OAList";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
     @GetMapping("/student/{studentId}/reportform/{oaId}")

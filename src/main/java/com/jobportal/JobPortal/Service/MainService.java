@@ -496,6 +496,10 @@ public class MainService {
     public void deleteExceptionDate(Integer id) {
         repository.deleteExceptionDate(id);
     }
+
+    public void deleteReport(Integer oaId) {
+        repository.deleteReport(oaId);
+    }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
 //        List<Integer> lessonList = new ArrayList<>();
