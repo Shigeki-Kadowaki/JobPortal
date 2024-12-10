@@ -36,9 +36,10 @@ function addOADate(selectedDate) {
     for(let subject of subjects[weekdayNumber]){
         if(subject["id"] !== -1){
             text+=`
-                <input type="checkbox" class="btn-check" id="${selectedDate}${index}" name="OAPeriods[${selectedDate}][]" value="${index}" autocomplete="off">
-  
-                <label class="btn btn-outline-primary" for="${selectedDate}${index}">${index}限目 : ${subject["name"]}</label>
+                <input type="checkbox" class="btn-check" id="${selectedDate}${index}period" name="OAPeriods[${selectedDate}][]" value="${index}" onchange="toggleDateCheck(${selectedDate}, ${index})" autocomplete="off">
+                <label class="btn btn-outline-primary" for="${selectedDate}${index}period">${index}限目 : ${subject["name"]}</label>
+                <input type="checkbox" class="btn-check" id="${selectedDate}${index}name" name="OASubjects[${selectedDate}][]" value="${subject["name"]}" autocomplete="off">
+                <label class="btn btn-outline-primary" for="${selectedDate}${index}name" style="display: none;">${subject["name"]}</label>
             `;
         }
         index++;
@@ -48,6 +49,10 @@ function addOADate(selectedDate) {
     OADate.appendChild(OADateBody);
     document.getElementById('OADates').appendChild(OADate);
  }
+
+function toggleDateCheck(date, period){
+    document.getElementById(`${date}${period}name`).checked = document.getElementById(`${date}${period}period`).checked;
+}
 
 function removeOADate(removeOADate){
     document.getElementById("OATime_" + removeOADate).remove();
