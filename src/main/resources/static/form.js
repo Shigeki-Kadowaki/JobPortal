@@ -17,7 +17,6 @@ function addOADate(selectedDate) {
     let strToday = formatDate(selectedDate, "-");
     let dateToday = new Date(strToday);
     let weekdayNumber;
-    let exceptionFlag;
     if(exceptionMap.has(strToday)){
         console.log("exception!")
         weekdayNumber = exceptionMap.get(strToday) - 1;
@@ -26,9 +25,11 @@ function addOADate(selectedDate) {
         weekdayNumber = dateToday.getDay() - 1;
     }
     if(weekdayNumber === -1 || weekdayNumber === 5) return false;
-    OADateHeader.innerHTML=`<div class="d-flex justify-content-between">${formatedDate} の公欠授業を選択<div class="text-end">
-                            <button type="button" class="btn btn-danger" onclick="removeOADate(${selectedDate})">削除</button>
-                            </div></div>`;
+    OADateHeader.innerHTML=`<div class="d-flex justify-content-between">${formatedDate} の公欠授業を選択
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-danger" onclick="removeOADate(${selectedDate})">削除</button>
+                                </div>
+                            </div>`;
     let OADateBody=document.createElement('div');
     OADateBody.className="card-body";
     let text=`<input type="hidden" name="OADates[]" value="${selectedDate}">`;
