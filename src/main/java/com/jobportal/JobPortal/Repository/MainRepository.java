@@ -60,10 +60,10 @@ public interface MainRepository {
         VALUES
         <foreach item='date' collection='dateList' separator=','>
                 (#{officialAbsenceId},
-                2,
                 #{date.OAPeriod},
                 #{date.OADate},
-                1)
+                1,
+                #{date.lessonName})
         </foreach>
         ;
         </script>
@@ -262,8 +262,6 @@ public interface MainRepository {
             official_absence_date_histories.period,
             lesson_name
         FROM official_absence_date_histories
-        INNER JOIN lessons
-        USING (lesson_id)
         WHERE (official_absence_id, version) IN (
             SELECT 
                 official_absence_id,
@@ -481,10 +479,10 @@ public interface MainRepository {
             INSERT INTO official_absence_date_histories VALUES
             <foreach item='date' collection='dateList' separator=','>(
                     #{OAId},
-                    2,
                     #{date.OAPeriod},
                     #{date.OADate},
-                    (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
+                    (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+                    #{date.lessonName}
             )</foreach>
             ;
             </script>
