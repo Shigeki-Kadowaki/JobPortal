@@ -3,7 +3,7 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 const subjectMap = new Map();
 const exceptionMap = new Map();
-function addOADate(selectedDate) {
+function addOADate(selectedDate, selectedPeriods) {
     if (document.getElementById('OATime_' + selectedDate)) {
         return;
     }
