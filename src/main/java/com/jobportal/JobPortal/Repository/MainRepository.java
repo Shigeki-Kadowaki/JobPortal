@@ -622,7 +622,7 @@ public interface MainRepository {
 
     @Select("""
         SELECT * FROM exception_dates
-        ORDER BY exception_day;
+        ORDER BY exception_day DESC;
     """)
     List<ExceptionDateEntity> selectExceptionDates();
 
