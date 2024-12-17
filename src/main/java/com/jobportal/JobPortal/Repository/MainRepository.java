@@ -647,4 +647,28 @@ public interface MainRepository {
         WHERE official_absence_id = #{oaId};
     """)
     void deleteReport(@Param("oaId") Integer oaId);
+
+    @Update("""
+        UPDATE desired_occupations SET business = #{business}
+        WHERE student_id = #{studentId};
+    """)
+    void updateDesiredBusiness(@Param("studentId") Integer studentId, @Param("business") String business);
+
+    @Update("""
+        UPDATE desired_occupations SET occupation = #{occupation}
+        WHERE student_id = #{studentId};
+    """)
+    void updateDesiredOccupation(@Param("studentId") Integer studentId, @Param("occupation") String occupation);
+
+    @Select("""
+        SELECT EXISTS(SELECT * FROM desired_occupations WHERE student_id = #{studentId});
+    """)
+    boolean existsDesired(@Param("studentId") Integer studentId);
+
+    @Insert("""
+        INSERT INTO desired_occupations VALUES(
+            #{studentId}, #{business}, #{occupation}    
+        );
+    """)
+    void insertDesired(@Param("studentId") Integer studentId,@Param("business") String business,@Param("occupation") String occupation);
 }

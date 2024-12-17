@@ -533,6 +533,22 @@ public class MainService {
 
         return classification;
     }
+
+    public void updateDesiredBusiness(Integer studentId, String business) {
+        repository.updateDesiredBusiness(studentId, business);
+    }
+
+    public void updateDesiredOccupation(Integer studentId, String occupation) {
+        repository.updateDesiredOccupation(studentId, occupation);
+    }
+
+    public boolean existsDesired(Integer studentId) {
+        return repository.existsDesired(studentId);
+    }
+
+    public void insertDesired(Integer studentId, String business, String occupation) {
+        repository.insertDesired(studentId, business, occupation);
+    }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
 //        List<Integer> lessonList = new ArrayList<>();

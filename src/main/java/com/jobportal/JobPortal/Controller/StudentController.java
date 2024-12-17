@@ -68,21 +68,27 @@ public class StudentController {
         model.addAttribute("student", student);
         model.addAttribute("desiredOccupation", desiredOccupation);
 
-
         //mailController.sendMail(student.getMail(), student.getMail(), "test");
-
-
-
         return "student";
     }
 
     @GetMapping("/student/{studentId}/desiredOccupation")
-    public String desiredOccupation(@PathVariable("studentId") Integer studentId, Model model) {
+    public String getDesiredOccupation(@PathVariable("studentId") @ModelAttribute Integer studentId, Model model) {
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("desiredOccupation", desiredOccupation);
         return "desiredOccupation";
     }
 
+    @PostMapping("/student/{studentId}/desiredOccupation")
+    public String postDesiredOccupation(@PathVariable("studentId") Integer studentId, @RequestParam("business") String business,@RequestParam("occupation") String occupation, Model model){
+        if(service.existsDesired(studentId)){
+            service.updateDesiredBusiness(studentId, business);
+            service.updateDesiredOccupation(studentId, occupation);
+        }else {
+            service.insertDesired(studentId, business, occupation);
+        }
+        return "redirect:/jobportal/student/{studentId}";
+    }
 //
 //    @PostMapping(value="/test", params="button1")
 //    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
@@ -542,4 +548,5 @@ public class StudentController {
         }
         return "reportform";
     }
+
 }
