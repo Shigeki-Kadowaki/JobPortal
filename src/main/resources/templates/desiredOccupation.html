@@ -11,12 +11,9 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <form th:action>
-
-    </form>
-    <div class="box2">
+    <form th:action="@{/jobportal/student/{studentId}/desiredOccupation(studentId=${studentId})}" th:method="post">
         <h2>希望業種を選択してください</h2>
-        <select class="form-select" id="business" aria-label="Default select example">
+        <select class="form-select" id="business" aria-label="Default select example" name="business">
             <option value="未選択" selected>未選択</option>
             <option value="水産・農林業">水産・農林業</option>
             <option value="メーカー">メーカー</option>
@@ -28,10 +25,13 @@
             <option value="IT・ソフトウェア・情報処理">IT・ソフトウェア・情報処理</option>
         </select><br>
         <h2>希望職種を選択してください</h2>
-        <select class="form-select" id="occupation" aria-label="Default select example">
+        <select class="form-select" id="occupation" aria-label="Default select example"  name="occupation">
             <option selected>未選択</option>
         </select>
-      </div>
+        <div class="text-end mt-3">
+            <button class="btn btn-primary" type="submit">送信</button>
+        </div>
+    </form>
     </section>
 </body>
 </html>

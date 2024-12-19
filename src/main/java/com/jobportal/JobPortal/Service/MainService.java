@@ -3,6 +3,7 @@ package com.jobportal.JobPortal.Service;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Controller.Student;
+import com.jobportal.JobPortal.Controller.Subject;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -499,6 +500,54 @@ public class MainService {
 
     public void deleteReport(Integer oaId) {
         repository.deleteReport(oaId);
+    }
+
+    public Subject[][] getSubjectArr(ClassificationForm classification) {
+        //該当区分時間割(id)取得
+        List<TimeTableEntity> timeTableEntities = getTimeTable(classification);
+        //該当区分授業情報取得
+        List<String> subjectAllList = getSubjects(classification);
+        Map<Integer, String> subjectMap = toSubjectInfos(subjectAllList);
+        Subject[][] subjects = new Subject[5][5];
+        for (int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                subjects[i][j] = new Subject(-1, "");
+            }
+        }
+        timeTableEntities.forEach(e->{
+            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
+        });
+        return subjects;
+    }
+
+    public ClassificationForm setClassification(Student student) {
+        //今日が前期か後期か取得
+        LocalDate today = LocalDate.now();
+        String semester = semesterBetween(today);
+        //学生情報セット
+        ClassificationForm classification = new ClassificationForm();
+        classification.setGrade(student.getGrade());
+        classification.setClassroom(student.getClassroom());
+        classification.setCourse(student.getCourse());
+        classification.setSemester(semester);
+
+        return classification;
+    }
+
+    public void updateDesiredBusiness(Integer studentId, String business) {
+        repository.updateDesiredBusiness(studentId, business);
+    }
+
+    public void updateDesiredOccupation(Integer studentId, String occupation) {
+        repository.updateDesiredOccupation(studentId, occupation);
+    }
+
+    public boolean existsDesired(Integer studentId) {
+        return repository.existsDesired(studentId);
+    }
+
+    public void insertDesired(Integer studentId, String business, String occupation) {
+        repository.insertDesired(studentId, business, occupation);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

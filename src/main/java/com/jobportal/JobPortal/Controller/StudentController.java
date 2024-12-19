@@ -1,6 +1,5 @@
 package com.jobportal.JobPortal.Controller;
 
-import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
@@ -23,8 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -67,21 +68,27 @@ public class StudentController {
         model.addAttribute("student", student);
         model.addAttribute("desiredOccupation", desiredOccupation);
 
-
         //mailController.sendMail(student.getMail(), student.getMail(), "test");
-
-
-
         return "student";
     }
 
     @GetMapping("/student/{studentId}/desiredOccupation")
-    public String desiredOccupation(@PathVariable("studentId") Integer studentId, Model model) {
+    public String getDesiredOccupation(@PathVariable("studentId") @ModelAttribute Integer studentId, Model model) {
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("desiredOccupation", desiredOccupation);
         return "desiredOccupation";
     }
 
+    @PostMapping("/student/{studentId}/desiredOccupation")
+    public String postDesiredOccupation(@PathVariable("studentId") Integer studentId, @RequestParam("business") String business,@RequestParam("occupation") String occupation, Model model){
+        if(service.existsDesired(studentId)){
+            service.updateDesiredBusiness(studentId, business);
+            service.updateDesiredOccupation(studentId, occupation);
+        }else {
+            service.insertDesired(studentId, business, occupation);
+        }
+        return "redirect:/jobportal/student/{studentId}";
+    }
 //
 //    @PostMapping(value="/test", params="button1")
 //    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
@@ -133,30 +140,7 @@ public class StudentController {
         model.addAttribute("studentId",studentId);
         model.addAttribute("mode", "create");
         Student student = (Student) request.getAttribute("student");
-        LocalDate today = LocalDate.now();
-        //今日が前期か後期か取得
-        String semester = service.semesterBetween(today);
-        //学生情報セット
-        ClassificationForm classification = new ClassificationForm();
-        classification.setGrade(student.getGrade());
-        classification.setClassroom(student.getClassroom());
-        classification.setCourse(student.getCourse());
-        classification.setSemester(semester);
-        //該当区分時間割(id)取得
-        List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
-        //該当区分授業情報取得
-        List<String> subjectAllList = service.getSubjects(classification);
-        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList);
-        Subject[][] subjects = new Subject[5][5];
-        for (int i = 0; i < 5; i++){
-            for(int j = 0; j < 5; j++){
-                subjects[i][j] = new Subject(-1, "");
-            }
-        }
-        timeTableEntities.forEach(e->{
-            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
-        });
-        System.out.println(Arrays.deepToString(subjects));
+        Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
         System.out.println(exceptionDates);
         model.addAttribute("subjects", subjects);
@@ -564,4 +548,5 @@ public class StudentController {
         }
         return "reportform";
     }
+
 }
