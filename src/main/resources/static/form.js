@@ -3,7 +3,7 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 const subjectMap = new Map();
 const exceptionMap = new Map();
-function addOADate(selectedDate) {
+function addOADate(selectedDate, selectedPeriods = null) {
     if (document.getElementById('OATime_' + selectedDate)) {
         return;
     }
@@ -49,6 +49,13 @@ function addOADate(selectedDate) {
     OADate.appendChild(OADateHeader);
     OADate.appendChild(OADateBody);
     document.getElementById('OADates').appendChild(OADate);
+
+    if(selectedPeriods !== null){
+        selectedPeriods.forEach(e=>{
+            document.getElementById(`${selectedDate}${e}period`).checked = true;
+            document.getElementById(`${selectedDate}${e}name`).checked = true;
+        });
+    }
  }
 
 function toggleDateCheck(date, period){

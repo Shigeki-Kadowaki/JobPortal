@@ -152,6 +152,8 @@ public class TeacherController {
     @PostMapping("/teacher/classification")
     public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()){
+            List<String> courses = service.getCourses();
+            model.addAttribute("courses", courses);
             System.out.println("error");
             return "classificationForm";
         }
