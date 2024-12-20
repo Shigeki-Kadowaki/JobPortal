@@ -44,10 +44,11 @@ public class TeacherController {
 
     //OAList
     @GetMapping("/teacher/OAList")
-    public String showTeacherOAList(TeacherOASearchForm form, Model model) {
+    public String showTeacherOAList(TeacherOASearchForm form, Model model, @RequestParam(defaultValue = "1", value = "page") Integer page) {
         if(session.getAttribute("searchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("searchForm");
         }
+        System.out.println(page);
         Map<String, String> colors = new HashMap<>();
         colors.put("受理","list-group-item-success");
         colors.put("未受理","list-group-item-warning");
