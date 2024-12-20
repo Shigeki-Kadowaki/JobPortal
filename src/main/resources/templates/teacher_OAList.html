@@ -74,6 +74,16 @@
         </div>
     </div>
     <br>
+    <nav aria-label="Page navigation example mx-auto">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
+    <br>
     <div th:each="value : ${mainList}" th:object="${value}">
         <ul class="list-group list-group-horizontal row">
             <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
