@@ -176,7 +176,7 @@ public interface MainRepository {
         SELECT DISTINCT official_absence_id
         FROM official_absences
         ORDER BY official_absence_id DESC
-        LIMIT 10 OFFSET (#{page} - 1) * 10
+        LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
         )
         SELECT
         	official_absences.official_absence_id,
@@ -237,7 +237,7 @@ public interface MainRepository {
         ORDER BY official_absence_id DESC, period;
     </script>
     """)
-    List<OAListEntity> teacherFindAllOAs(@Param("form")TeacherOASearchForm form, @Param("page") Integer page);
+    List<OAListEntity> teacherFindAllOAs(@Param("form")TeacherOASearchForm form, @Param("page") Integer page, @Param("pageSize") Integer pageSize);
     //Info取得
     @Select("""
         SELECT
