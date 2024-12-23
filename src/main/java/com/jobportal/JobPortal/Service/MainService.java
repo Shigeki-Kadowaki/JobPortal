@@ -12,6 +12,7 @@ import com.jobportal.JobPortal.Service.Entity.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,7 @@ import static java.lang.Integer.parseInt;
 @RequiredArgsConstructor
 public class MainService {
 
+    @Autowired
     private final MainRepository repository;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
@@ -83,7 +85,7 @@ public class MainService {
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
-    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form){return repository.teacherFindAllOAs(form);
+    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form, Integer page){return repository.teacherFindAllOAs(form, page);
     }
     //info取得
     public OAMainInfoEntity findMainInfo(Integer oaId) {return  repository.selectMainInfo(oaId);
@@ -548,6 +550,14 @@ public class MainService {
 
     public void insertDesired(Integer studentId, String business, String occupation) {
         repository.insertDesired(studentId, business, occupation);
+    }
+
+    public Integer countOA() {
+        return repository.countOA();
+    }
+
+    public Integer countSearchOA(TeacherOASearchForm form) {
+        return repository.countSearchOA(form);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
