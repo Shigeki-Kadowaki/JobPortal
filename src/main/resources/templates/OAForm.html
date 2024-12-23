@@ -21,6 +21,7 @@
         const subjects = /*[[${subjects}]]*/"subjects";
         const exceptionDates = /*[[${exceptionDates}]]*/"exceptionDates";
         const OAPeriods = /*[[${oAMainForm.OAPeriods}]]*/"OAPeriods";
+        const editOAPeriods = /*[[${OAPeriods}]]*/"editOAPeriods";
     </script>
     <form th:action="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" th:method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
@@ -278,6 +279,13 @@
                     <th:block th:if="*{OAPeriods != null}">
                         <script>
                             Object.entries(OAPeriods).forEach((k)=>{
+                                addOADate(k[0],k[1]);
+                            })
+                        </script>
+                    </th:block>
+                    <th:block th:if="${OAPeriods != null}">
+                        <script>
+                            Object.entries(editOAPeriods).forEach((k)=>{
                                 addOADate(k[0],k[1]);
                             })
                         </script>
