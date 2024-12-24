@@ -85,7 +85,7 @@ public class MainService {
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
-    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form, Integer page){return repository.teacherFindAllOAs(form, page);
+    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form, Integer page, Integer pageSize){return repository.teacherFindAllOAs(form, page, pageSize);
     }
     //info取得
     public OAMainInfoEntity findMainInfo(Integer oaId) {return  repository.selectMainInfo(oaId);

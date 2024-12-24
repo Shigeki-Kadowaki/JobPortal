@@ -28,8 +28,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/jobportal")
 public class TeacherController {
-
-    final Integer pageSize = 25;
     private final MailController mailController;
     @Autowired
     public MainService service;
@@ -37,6 +35,7 @@ public class TeacherController {
     public HttpSession session;
 
     public final String sendAddress = "40104kk@saisen.ac.jp";
+    final Integer pageSize = 25;
     final Map<String, String> colors = new HashMap<>(){
         {
             put("受理", "list-group-item-success");
@@ -68,17 +67,18 @@ public class TeacherController {
         }else{
             session.setAttribute("page", page);
         }
-        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page);
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page, pageSize);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
-            Integer size = service.countOA();
-            model.addAttribute("size", size);
-            model.addAttribute("maxSize", (int)Math.ceil((double) size /10));
         }
+        Integer size = service.countOA();
+        model.addAttribute("size", size);
+        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
+        System.out.println((int)Math.ceil((double) size / pageSize));
         return "teacher_OAList";
     }
     //OAList検索
@@ -95,17 +95,18 @@ public class TeacherController {
         }else{
             session.setAttribute("page", page);
         }
-        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page);
-        Integer size = service.countSearchOA(form);
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page, pageSize);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
+        Integer size = service.countSearchOA(form);
         model.addAttribute("size", size);
-        model.addAttribute("maxSize", (int)Math.ceil((double) size /10));
+        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
+        System.out.println((int)Math.ceil((double) size / pageSize));
         return "teacher_OAList";
     }
     //OA詳細
