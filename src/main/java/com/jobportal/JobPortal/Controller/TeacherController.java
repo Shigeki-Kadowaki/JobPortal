@@ -71,13 +71,14 @@ public class TeacherController {
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
-            Integer size = service.countOA();
-            model.addAttribute("size", size);
-            model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         }
+        Integer size = service.countOA();
+        model.addAttribute("size", size);
+        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
+        System.out.println((int)Math.ceil((double) size / pageSize));
         return "teacher_OAList";
     }
     //OAList検索
@@ -95,16 +96,17 @@ public class TeacherController {
             session.setAttribute("page", page);
         }
         List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page, pageSize);
-        Integer size = service.countSearchOA(form);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
+        Integer size = service.countSearchOA(form);
         model.addAttribute("size", size);
         model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
+        System.out.println((int)Math.ceil((double) size / pageSize));
         return "teacher_OAList";
     }
     //OA詳細
