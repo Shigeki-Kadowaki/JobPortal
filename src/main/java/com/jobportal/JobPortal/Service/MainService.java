@@ -3,6 +3,7 @@ package com.jobportal.JobPortal.Service;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Controller.Student;
+import com.jobportal.JobPortal.Controller.Subject;
 import com.jobportal.JobPortal.Repository.MainRepository;
 import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
 import com.jobportal.JobPortal.Service.DTO.OAListDTO;
@@ -11,6 +12,7 @@ import com.jobportal.JobPortal.Service.Entity.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ import static java.lang.Integer.parseInt;
 @RequiredArgsConstructor
 public class MainService {
 
+    @Autowired
     private final MainRepository repository;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
@@ -82,7 +85,7 @@ public class MainService {
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
-    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form){return repository.teacherFindAllOAs(form);
+    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form, Integer page){return repository.teacherFindAllOAs(form, page);
     }
     //info取得
     public OAMainInfoEntity findMainInfo(Integer oaId) {return  repository.selectMainInfo(oaId);
@@ -399,10 +402,10 @@ public class MainService {
             group = "学生";
         }
         map.put("group", group);
-        map.forEach((k,v)->{
-            System.out.println("k: " + k);
-            System.out.println("v: " + v);
-        });
+//        map.forEach((k,v)->{
+//            System.out.println("k: " + k);
+//            System.out.println("v: " + v);
+//        });
         return map;
     }
 
@@ -495,6 +498,66 @@ public class MainService {
 
     public void deleteExceptionDate(Integer id) {
         repository.deleteExceptionDate(id);
+    }
+
+    public void deleteReport(Integer oaId) {
+        repository.deleteReport(oaId);
+    }
+
+    public Subject[][] getSubjectArr(ClassificationForm classification) {
+        //該当区分時間割(id)取得
+        List<TimeTableEntity> timeTableEntities = getTimeTable(classification);
+        //該当区分授業情報取得
+        List<String> subjectAllList = getSubjects(classification);
+        Map<Integer, String> subjectMap = toSubjectInfos(subjectAllList);
+        Subject[][] subjects = new Subject[5][5];
+        for (int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                subjects[i][j] = new Subject(-1, "");
+            }
+        }
+        timeTableEntities.forEach(e->{
+            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
+        });
+        return subjects;
+    }
+
+    public ClassificationForm setClassification(Student student) {
+        //今日が前期か後期か取得
+        LocalDate today = LocalDate.now();
+        String semester = semesterBetween(today);
+        //学生情報セット
+        ClassificationForm classification = new ClassificationForm();
+        classification.setGrade(student.getGrade());
+        classification.setClassroom(student.getClassroom());
+        classification.setCourse(student.getCourse());
+        classification.setSemester(semester);
+
+        return classification;
+    }
+
+    public void updateDesiredBusiness(Integer studentId, String business) {
+        repository.updateDesiredBusiness(studentId, business);
+    }
+
+    public void updateDesiredOccupation(Integer studentId, String occupation) {
+        repository.updateDesiredOccupation(studentId, occupation);
+    }
+
+    public boolean existsDesired(Integer studentId) {
+        return repository.existsDesired(studentId);
+    }
+
+    public void insertDesired(Integer studentId, String business, String occupation) {
+        repository.insertDesired(studentId, business, occupation);
+    }
+
+    public Integer countOA() {
+        return repository.countOA();
+    }
+
+    public Integer countSearchOA(TeacherOASearchForm form) {
+        return repository.countSearchOA(form);
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

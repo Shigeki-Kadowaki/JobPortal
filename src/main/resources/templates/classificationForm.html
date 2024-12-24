@@ -37,7 +37,7 @@
       <span th:errors="*{course}"></span>
       <select id="course" class="form-select" name="course" aria-label="Default select example">
         <div th:each="course : ${courses}">
-          <option th:value="${course}" th:text="${course}"></option>
+          <option th:value="${course}" th:text="${course}" th:selected="${classification.course} == ${course}"></option>
         </div>
       </select>
       <h3>期</h3>

@@ -60,10 +60,10 @@ public interface MainRepository {
         VALUES
         <foreach item='date' collection='dateList' separator=','>
                 (#{officialAbsenceId},
-                2,
                 #{date.OAPeriod},
                 #{date.OADate},
-                1)
+                1,
+                #{date.lessonName})
         </foreach>
         ;
         </script>
@@ -172,31 +172,39 @@ public interface MainRepository {
     List<OAListEntity> selectAll(@Param("studentId") Integer studentId, @Param("form")StudentOASearchForm form);
     @Select("""
     <script>
+        WITH List AS(
+        SELECT DISTINCT official_absence_id
+        FROM official_absences
+        ORDER BY official_absence_id DESC
+        LIMIT 10 OFFSET (#{page} - 1) * 10
+        )
         SELECT
-            official_absence_id,
-            student_id,
-            grade,
-            classroom,
-            course,
-            student_name,
-            official_absences.status,
-            reason,
-            reports.status AS reportStatus,
-            report_required,
-            MIN(official_absence_date) AS startDate,
-            MAX(official_absence_date) AS endDate,
-            official_absence_date_histories.period
+        	official_absences.official_absence_id,
+        	student_id,
+        	grade,
+        	classroom,
+        	course,
+        	student_name,
+        	official_absences.status,
+        	reason,
+        	reports.status AS reportStatus,
+        	report_required,
+        	MIN(official_absence_date_histories.official_absence_date) AS startDate,
+        	MAX(official_absence_date_histories.official_absence_date) AS endDate,
+        	official_absence_date_histories.period
         FROM official_absences
         LEFT OUTER JOIN official_absence_date_histories
         USING (official_absence_id)
         LEFT OUTER JOIN reports
         USING (official_absence_id)
-        WHERE (official_absence_id, version) IN (
-            SELECT 
-                official_absence_id,
-                MAX(version)
-            FROM official_absence_date_histories
-            GROUP BY official_absence_id
+        JOIN List
+        USING(official_absence_id)
+        WHERE (official_absences.official_absence_id, version) IN (
+        	SELECT
+        		official_absence_id,
+        		MAX(version)
+        	FROM official_absence_date_histories
+        	GROUP BY official_absence_id
         )
         <if test='form.grade != 0 and form.grade != null'>
             AND grade = #{form.grade}
@@ -217,19 +225,19 @@ public interface MainRepository {
             <if test='form.andFlag'>
                 OR
             </if>
-                reports.status IN
-                    <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
-                        #{reportStatus}
-                    </foreach>
+            reports.status IN
+            <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                #{reportStatus}
+            </foreach>
         </if>
         <if test='form.todayOAFlag'>
             AND official_absence_date = CURRENT_DATE
         </if>
-        GROUP BY official_absence_id,student_id,course,student_name,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
+        GROUP BY official_absences.official_absence_id,student_id,course,student_name,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
         ORDER BY official_absence_id DESC, period;
     </script>
     """)
-    List<OAListEntity> teacherFindAllOAs(@Param("form")TeacherOASearchForm form);
+    List<OAListEntity> teacherFindAllOAs(@Param("form")TeacherOASearchForm form, @Param("page") Integer page);
     //Info取得
     @Select("""
         SELECT
@@ -262,8 +270,6 @@ public interface MainRepository {
             official_absence_date_histories.period,
             lesson_name
         FROM official_absence_date_histories
-        INNER JOIN lessons
-        USING (lesson_id)
         WHERE (official_absence_id, version) IN (
             SELECT 
                 official_absence_id,
@@ -481,10 +487,10 @@ public interface MainRepository {
             INSERT INTO official_absence_date_histories VALUES
             <foreach item='date' collection='dateList' separator=','>(
                     #{OAId},
-                    2,
                     #{date.OAPeriod},
                     #{date.OADate},
-                    (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
+                    (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+                    #{date.lessonName}
             )</foreach>
             ;
             </script>
@@ -624,7 +630,7 @@ public interface MainRepository {
 
     @Select("""
         SELECT * FROM exception_dates
-        ORDER BY exception_day;
+        ORDER BY exception_day DESC;
     """)
     List<ExceptionDateEntity> selectExceptionDates();
 
@@ -643,4 +649,87 @@ public interface MainRepository {
         WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day LIMIT 1 OFFSET #{id});
     """)
     void deleteExceptionDate(@Param("id") Integer id);
+
+    @Delete("""
+        DELETE FROM reports
+        WHERE official_absence_id = #{oaId};
+    """)
+    void deleteReport(@Param("oaId") Integer oaId);
+
+    @Update("""
+        UPDATE desired_occupations SET business = #{business}
+        WHERE student_id = #{studentId};
+    """)
+    void updateDesiredBusiness(@Param("studentId") Integer studentId, @Param("business") String business);
+
+    @Update("""
+        UPDATE desired_occupations SET occupation = #{occupation}
+        WHERE student_id = #{studentId};
+    """)
+    void updateDesiredOccupation(@Param("studentId") Integer studentId, @Param("occupation") String occupation);
+
+    @Select("""
+        SELECT EXISTS(SELECT * FROM desired_occupations WHERE student_id = #{studentId});
+    """)
+    boolean existsDesired(@Param("studentId") Integer studentId);
+
+    @Insert("""
+        INSERT INTO desired_occupations VALUES(
+            #{studentId}, #{business}, #{occupation}    
+        );
+    """)
+    void insertDesired(@Param("studentId") Integer studentId,@Param("business") String business,@Param("occupation") String occupation);
+
+    @Select("""
+        SELECT COUNT(*)
+        FROM official_absences;
+    """)
+    Integer countOA();
+
+    @Select("""
+    <script>
+        SELECT
+        	COUNT(*)
+        FROM official_absences
+        LEFT OUTER JOIN official_absence_date_histories
+        USING (official_absence_id)
+        LEFT OUTER JOIN reports
+        USING (official_absence_id)
+        WHERE (official_absences.official_absence_id, version) IN (
+        	SELECT
+        		official_absence_id,
+        		MAX(version)
+        	FROM official_absence_date_histories
+        	GROUP BY official_absence_id
+        )
+        <if test='form.grade != 0 and form.grade != null'>
+            AND grade = #{form.grade}
+        </if>
+        <if test='form.classroom != "all" and form.classroom != null'>
+            AND classroom = #{form.classroom}
+        </if>
+        <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
+            AND official_absences.status IN
+                <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
+                    #{status}
+                </foreach>
+        </if>
+        <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
+            <if test='form.andFlag == null'>
+                AND
+            </if>
+            <if test='form.andFlag'>
+                OR
+            </if>
+                reports.status IN
+                    <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                        #{reportStatus}
+                    </foreach>
+        </if>
+        <if test='form.todayOAFlag'>
+            AND official_absence_date = CURRENT_DATE
+        </if>;
+    </script>
+    """)
+    Integer countSearchOA(@Param("form") TeacherOASearchForm form);
 }

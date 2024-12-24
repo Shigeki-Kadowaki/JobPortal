@@ -3,7 +3,7 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 const subjectMap = new Map();
 const exceptionMap = new Map();
-function addOADate(selectedDate) {
+function addOADate(selectedDate, selectedPeriods = null) {
     if (document.getElementById('OATime_' + selectedDate)) {
         return;
     }
@@ -17,7 +17,6 @@ function addOADate(selectedDate) {
     let strToday = formatDate(selectedDate, "-");
     let dateToday = new Date(strToday);
     let weekdayNumber;
-    let exceptionFlag;
     if(exceptionMap.has(strToday)){
         console.log("exception!")
         weekdayNumber = exceptionMap.get(strToday) - 1;
@@ -26,9 +25,11 @@ function addOADate(selectedDate) {
         weekdayNumber = dateToday.getDay() - 1;
     }
     if(weekdayNumber === -1 || weekdayNumber === 5) return false;
-    OADateHeader.innerHTML=`<div class="d-flex justify-content-between">${formatedDate} の公欠授業を選択<div class="text-end">
-                            <button type="button" class="btn btn-danger" onclick="removeOADate(${selectedDate})">削除</button>
-                            </div></div>`;
+    OADateHeader.innerHTML=`<div class="d-flex justify-content-between">${formatedDate} の公欠授業を選択
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-danger" onclick="removeOADate(${selectedDate})">削除</button>
+                                </div>
+                            </div>`;
     let OADateBody=document.createElement('div');
     OADateBody.className="card-body";
     let text=`<input type="hidden" name="OADates[]" value="${selectedDate}">`;
@@ -36,8 +37,10 @@ function addOADate(selectedDate) {
     for(let subject of subjects[weekdayNumber]){
         if(subject["id"] !== -1){
             text+=`
-                <input type="checkbox" class="btn-check" id="${selectedDate}${index}" name="OAPeriods[${selectedDate}][]" value="${index}" autocomplete="off">
-                <label class="btn btn-outline-primary" for="${selectedDate}${index}">${index}限目 : ${subject["name"]}</label>
+                <input type="checkbox" class="btn-check" id="${selectedDate}${index}period" name="OAPeriods[${selectedDate}][]" value="${index}" onchange="toggleDateCheck(${selectedDate}, ${index})" autocomplete="off">
+                <label class="btn btn-outline-primary" for="${selectedDate}${index}period">${index}限目 : ${subject["name"]}</label>
+                <input type="checkbox" class="btn-check" id="${selectedDate}${index}name" name="OASubjects[${selectedDate}][]" value="${subject["name"]}" autocomplete="off">
+                <label class="btn btn-outline-primary" for="${selectedDate}${index}name" style="display: none;">${subject["name"]}</label>
             `;
         }
         index++;
@@ -46,7 +49,18 @@ function addOADate(selectedDate) {
     OADate.appendChild(OADateHeader);
     OADate.appendChild(OADateBody);
     document.getElementById('OADates').appendChild(OADate);
+
+    if(selectedPeriods !== null){
+        selectedPeriods.forEach(e=>{
+            document.getElementById(`${selectedDate}${e}period`).checked = true;
+            document.getElementById(`${selectedDate}${e}name`).checked = true;
+        });
+    }
  }
+
+function toggleDateCheck(date, period){
+    document.getElementById(`${date}${period}name`).checked = document.getElementById(`${date}${period}period`).checked;
+}
 
 function removeOADate(removeOADate){
     document.getElementById("OATime_" + removeOADate).remove();
@@ -101,5 +115,18 @@ window.addEventListener('DOMContentLoaded',()=>{
 
     for (let exceptionDate of exceptionDates){
         exceptionMap.set(exceptionDate.exceptionDate, exceptionDate.weekdayNumber);
+    }
+    console.log(exceptionDates);
+    console.log("----------");
+    for (let exceptionDate of exceptionDates){
+        console.log(exceptionDate);
+    }
+    console.log("----------");
+    for (let exceptionDate in exceptionDates){
+        console.log(exceptionDate);
+    }
+    console.log("----------");
+    for (let exceptionDate in exceptionDates){
+        console.log(exceptionDates[exceptionDate]);
     }
 })

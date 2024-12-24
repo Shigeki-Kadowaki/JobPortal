@@ -50,77 +50,75 @@
             会社名 : [[*{companyName}]]<br>
             住所 : [[*{address}]]<br>
             開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
-            <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
+            <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
             セミナー・合説名 : [[*{seminarName}]]<br>
             実施場所 : [[*{location}]]<br>
             会場名 : [[*{venueName}]]<br>
             開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
-            <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
+            <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
             亡くなった方 : [[*{deceasedName}]]<br>
             続柄 : [[*{relationship}]]<br>
-            <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
+            <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == '出席停止'" th:object="${attendanceBanInfo}">
             理由 : [[*{banReason}]]<br>
-            <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
+            <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == 'その他'" th:object="${otherInfo}">
             理由 : [[*{otherReason}]]<br>
-            <div th:if="*{!remarks.isBlank}">備考 : [[*{remarks}]]<br></div>
+            <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
     </div>
     <br><br><br>
-    <th:block th:if="${mode == 'info'}">
-        <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
-        </div>
-        <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <!--          modalヘッダー-->
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="cancelModalLabel">本当に破棄しますか？</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <!--          modalボディー-->
-                    <form th:action="@{/jobportal/student/OAList/{OAId}/cansel(OAId=${mainInfo.officialAbsenceId})}" th:method="delete">
-                        <h6 class="text-center m-3"><th:block th:if="${mainInfo.maxVersion}>=2">
-                            過去のバージョンも全て破棄されます。
-                        </th:block>破棄すると元に戻せません。</h6>
-                        <!--          modalフッター-->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-danger">破棄</button>
-                        </div>
-                    </form>
+    <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
+    </div>
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!--          modalヘッダー-->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="cancelModalLabel">本当に破棄しますか？</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!--          modalボディー-->
+                <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}/cansel(studentId=${studentId},OAId=${mainInfo.officialAbsenceId})}" th:method="delete">
+                    <h6 class="text-center m-3"><th:block th:if="${mainInfo.maxVersion}>=2">
+                        過去のバージョンも全て破棄されます。
+                    </th:block>破棄すると元に戻せません。</h6>
+                    <!--          modalフッター-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">破棄</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="modal fade" id="reSubmissionModal" tabindex="-1" aria-labelledby="reSubmissionModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <!--          modalヘッダー-->
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="reSubmissionModalLabel">再提出すると未受理状態になります。よろしいですか？</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <!--          modalボディー-->
-                    <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}/OAEditForm(studentId=${mainInfo.studentId}, OAId=${mainInfo.officialAbsenceId})}" method="get">
-                        <!--          modalフッター-->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">再提出</button>
-                        </div>
-                    </form>
+    </div>
+    <div class="modal fade" id="reSubmissionModal" tabindex="-1" aria-labelledby="reSubmissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!--          modalヘッダー-->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="reSubmissionModalLabel">再提出すると未受理状態になります。よろしいですか？</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!--          modalボディー-->
+                <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}/OAEditForm(studentId=${mainInfo.studentId}, OAId=${mainInfo.officialAbsenceId})}" method="get">
+                    <!--          modalフッター-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">再提出</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </th:block>
+    </div>
     <br><br><br>
 </section>
 </body>

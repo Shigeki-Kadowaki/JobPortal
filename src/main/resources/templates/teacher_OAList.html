@@ -74,6 +74,40 @@
         </div>
     </div>
     <br>
+    <th:block th:if="${maxSize != 0}">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination pagination-lg d-flex justify-content-center">
+                <th:block th:if="${page eq 1 or page eq 2}">
+                    <li class="page-item"><a class="page-link" th:classappend="${page == 1}?'disabled':''" th:href="@{/jobportal/teacher/OAList(page=${page - 1})}">prev</a></li>
+                    <li class="page-item"><a class="page-link" th:classappend="${page == 1}?'active':''" th:href="@{/jobportal/teacher/OAList(page=1)}">1</a></li>
+                    <li class="page-item"><a class="page-link" th:classappend="${page == 2}?'active':''" th:href="@{/jobportal/teacher/OAList(page=2)}">2</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=3)}">3</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=4)}">4</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=5)}">5</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page + 1})}">next</a></li>
+                </th:block>
+                <th:block th:if="${page eq maxSize or page eq maxSize - 1}">
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page - 1})}">prev</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${maxSize - 4})}">[[${maxSize - 4}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${maxSize - 3})}">[[${maxSize - 3}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${maxSize - 2})}">[[${maxSize - 2}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:classappend="${page == __${maxSize - 1}__}?'active':''" th:href="@{/jobportal/teacher/OAList(page=${maxSize - 1})}">[[${maxSize - 1}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:classappend="${page == __${maxSize}__}?'active':''" th:href="@{/jobportal/teacher/OAList(page=${maxSize})}">[[${maxSize}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:classappend="${page == __${maxSize}__}?'disabled':''" th:href="@{/jobportal/teacher/OAList(page=${page + 1})}">next</a></li>
+                </th:block>
+                <th:block th:unless="${page eq 1 or page eq 2 or page eq maxSize or page eq maxSize - 1}">
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page - 1})}">prev</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page - 2})}">[[${page - 2}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page - 1})}">[[${page - 1}]]</a></li>
+                    <li class="page-item"><a class="page-link active" th:href="@{/jobportal/teacher/OAList(page=${page})}">[[${page}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page + 1})}">[[${page + 1}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page + 2})}">[[${page + 2}]]</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/jobportal/teacher/OAList(page=${page + 1})}">next</a></li>
+                </th:block>
+            </ul>
+        </nav>
+    </th:block>
+    <br>
     <div th:each="value : ${mainList}" th:object="${value}">
         <ul class="list-group list-group-horizontal row">
             <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
@@ -98,9 +132,9 @@
             <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
 <!--            <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未提出'?'btn-secondary':'btn-primary'} ${value.reportStatus == '未提出'?'disabled':''}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>-->
             <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
-
         </ul>
     </div>
+    <br><br><br><br><br>
 </section>
 </body>
 </html>

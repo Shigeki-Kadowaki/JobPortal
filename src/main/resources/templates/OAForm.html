@@ -20,6 +20,8 @@
     <script th:inline="javascript">
         const subjects = /*[[${subjects}]]*/"subjects";
         const exceptionDates = /*[[${exceptionDates}]]*/"exceptionDates";
+        const OAPeriods = /*[[${oAMainForm.OAPeriods}]]*/"OAPeriods";
+        const editOAPeriods = /*[[${OAPeriods}]]*/"editOAPeriods";
     </script>
     <form th:action="${mode == 'create'}?@{/jobportal/student/{studentId}(studentId=${studentId})}:@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId}, OAId=${OAId})}" th:method="post" th:object="${oAMainForm}">
         <div class="form-group mt-3" id="officialAbsenceDetail">
@@ -273,7 +275,22 @@
                 <span th:errors="*{OAPeriods}"></span>
                 <label class="form-label mt-3" for="date">公欠日を選択:</label>
                 <input class="form-control" type="text" id="date" onchange="addOADate(this.value.replaceAll('/',''))" readonly>
-                <div id="OADates"></div>
+                <div id="OADates">
+                    <th:block th:if="*{OAPeriods != null}">
+                        <script>
+                            Object.entries(OAPeriods).forEach((k)=>{
+                                addOADate(k[0],k[1]);
+                            })
+                        </script>
+                    </th:block>
+                    <th:block th:if="${OAPeriods != null}">
+                        <script>
+                            Object.entries(editOAPeriods).forEach((k)=>{
+                                addOADate(k[0],k[1]);
+                            })
+                        </script>
+                    </th:block>
+                </div>
                 <br><br>
             </div>
         </div>
@@ -325,10 +342,5 @@
     </form>
     <br><br><br><br><br>
 </section>
-<!--<a th:href="@{/tasks/creationForm}" class="btn btn-primary">作成</a>-->
-<div class="card">
-    <div class="card-header"></div>
-    <div class="card-body"></div>
-</div>
 </body>
 </html>

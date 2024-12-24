@@ -29,11 +29,23 @@ import java.util.Map;
 @RequestMapping("/jobportal")
 public class TeacherController {
 
+    final Integer pageSize = 25;
     private final MailController mailController;
     @Autowired
     public MainService service;
     @Autowired
     public HttpSession session;
+
+    public final String sendAddress = "40104kk@saisen.ac.jp";
+    final Map<String, String> colors = new HashMap<>(){
+        {
+            put("受理", "list-group-item-success");
+            put("未受理", "list-group-item-warning");
+            put("却下", "list-group-item-danger");
+            put("未提出", "list-group-item-dark");
+            put("不要", "list-group-item-light");
+        }
+    };
 
     @GetMapping("/teacher")
     public String showTeacherPage() {
@@ -42,42 +54,58 @@ public class TeacherController {
 
     //OAList
     @GetMapping("/teacher/OAList")
-    public String showTeacherOAList(TeacherOASearchForm form, Model model) {
+    public String showTeacherOAList(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page) {
         if(session.getAttribute("searchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("searchForm");
         }
-        Map<String, String> colors = new HashMap<>();
-        colors.put("受理","list-group-item-success");
-        colors.put("未受理","list-group-item-warning");
-        colors.put("却下","list-group-item-danger");
-        colors.put("未提出","list-group-item-dark");
-        colors.put("不要","list-group-item-light");
-        List<OAListEntity> listEntity = service.teacherFindAllOAs(form);
+        if(page == 0){
+            page = 1;
+            if(session.getAttribute("searchForm") == null) {
+                session.setAttribute("page", page);
+            }else{
+                page = (Integer) session.getAttribute("page");
+            }
+        }else{
+            session.setAttribute("page", page);
+        }
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
+            Integer size = service.countOA();
+            model.addAttribute("size", size);
+            model.addAttribute("maxSize", (int)Math.ceil((double) size /10));
         }
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
+        model.addAttribute("page", page);
         return "teacher_OAList";
     }
     //OAList検索
     @GetMapping(value = "/teacher/OAList", params = "search")
-    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model){
+    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page){
         session.setAttribute("searchForm", form);
-        Map<String, String> colors = new HashMap<>();
-        colors.put("受理","list-group-item-success");
-        colors.put("未受理","list-group-item-warning");
-        colors.put("却下","list-group-item-danger");
-        colors.put("未提出","list-group-item-dark");
-        colors.put("不要","list-group-item-light");
-        List<OAListEntity> listEntity = service.teacherFindAllOAs(form);
+        if(page == 0){
+            page = 1;
+            if(session.getAttribute("searchForm") == null) {
+                session.setAttribute("page", page);
+            }else{
+                page = (Integer) session.getAttribute("page");
+            }
+        }else{
+            session.setAttribute("page", page);
+        }
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page);
+        Integer size = service.countSearchOA(form);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
+        model.addAttribute("size", size);
+        model.addAttribute("maxSize", (int)Math.ceil((double) size /10));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
+        model.addAttribute("page", page);
         return "teacher_OAList";
     }
     //OA詳細
@@ -135,9 +163,7 @@ public class TeacherController {
     public String OAUnaccepted(HttpServletRequest request, @PathVariable("OAId") Integer OAId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
         service.updateOAStatus(OAId,"rejection");
         System.out.println(reasonForRejection);
-        String teacherEmail = request.getAttribute("mail").toString();
-        System.out.println(teacherEmail);
-        mailController.sendMail(teacherEmail, studentEmail, reasonForRejection);
+        //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
     }
 
@@ -152,6 +178,8 @@ public class TeacherController {
     @PostMapping("/teacher/classification")
     public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()){
+            List<String> courses = service.getCourses();
+            model.addAttribute("courses", courses);
             System.out.println("error");
             return "classificationForm";
         }

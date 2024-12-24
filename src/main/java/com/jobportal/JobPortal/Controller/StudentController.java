@@ -1,6 +1,5 @@
 package com.jobportal.JobPortal.Controller;
 
-import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
@@ -23,8 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,12 +46,19 @@ public class StudentController {
             put("不要", "list-group-item-light");
         }
     };
+    private final Subject[][] subjects = {
+        {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
+        {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
+        {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
+        {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
+        {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
+    };
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-            student.setGno(99999);
+            student.setGno(40104);
             //ssoから取得用
 //            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
@@ -67,21 +75,27 @@ public class StudentController {
         model.addAttribute("student", student);
         model.addAttribute("desiredOccupation", desiredOccupation);
 
-
-        mailController.sendMail(student.getMail(), student.getMail(), "test");
-
-
-
+        //mailController.sendMail(student.getMail(), student.getMail(), "test");
         return "student";
     }
 
     @GetMapping("/student/{studentId}/desiredOccupation")
-    public String desiredOccupation(@PathVariable("studentId") Integer studentId, Model model) {
+    public String getDesiredOccupation(@PathVariable("studentId") @ModelAttribute Integer studentId, Model model) {
         DesiredOccupation desiredOccupation = service.getOccupation(studentId);
         model.addAttribute("desiredOccupation", desiredOccupation);
         return "desiredOccupation";
     }
 
+    @PostMapping("/student/{studentId}/desiredOccupation")
+    public String postDesiredOccupation(@PathVariable("studentId") Integer studentId, @RequestParam("business") String business,@RequestParam("occupation") String occupation, Model model){
+        if(service.existsDesired(studentId)){
+            service.updateDesiredBusiness(studentId, business);
+            service.updateDesiredOccupation(studentId, occupation);
+        }else {
+            service.insertDesired(studentId, business, occupation);
+        }
+        return "redirect:/jobportal/student/{studentId}";
+    }
 //
 //    @PostMapping(value="/test", params="button1")
 //    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
@@ -133,32 +147,8 @@ public class StudentController {
         model.addAttribute("studentId",studentId);
         model.addAttribute("mode", "create");
         Student student = (Student) request.getAttribute("student");
-        LocalDate today = LocalDate.now();
-        //今日が前期か後期か取得
-        String semester = service.semesterBetween(today);
-        //学生情報セット
-        ClassificationForm classification = new ClassificationForm();
-        classification.setGrade(student.getGrade());
-        classification.setClassroom(student.getClassroom());
-        classification.setCourse(student.getCourse());
-        classification.setSemester(semester);
-        //該当区分時間割(id)取得
-        List<TimeTableEntity> timeTableEntities = service.getTimeTable(classification);
-        //該当区分授業情報取得
-        List<String> subjectAllList = service.getSubjects(classification);
-        Map<Integer, String> subjectMap = service.toSubjectInfos(subjectAllList);
-        Subject[][] subjects = new Subject[5][5];
-        for (int i = 0; i < 5; i++){
-            for(int j = 0; j < 5; j++){
-                subjects[i][j] = new Subject(-1, "");
-            }
-        }
-        timeTableEntities.forEach(e->{
-            subjects[e.period()-1][e.weekdayNumber()-1] = new Subject(e.subjectId(), subjectMap.get(e.subjectId()));
-        });
-        System.out.println(Arrays.deepToString(subjects));
+        //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
-        System.out.println(exceptionDates);
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
         return "OAForm";
@@ -338,6 +328,7 @@ public class StudentController {
             model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
             model.addAttribute("mode", "info");
+
         }
         return "OAInfo";
     }
@@ -390,9 +381,13 @@ public class StudentController {
     public String showEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        Map<String, List<String>> OAPeriods = new HashMap<>();
         //公欠日時をMapにする
         if(!dateInfoEntities.isEmpty()){
             Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
+            lessonInfoEntities.forEach((k,v)->{
+                OAPeriods.put(k.replaceAll("[^0-9]", ""),v.stream().map(e->e.period().toString()).toList());
+            });
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
 //        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
@@ -426,6 +421,10 @@ public class StudentController {
             model.addAttribute("OAId", mainInfoDTO.officialAbsenceId());
         }
         model.addAttribute("mode", "edit");
+        List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
+        model.addAttribute("subjects", subjects);
+        model.addAttribute("exceptionDates", exceptionDates);
+        model.addAttribute("OAPeriods", OAPeriods);
         return "OAForm";
     }
     //就活再提出
@@ -513,8 +512,8 @@ public class StudentController {
     }
 
     //破棄
-    @DeleteMapping("/student/OAList/{OAId}/cansel")
-    public String deleteOA(@PathVariable("OAId")Integer OAId){
+    @DeleteMapping("/student/{studentId}/OAList/{OAId}/cansel")
+    public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         switch (mainInfoEntity.reason()){
             case jobSearch -> {
@@ -535,9 +534,9 @@ public class StudentController {
         }
         service.deleteDate(OAId);
         service.deleteSubmittedDate(OAId);
+        service.deleteReport(OAId);
         service.deleteMain(OAId);
-        String studentId = mainInfoEntity.studentId().toString();
-        return "redirect:/jobportal/student/" + studentId + "/OAList";
+        return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
     @GetMapping("/student/{studentId}/reportform/{oaId}")
@@ -564,4 +563,5 @@ public class StudentController {
         }
         return "reportform";
     }
+
 }
