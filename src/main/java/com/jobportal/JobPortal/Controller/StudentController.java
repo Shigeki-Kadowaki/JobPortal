@@ -381,45 +381,39 @@ public class StudentController {
     public String showEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        Map<String, List<String>> OAPeriods = new HashMap<>();
+        Map<String, List<String>> OAPeriods = service.toOAPeriods(dateInfoEntities);
         //公欠日時をMapにする
-        if(!dateInfoEntities.isEmpty()){
-            Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
-            lessonInfoEntities.forEach((k,v)->{
-                OAPeriods.put(k.replaceAll("[^0-9]", ""),v.stream().map(e->e.period().toString()).toList());
-            });
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
 //        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
-            switch (mainInfoDTO.reason()){
-                case "就活" -> {
-                    JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-                    OAMainForm form = service.toJobSearchForm(mainInfoDTO,lessonInfoEntities,jobSearch);
-                    model.addAttribute("oAMainForm", form);
-                }
-                case "セミナー・合説" -> {
-                    SeminarEntity seminar = service.findSeminarInfo(OAId);
-                    OAMainForm form = service.toSeminarForm(mainInfoDTO, lessonInfoEntities, seminar);
-                    model.addAttribute("oAMainForm", form);
-                }
-                case "忌引" -> {
-                    BereavementEntity bereavement = service.findBereavementInfo(OAId);
-                    OAMainForm form = service.toBereavementForm(mainInfoDTO, lessonInfoEntities, bereavement);
-                    model.addAttribute("oAMainForm", form);
-                }
-                case "出席停止" -> {
-                    AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
-                    OAMainForm form = service.toAttendanceBanForm(mainInfoDTO, lessonInfoEntities, attendanceBan);
-                    model.addAttribute("oAMainForm", form);
-                }
-                case "その他" -> {
-                    OtherEntity other = service.findOtherInfo(OAId);
-                    OAMainForm form = service.toOtherForm(mainInfoDTO, lessonInfoEntities, other);
-                    model.addAttribute("oAMainForm", form);
-                }
+        switch (mainInfoDTO.reason()){
+            case "就活" -> {
+                JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+                OAMainForm form = service.toJobSearchForm(mainInfoDTO,OAPeriods,jobSearch);
+                model.addAttribute("oAMainForm", form);
             }
-            model.addAttribute("OAId", mainInfoDTO.officialAbsenceId());
+            case "セミナー・合説" -> {
+                SeminarEntity seminar = service.findSeminarInfo(OAId);
+                OAMainForm form = service.toSeminarForm(mainInfoDTO, OAPeriods, seminar);
+                model.addAttribute("oAMainForm", form);
+            }
+            case "忌引" -> {
+                BereavementEntity bereavement = service.findBereavementInfo(OAId);
+                OAMainForm form = service.toBereavementForm(mainInfoDTO, OAPeriods, bereavement);
+                model.addAttribute("oAMainForm", form);
+            }
+            case "出席停止" -> {
+                AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
+                OAMainForm form = service.toAttendanceBanForm(mainInfoDTO, OAPeriods, attendanceBan);
+                model.addAttribute("oAMainForm", form);
+            }
+            case "その他" -> {
+                OtherEntity other = service.findOtherInfo(OAId);
+                OAMainForm form = service.toOtherForm(mainInfoDTO, OAPeriods, other);
+                model.addAttribute("oAMainForm", form);
+            }
         }
+        model.addAttribute("OAId", mainInfoDTO.officialAbsenceId());
         model.addAttribute("mode", "edit");
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
         model.addAttribute("subjects", subjects);

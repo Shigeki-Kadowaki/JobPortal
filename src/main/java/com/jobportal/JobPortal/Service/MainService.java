@@ -262,14 +262,11 @@ public class MainService {
             return status.getJapaneseName();
         }
     }
-    public OAMainForm toJobSearchForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, JobSearchEntity jobSearch) {
+    public OAMainForm toJobSearchForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, JobSearchEntity jobSearch) {
         return new OAMainForm(
             jobSearch,
             mainInfoDTO.reason(),
-            lessonInfoEntities.entrySet().stream().collect(
-                    Collectors.toMap(
-                            Map.Entry::getKey,
-                            e -> e.getValue().stream().map(k -> k.period().toString()).toList())),
+            OAPeriods,
             mainInfoDTO.reportRequired(),
             jobSearch.work().toString(),
             jobSearch.companyName(),
@@ -279,19 +276,11 @@ public class MainService {
             jobSearch.visitStartMinute()
         );
     }
-    public OAMainForm toSeminarForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, SeminarEntity seminar) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toSeminarForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, SeminarEntity seminar) {
         return new OAMainForm(
                 seminar,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 seminar.seminarName(),
                 seminar.location(),
@@ -301,56 +290,32 @@ public class MainService {
                 seminar.visitStartMinute()
         );
     }
-    public OAMainForm toBereavementForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, BereavementEntity bereavement) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toBereavementForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, BereavementEntity bereavement) {
         return new OAMainForm(
                 bereavement,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 bereavement.remarks(),
                 bereavement.deceasedName(),
                 bereavement.relationship()
         );
     }
-    public OAMainForm toAttendanceBanForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, AttendanceBanEntity ban) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toAttendanceBanForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, AttendanceBanEntity ban) {
         return new OAMainForm(
                 ban,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 ban.banReason(),
                 ban.remarks()
         );
     }
-    public OAMainForm toOtherForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, OtherEntity other) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toOtherForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, OtherEntity other) {
         return new OAMainForm(
                 other,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 other.otherReason(),
                 other.remarks()
@@ -539,6 +504,17 @@ public class MainService {
 
     public Integer countSearchOA(TeacherOASearchForm form) {
         return repository.countSearchOA(form);
+    }
+
+    public Map<String, List<String>> toOAPeriods(List<OADateInfoEntity> dateInfoEntities) {
+        return dateInfoEntities.stream().collect(
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate)
+        ).entrySet().stream().collect(
+            Collectors.toMap(
+                e->e.getKey().toString(),
+                e->e.getValue().stream().map(v->v.period().toString()).toList()
+            )
+        );
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
