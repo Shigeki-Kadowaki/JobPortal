@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
@@ -178,93 +179,64 @@ public class MainService {
 
     //重複データを排除するために、ListをMapにするメソッド
     public Map<String, List<OALessonsDTO>> toLessonInfoDTO(List<OADateInfoEntity> allInfoDTO) {
-        Map<String, List<OALessonsDTO>> map = new TreeMap<>();
-        List<OALessonsDTO> allLessonsList = new ArrayList<>();
-        LocalDate prevDate = allInfoDTO.getFirst().officialAbsenceDate();
-        for (OADateInfoEntity oaAllInfoDTO : allInfoDTO) {
-            if (prevDate.toString().equals(oaAllInfoDTO.officialAbsenceDate().toString())) {
-                allLessonsList.add(new OALessonsDTO(oaAllInfoDTO.period(), oaAllInfoDTO.lessonName()));
-            } else {
-                map.put(dateFormat(prevDate), allLessonsList);
-                prevDate = oaAllInfoDTO.officialAbsenceDate();
-                allLessonsList = new ArrayList<>(List.of(new OALessonsDTO(oaAllInfoDTO.period(), oaAllInfoDTO.lessonName())));
-            }
-        }
-        map.put(dateFormat(prevDate), allLessonsList);
-//        map.forEach((k,v)->{
-//            System.out.println(k);
-//            v.forEach(System.out::println);
-//        });
-        return map;
+        return allInfoDTO.stream().collect(
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new,Collectors.toList())
+        ).entrySet().stream().collect(
+                Collectors.toMap(
+                        e->e.getKey().toString(),
+                        e->e.getValue().stream().map(v-> new OALessonsDTO(v.period(),v.lessonName())).toList()
+                )
+        );
     }
     //公欠授業をリスト化
     public List<OAListDTO> toListEntity(List<OAListEntity> listEntity) {
-        List<OAListDTO> listDTO = new ArrayList<>();
-        List<Integer> lessons = new ArrayList<>();
-        Integer prevId = listEntity.getFirst().officialAbsenceId();
-        final LocalDate currentDate = LocalDate.now();
-        int index = 0;
-        int i = 0;
-        for(var list : listEntity){
-            if(listEntity.get(index).officialAbsenceId().equals(list.officialAbsenceId())){
-                lessons.add(list.period());
-            }else {
-                listDTO.add(new OAListDTO(
-                        listEntity.get(index).officialAbsenceId(),
-                        listEntity.get(index).studentId(),
-                        listEntity.get(index).grade(),
-                        listEntity.get(index).classroom(),
-                        listEntity.get(index).course(),
-                        listEntity.get(index).name(),
-                        existsReport(listEntity.get(index).status()),
-                        listEntity.get(index).reason().getJapaneseName(),
-                        existsReport(listEntity.get(index).reportStatus()),
-                        listEntity.get(index).reportRequired(),
-                        dateFormat(listEntity.get(index).startDate()),
-                        dateFormat(listEntity.get(index).endDate()),
-                        listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
-                        lessons
-                        ));
-                lessons = new ArrayList<>(List.of(list.period()));
-                index = i;
-            }
-            i++;
-        }
-        listDTO.add(new OAListDTO(
-                listEntity.get(index).officialAbsenceId(),
-                listEntity.get(index).studentId(),
-                listEntity.get(index).grade(),
-                listEntity.get(index).classroom(),
-                listEntity.get(index).course(),
-                listEntity.get(index).name(),
-                existsReport(listEntity.get(index).status()),
-                listEntity.get(index).reason().getJapaneseName(),
-                existsReport(listEntity.get(index).reportStatus()),
-                listEntity.get(index).reportRequired(),
-                dateFormat(listEntity.get(index).startDate()),
-                dateFormat(listEntity.get(index).endDate()),
-                listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
-                lessons
-        ));
-        return listDTO;
+        LocalDate today = LocalDate.now();
+        return listEntity.stream()
+                .collect(Collectors.groupingBy(k -> Arrays.asList(
+                        k.officialAbsenceId(),
+                        k.studentId(),
+                        k.grade(),
+                        k.classroom(),
+                        k.course(),
+                        k.name(),
+                        existsReport(k.status()),
+                        k.reason().getJapaneseName(),
+                        existsReport(k.reportStatus()),
+                        k.reportRequired(),
+                        dateFormat(k.startDate()),
+                        dateFormat(k.endDate()),
+                        k.endDate().isBefore(today) || k.endDate().isEqual(today)
+                        ),LinkedHashMap::new,Collectors.toList())).entrySet().stream()
+                .map(entry -> new OAListDTO(
+                        (Integer) entry.getKey().get(0),
+                        (Integer) entry.getKey().get(1),
+                        (Integer) entry.getKey().get(2),
+                        entry.getKey().get(3).toString(),
+                        entry.getKey().get(4).toString(),
+                        entry.getKey().get(5).toString(),
+                        entry.getKey().get(6).toString(),
+                        entry.getKey().get(7).toString(),
+                        entry.getKey().get(8).toString(),
+                        (Boolean) entry.getKey().get(9),
+                        entry.getKey().get(10).toString(),
+                        entry.getKey().get(11).toString(),
+                        (Boolean)entry.getKey().get(12),
+                        entry.getValue().stream().map(OAListEntity::period).collect(Collectors.toList())
+                )).toList();
     }
     //yyyy-mm-ddをyyyy年mm月dd日(曜日)にする
     public static String dateFormat(LocalDate date) {
-        String yyyy = date.toString().substring(0,4);
-        String mm = date.toString().substring(5,7);
-        String dd = date.toString().substring(8,10);
-        String dow = "";
-        Calendar cal = Calendar.getInstance();
-        cal.set(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd));
-        dow = switch (cal.get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.SUNDAY -> "(日)";
-            case Calendar.MONDAY -> "(月)";
-            case Calendar.TUESDAY -> "(火)";
-            case Calendar.WEDNESDAY -> "(水)";
-            case Calendar.THURSDAY -> "(木)";
-            case Calendar.FRIDAY -> "(金)";
-            case Calendar.SATURDAY -> "(土)";
-            default -> dow;
+        String yyyy = String.valueOf(date.getYear());
+        String mm = String.valueOf(date.getMonthValue());
+        String dd = String.valueOf(date.getDayOfMonth());
+        String dow = switch (date.getDayOfWeek()) {
+            case SUNDAY -> "(日)";
+            case MONDAY -> "(月)";
+            case TUESDAY -> "(火)";
+            case WEDNESDAY -> "(水)";
+            case THURSDAY -> "(木)";
+            case FRIDAY -> "(金)";
+            case SATURDAY -> "(土)";
         };
         return yyyy + "年" + mm + "月" + dd + "日" + dow;
     }
@@ -276,19 +248,11 @@ public class MainService {
             return status.getJapaneseName();
         }
     }
-    public OAMainForm toJobSearchForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, JobSearchEntity jobSearch) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toJobSearchForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, JobSearchEntity jobSearch) {
         return new OAMainForm(
             jobSearch,
             mainInfoDTO.reason(),
-            map,
+            OAPeriods,
             mainInfoDTO.reportRequired(),
             jobSearch.work().toString(),
             jobSearch.companyName(),
@@ -298,19 +262,11 @@ public class MainService {
             jobSearch.visitStartMinute()
         );
     }
-    public OAMainForm toSeminarForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, SeminarEntity seminar) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toSeminarForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, SeminarEntity seminar) {
         return new OAMainForm(
                 seminar,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 seminar.seminarName(),
                 seminar.location(),
@@ -320,56 +276,32 @@ public class MainService {
                 seminar.visitStartMinute()
         );
     }
-    public OAMainForm toBereavementForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, BereavementEntity bereavement) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toBereavementForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, BereavementEntity bereavement) {
         return new OAMainForm(
                 bereavement,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 bereavement.remarks(),
                 bereavement.deceasedName(),
                 bereavement.relationship()
         );
     }
-    public OAMainForm toAttendanceBanForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, AttendanceBanEntity ban) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toAttendanceBanForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, AttendanceBanEntity ban) {
         return new OAMainForm(
                 ban,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 ban.banReason(),
                 ban.remarks()
         );
     }
-    public OAMainForm toOtherForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, OtherEntity other) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
+    public OAMainForm toOtherForm(OAMainInfoDTO mainInfoDTO, Map<String, List<String>> OAPeriods, OtherEntity other) {
         return new OAMainForm(
                 other,
                 mainInfoDTO.reason(),
-                map,
+                OAPeriods,
                 mainInfoDTO.reportRequired(),
                 other.otherReason(),
                 other.remarks()
@@ -558,6 +490,17 @@ public class MainService {
 
     public Integer countSearchOA(TeacherOASearchForm form) {
         return repository.countSearchOA(form);
+    }
+
+    public Map<String, List<String>> toOAPeriods(List<OADateInfoEntity> dateInfoEntities) {
+        return dateInfoEntities.stream().collect(
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new,Collectors.toList())
+        ).entrySet().stream().collect(
+            Collectors.toMap(
+                e->e.getKey().toString().replaceAll("-",""),
+                e->e.getValue().stream().map(v->v.period().toString()).toList()
+            )
+        );
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

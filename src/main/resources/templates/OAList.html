@@ -53,8 +53,8 @@
     <ul class="list-group list-group-horizontal row">
       <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
         <ul class="list-group list-group-flush">
-          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[${value.status}]]</li>
-          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[value.status]}">公欠届 : [[${value.status}]]</li>
+          <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[value.reportStatus]}">報告書 : [[${value.reportStatus}]]</li>
 
         </ul>
       </li>

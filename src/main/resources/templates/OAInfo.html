@@ -87,7 +87,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!--          modalボディー-->
-                <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}/cansel(studentId=${studentId},OAId=${mainInfo.officialAbsenceId})}" th:method="delete">
+                <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId},OAId=${mainInfo.officialAbsenceId})}" th:method="delete">
                     <h6 class="text-center m-3"><th:block th:if="${mainInfo.maxVersion}>=2">
                         過去のバージョンも全て破棄されます。
                     </th:block>破棄すると元に戻せません。</h6>
