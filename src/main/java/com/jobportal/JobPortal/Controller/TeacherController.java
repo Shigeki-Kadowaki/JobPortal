@@ -120,24 +120,24 @@ public class TeacherController {
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
 //        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
-            switch (mainInfoDTO.reason()){
-                case "就活" -> {
+            switch (mainInfoEntity.reason()){
+                case jobSearch -> {
                     JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
                     model.addAttribute("jobSearchInfo", jobSearch);
                 }
-                case "セミナー・合説" -> {
+                case seminar -> {
                     SeminarEntity seminar = service.findSeminarInfo(OAId);
                     model.addAttribute("seminarInfo", seminar);
                 }
-                case "忌引" -> {
+                case bereavement -> {
                     BereavementEntity bereavement = service.findBereavementInfo(OAId);
                     model.addAttribute("bereavementInfo", bereavement);
                 }
-                case "出席停止" -> {
+                case attendanceBan -> {
                     AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
                     model.addAttribute("attendanceBanInfo", attendanceBan);
                 }
-                case "その他" -> {
+                case other -> {
                     OtherEntity other = service.findOtherInfo(OAId);
                     model.addAttribute("otherInfo", other);
                 }

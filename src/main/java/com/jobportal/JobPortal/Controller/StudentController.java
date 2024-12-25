@@ -295,24 +295,24 @@ public class StudentController {
             Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
-            switch (mainInfoDTO.reason()){
-                case "就活" -> {
+            switch (mainInfoEntity.reason()){
+                case jobSearch -> {
                     JobSearchEntity  jobSearch = service.findJobSearchInfo(OAId);
                     model.addAttribute("jobSearchInfo", jobSearch);
                 }
-                case "セミナー・合説" -> {
+                case seminar -> {
                     SeminarEntity seminar = service.findSeminarInfo(OAId);
                     model.addAttribute("seminarInfo", seminar);
                 }
-                case "忌引" -> {
+                case bereavement -> {
                     BereavementEntity bereavement = service.findBereavementInfo(OAId);
                     model.addAttribute("bereavementInfo", bereavement);
                 }
-                case "出席停止" -> {
+                case attendanceBan -> {
                     AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
                     model.addAttribute("attendanceBanInfo", attendanceBan);
                 }
-                case "その他" -> {
+                case other -> {
                     OtherEntity other = service.findOtherInfo(OAId);
                     model.addAttribute("otherInfo", other);
                 }
@@ -335,24 +335,24 @@ public class StudentController {
             Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
 //        //共通部分抽出
-            switch (mainInfoDTO.reason()){
-                case "就活" -> {
+            switch (mainInfoEntity.reason()){
+                case jobSearch -> {
                     JobSearchEntity  jobSearch = service.findJobSearchInfoByVersion(OAId, version);
                     model.addAttribute("jobSearchInfo", jobSearch);
                 }
-                case "セミナー・合説" -> {
+                case seminar -> {
                     SeminarEntity seminar = service.findSeminarInfoByVersion(OAId, version);
                     model.addAttribute("seminarInfo", seminar);
                 }
-                case "忌引" -> {
+                case bereavement -> {
                     BereavementEntity bereavement = service.findBereavementInfoByVersion(OAId, version);
                     model.addAttribute("bereavementInfo", bereavement);
                 }
-                case "出席停止" -> {
+                case attendanceBan -> {
                     AttendanceBanEntity attendanceBan = service.findAttendanceBanInfoByVersion(OAId, version);
                     model.addAttribute("attendanceBanInfo", attendanceBan);
                 }
-                case "その他" -> {
+                case other -> {
                     OtherEntity other = service.findOtherInfoByVersion(OAId, version);
                     model.addAttribute("otherInfo", other);
                 }
@@ -376,28 +376,28 @@ public class StudentController {
         Map<String, List<String>> OAPeriods = service.toOAPeriods(dateInfoEntities);
         //公欠日時をMapにする
         OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
-        switch (mainInfoDTO.reason()){
-            case "就活" -> {
+        switch (mainInfoEntity.reason()){
+            case jobSearch -> {
                 JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
                 OAMainForm form = service.toJobSearchForm(mainInfoDTO,OAPeriods,jobSearch);
                 model.addAttribute("oAMainForm", form);
             }
-            case "セミナー・合説" -> {
+            case seminar -> {
                 SeminarEntity seminar = service.findSeminarInfo(OAId);
                 OAMainForm form = service.toSeminarForm(mainInfoDTO, OAPeriods, seminar);
                 model.addAttribute("oAMainForm", form);
             }
-            case "忌引" -> {
+            case bereavement -> {
                 BereavementEntity bereavement = service.findBereavementInfo(OAId);
                 OAMainForm form = service.toBereavementForm(mainInfoDTO, OAPeriods, bereavement);
                 model.addAttribute("oAMainForm", form);
             }
-            case "出席停止" -> {
+            case attendanceBan -> {
                 AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
                 OAMainForm form = service.toAttendanceBanForm(mainInfoDTO, OAPeriods, attendanceBan);
                 model.addAttribute("oAMainForm", form);
             }
-            case "その他" -> {
+            case other -> {
                 OtherEntity other = service.findOtherInfo(OAId);
                 OAMainForm form = service.toOtherForm(mainInfoDTO, OAPeriods, other);
                 model.addAttribute("oAMainForm", form);

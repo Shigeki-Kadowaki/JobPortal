@@ -133,17 +133,17 @@ public interface MainRepository {
             classroom,
             course,
             student_name,
-            official_absences.status,
+            o.status,
             reason,
-            reports.status AS reportStatus,
+            r.status AS reportStatus,
             report_required,
-            (SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
-            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
-            official_absence_date_histories.period
-        FROM official_absences
-        LEFT OUTER JOIN official_absence_date_histories
+            (SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+            d.period
+        FROM official_absences o
+        LEFT OUTER JOIN official_absence_date_histories d
         USING (official_absence_id)
-        LEFT OUTER JOIN reports
+        LEFT OUTER JOIN reports r
         USING (official_absence_id)
         WHERE student_id = #{studentId}
         AND (official_absence_id, version) IN (
@@ -165,7 +165,7 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
         </if>
-        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,official_absences.status,reason,reportStatus,official_absence_date_histories.period,report_required
+        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required
         ORDER BY official_absence_id DESC, period;
         </script>
     """)
@@ -179,27 +179,27 @@ public interface MainRepository {
         LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
         )
         SELECT
-        	official_absences.official_absence_id,
+        	o.official_absence_id,
         	student_id,
         	grade,
         	classroom,
         	course,
         	student_name,
-        	official_absences.status,
+        	o.status,
         	reason,
-        	reports.status AS reportStatus,
+        	r.status AS reportStatus,
         	report_required,
-        	(SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
-            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
-        	official_absence_date_histories.period
-        FROM official_absences
-        LEFT OUTER JOIN official_absence_date_histories
+        	(SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+        	d.period
+        FROM official_absences o
+        LEFT OUTER JOIN official_absence_date_histories d
         USING (official_absence_id)
-        LEFT OUTER JOIN reports
+        LEFT OUTER JOIN reports r
         USING (official_absence_id)
         JOIN List
         USING(official_absence_id)
-        WHERE (official_absences.official_absence_id, version) IN (
+        WHERE (o.official_absence_id, version) IN (
         	SELECT
         		official_absence_id,
         		MAX(version)
@@ -233,7 +233,7 @@ public interface MainRepository {
         <if test='form.todayOAFlag'>
             AND official_absence_date = CURRENT_DATE
         </if>
-        GROUP BY official_absences.official_absence_id,student_id,course,student_name,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
+        GROUP BY o.official_absence_id,student_id,course,student_name,o.status,reason,reportStatus,report_required,d.period
         ORDER BY official_absence_id DESC, period;
     </script>
     """)
