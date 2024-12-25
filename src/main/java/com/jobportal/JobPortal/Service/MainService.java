@@ -179,24 +179,14 @@ public class MainService {
 
     //重複データを排除するために、ListをMapにするメソッド
     public Map<String, List<OALessonsDTO>> toLessonInfoDTO(List<OADateInfoEntity> allInfoDTO) {
-        Map<String, List<OALessonsDTO>> map = new TreeMap<>();
-        List<OALessonsDTO> allLessonsList = new ArrayList<>();
-        LocalDate prevDate = allInfoDTO.getFirst().officialAbsenceDate();
-        for (OADateInfoEntity oaAllInfoDTO : allInfoDTO) {
-            if (prevDate.toString().equals(oaAllInfoDTO.officialAbsenceDate().toString())) {
-                allLessonsList.add(new OALessonsDTO(oaAllInfoDTO.period(), oaAllInfoDTO.lessonName()));
-            } else {
-                map.put(dateFormat(prevDate), allLessonsList);
-                prevDate = oaAllInfoDTO.officialAbsenceDate();
-                allLessonsList = new ArrayList<>(List.of(new OALessonsDTO(oaAllInfoDTO.period(), oaAllInfoDTO.lessonName())));
-            }
-        }
-        map.put(dateFormat(prevDate), allLessonsList);
-//        map.forEach((k,v)->{
-//            System.out.println(k);
-//            v.forEach(System.out::println);
-//        });
-        return map;
+        return allInfoDTO.stream().collect(
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate)
+        ).entrySet().stream().collect(
+                Collectors.toMap(
+                        e->e.getKey().toString(),
+                        e->e.getValue().stream().map(v-> new OALessonsDTO(v.period(),v.lessonName())).toList()
+                )
+        );
     }
     //公欠授業をリスト化
     public List<OAListDTO> toListEntity(List<OAListEntity> listEntity) {

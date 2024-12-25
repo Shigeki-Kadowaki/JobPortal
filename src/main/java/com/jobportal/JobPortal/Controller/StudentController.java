@@ -147,6 +147,7 @@ public class StudentController {
         model.addAttribute("studentId",studentId);
         model.addAttribute("mode", "create");
         Student student = (Student) request.getAttribute("student");
+        //学校で使う用
         //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
         model.addAttribute("subjects", subjects);
@@ -264,10 +265,6 @@ public class StudentController {
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
-//            listDTO.forEach(e->{
-//                System.out.println(e.officialAbsenceId());
-//                e.lessons().forEach(System.out::println);
-//            });
         }
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
@@ -283,10 +280,6 @@ public class StudentController {
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
-//            listDTO.forEach(e->{
-//                System.out.println(e.officialAbsenceId());
-//                e.lessons().forEach(System.out::println);
-//            });
         }
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
