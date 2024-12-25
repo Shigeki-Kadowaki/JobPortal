@@ -263,18 +263,13 @@ public class MainService {
         }
     }
     public OAMainForm toJobSearchForm(OAMainInfoDTO mainInfoDTO, Map<String, List<OALessonsDTO>> lessonInfoEntities, JobSearchEntity jobSearch) {
-        Map<String, List<String>> map = new HashMap<>();
-        lessonInfoEntities.forEach((k,v)->{
-            List<String> l = new ArrayList<>();
-            v.forEach(e->{
-                l.add(e.toString());
-            });
-            map.put(k, l);
-        });
         return new OAMainForm(
             jobSearch,
             mainInfoDTO.reason(),
-            map,
+            lessonInfoEntities.entrySet().stream().collect(
+                    Collectors.toMap(
+                            Map.Entry::getKey,
+                            e -> e.getValue().stream().map(k -> k.period().toString()).toList())),
             mainInfoDTO.reportRequired(),
             jobSearch.work().toString(),
             jobSearch.companyName(),
