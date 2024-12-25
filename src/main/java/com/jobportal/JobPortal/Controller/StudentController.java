@@ -261,7 +261,6 @@ public class StudentController {
         }
         //OAList取得
         List<OAListEntity> listEntity = service.findAllOAs(studentId, form);
-        //公欠日時をMapにする
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = service.toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
@@ -376,9 +375,7 @@ public class StudentController {
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         Map<String, List<String>> OAPeriods = service.toOAPeriods(dateInfoEntities);
         //公欠日時をMapにする
-            OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
-//        //共通部分抽出
-//        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
+        OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
         switch (mainInfoDTO.reason()){
             case "就活" -> {
                 JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);

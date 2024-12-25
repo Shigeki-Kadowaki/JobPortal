@@ -137,8 +137,8 @@ public interface MainRepository {
             reason,
             reports.status AS reportStatus,
             report_required,
-            MIN(official_absence_date) AS startDate,
-            MAX(official_absence_date) AS endDate,
+            (SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
+            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
             official_absence_date_histories.period
         FROM official_absences
         LEFT OUTER JOIN official_absence_date_histories
@@ -189,8 +189,8 @@ public interface MainRepository {
         	reason,
         	reports.status AS reportStatus,
         	report_required,
-        	MIN(official_absence_date_histories.official_absence_date) AS startDate,
-        	MAX(official_absence_date_histories.official_absence_date) AS endDate,
+        	(SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
+            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = official_absences.official_absence_id),
         	official_absence_date_histories.period
         FROM official_absences
         LEFT OUTER JOIN official_absence_date_histories

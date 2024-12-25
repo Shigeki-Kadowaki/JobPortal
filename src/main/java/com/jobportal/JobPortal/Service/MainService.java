@@ -180,7 +180,7 @@ public class MainService {
     //重複データを排除するために、ListをMapにするメソッド
     public Map<String, List<OALessonsDTO>> toLessonInfoDTO(List<OADateInfoEntity> allInfoDTO) {
         return allInfoDTO.stream().collect(
-                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate)
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new,Collectors.toList())
         ).entrySet().stream().collect(
                 Collectors.toMap(
                         e->e.getKey().toString(),
@@ -199,14 +199,14 @@ public class MainService {
                         k.classroom(),
                         k.course(),
                         k.name(),
-                        k.status(),
-                        k.reason(),
-                        k.reportStatus(),
+                        existsReport(k.status()),
+                        k.reason().getJapaneseName(),
+                        existsReport(k.reportStatus()),
                         k.reportRequired(),
-                        k.startDate(),
-                        k.endDate(),
+                        dateFormat(k.startDate()),
+                        dateFormat(k.endDate()),
                         k.endDate().isBefore(today) || k.endDate().isEqual(today)
-                        ))).entrySet().stream()
+                        ),LinkedHashMap::new,Collectors.toList())).entrySet().stream()
                 .map(entry -> new OAListDTO(
                         (Integer) entry.getKey().get(0),
                         (Integer) entry.getKey().get(1),
@@ -226,21 +226,17 @@ public class MainService {
     }
     //yyyy-mm-ddをyyyy年mm月dd日(曜日)にする
     public static String dateFormat(LocalDate date) {
-        String yyyy = date.toString().substring(0,4);
-        String mm = date.toString().substring(5,7);
-        String dd = date.toString().substring(8,10);
-        String dow = "";
-        Calendar cal = Calendar.getInstance();
-        cal.set(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd));
-        dow = switch (cal.get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.SUNDAY -> "(日)";
-            case Calendar.MONDAY -> "(月)";
-            case Calendar.TUESDAY -> "(火)";
-            case Calendar.WEDNESDAY -> "(水)";
-            case Calendar.THURSDAY -> "(木)";
-            case Calendar.FRIDAY -> "(金)";
-            case Calendar.SATURDAY -> "(土)";
-            default -> dow;
+        String yyyy = String.valueOf(date.getYear());
+        String mm = String.valueOf(date.getMonthValue());
+        String dd = String.valueOf(date.getDayOfMonth());
+        String dow = switch (date.getDayOfWeek()) {
+            case SUNDAY -> "(日)";
+            case MONDAY -> "(月)";
+            case TUESDAY -> "(火)";
+            case WEDNESDAY -> "(水)";
+            case THURSDAY -> "(木)";
+            case FRIDAY -> "(金)";
+            case SATURDAY -> "(土)";
         };
         return yyyy + "年" + mm + "月" + dd + "日" + dow;
     }
@@ -498,10 +494,10 @@ public class MainService {
 
     public Map<String, List<String>> toOAPeriods(List<OADateInfoEntity> dateInfoEntities) {
         return dateInfoEntities.stream().collect(
-                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate)
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new,Collectors.toList())
         ).entrySet().stream().collect(
             Collectors.toMap(
-                e->e.getKey().toString(),
+                e->e.getKey().toString().replaceAll("-",""),
                 e->e.getValue().stream().map(v->v.period().toString()).toList()
             )
         );
