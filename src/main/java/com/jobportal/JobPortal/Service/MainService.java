@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
@@ -199,54 +201,22 @@ public class MainService {
     }
     //公欠授業をリスト化
     public List<OAListDTO> toListEntity(List<OAListEntity> listEntity) {
-        List<OAListDTO> listDTO = new ArrayList<>();
-        List<Integer> lessons = new ArrayList<>();
-        Integer prevId = listEntity.getFirst().officialAbsenceId();
-        final LocalDate currentDate = LocalDate.now();
-        int index = 0;
-        int i = 0;
-        for(var list : listEntity){
-            if(listEntity.get(index).officialAbsenceId().equals(list.officialAbsenceId())){
-                lessons.add(list.period());
-            }else {
-                listDTO.add(new OAListDTO(
-                        listEntity.get(index).officialAbsenceId(),
-                        listEntity.get(index).studentId(),
-                        listEntity.get(index).grade(),
-                        listEntity.get(index).classroom(),
-                        listEntity.get(index).course(),
-                        listEntity.get(index).name(),
-                        existsReport(listEntity.get(index).status()),
-                        listEntity.get(index).reason().getJapaneseName(),
-                        existsReport(listEntity.get(index).reportStatus()),
-                        listEntity.get(index).reportRequired(),
-                        dateFormat(listEntity.get(index).startDate()),
-                        dateFormat(listEntity.get(index).endDate()),
-                        listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
-                        lessons
-                        ));
-                lessons = new ArrayList<>(List.of(list.period()));
-                index = i;
-            }
-            i++;
-        }
-        listDTO.add(new OAListDTO(
-                listEntity.get(index).officialAbsenceId(),
-                listEntity.get(index).studentId(),
-                listEntity.get(index).grade(),
-                listEntity.get(index).classroom(),
-                listEntity.get(index).course(),
-                listEntity.get(index).name(),
-                existsReport(listEntity.get(index).status()),
-                listEntity.get(index).reason().getJapaneseName(),
-                existsReport(listEntity.get(index).reportStatus()),
-                listEntity.get(index).reportRequired(),
-                dateFormat(listEntity.get(index).startDate()),
-                dateFormat(listEntity.get(index).endDate()),
-                listEntity.get(index).endDate().isBefore(currentDate) || listEntity.get(index).endDate().isEqual(currentDate),
-                lessons
-        ));
-        return listDTO;
+        LocalDate today = LocalDate.now();
+        List<OAListDTO> l = listEntity.stream()
+                .collect(Collectors.groupingBy(k -> new AbstractMap.SimpleEntry<>(
+                        k.officialAbsenceId(),
+                        k.studentId(),
+                        k.grade(),
+                        k.classroom(),
+                        k.course(),
+                        k.name(),
+                        k.status(),
+                        k.reason(),
+                        k.reportStatus(),
+                        k.reportRequired(),
+                        k.startDate(),
+                        k.endDate()
+                        ) {}))
     }
     //yyyy-mm-ddをyyyy年mm月dd日(曜日)にする
     public static String dateFormat(LocalDate date) {
