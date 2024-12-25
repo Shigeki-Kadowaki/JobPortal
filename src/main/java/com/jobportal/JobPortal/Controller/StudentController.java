@@ -496,7 +496,7 @@ public class StudentController {
     }
 
     //破棄
-    @DeleteMapping("/student/{studentId}/OAList/{OAId}/cansel")
+    @DeleteMapping("/student/{studentId}/OAList/{OAId}")
     public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         switch (mainInfoEntity.reason()){

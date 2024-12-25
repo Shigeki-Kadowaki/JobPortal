@@ -16,7 +16,7 @@
   <div class="card w-50 mx-auto">
     <h5 class="card-header">例外日を追加</h5>
     <div class="card-body">
-      <form th:action="@{/jobportal/teacher/exceptionDate/post}" method="post" th:object="${exceptionDate}">
+      <form th:action="@{/jobportal/teacher/exceptionDate}" method="post" th:object="${exceptionDate}">
         <div class="row">
           <div class="col-4">
             <div th:errors="${exceptionDate.exceptionDay}"></div>
@@ -71,16 +71,16 @@
     </tr>
     </thead>
     <tbody>
-    <div th:each="exceptionDate, stat : ${exceptionDateList}">
-      <tr>
-        <th scope="row" class="align-content-center">[[${stat.index}]]</th>
-        <div th:each="exception : ${exceptionDate}">
-          <td class="align-content-center">[[${exception.exceptionDate}]]</td>
-          <td class="align-content-center">[[${exception.weekdayNumber}]]</td>
-          <td  class="align-content-center p-0"><a th:href="@{/jobportal/teacher/exceptionDate/delete/id(id=${stat.index})}" class="btn btn-danger">削除</a></td>
-        </div>
-      </tr>
-    </div>
+      <div th:each="exceptionDate, stat : ${exceptionDateList}">
+        <tr>
+          <th scope="row" class="align-content-center">[[${stat.index}]]</th>
+            <td class="align-content-center">[[${exceptionDate.exceptionDate}]]</td>
+            <td class="align-content-center">[[${exceptionDate.weekdayNumber}]]</td>
+            <form th:action="@{/jobportal/teacher/exceptionDate(id=${stat.index})}" th:method="delete">
+              <td  class="align-content-center p-0"><button class="btn btn-danger" type="submit">削除</button></td>
+            </form>
+        </tr>
+      </div>
     </tbody>
   </table>
 </section>

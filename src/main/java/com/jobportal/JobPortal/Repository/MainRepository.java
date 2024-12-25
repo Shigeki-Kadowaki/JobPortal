@@ -646,7 +646,7 @@ public interface MainRepository {
 
     @Delete("""
         DELETE FROM exception_dates
-        WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day LIMIT 1 OFFSET #{id});
+        WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day DESC LIMIT 1 OFFSET #{id});
     """)
     void deleteExceptionDate(@Param("id") Integer id);
 

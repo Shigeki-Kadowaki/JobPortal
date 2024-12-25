@@ -217,12 +217,11 @@ public class TeacherController {
         List<ExceptionDateDTO> exceptionDateDTO = exceptionDateList.stream()
                         .map(e->new ExceptionDateDTO(MainService.dateFormat(e.exceptionDate()), MainService.weekDayFormat(e.weekdayNumber())))
                         .toList();
-        System.out.println(exceptionDateDTO);
         model.addAttribute("exceptionDateList", exceptionDateDTO);
         return "exceptionDate";
     }
     //例外時間割ポスト
-    @PostMapping("/teacher/exceptionDate/post")
+    @PostMapping("/teacher/exceptionDate")
     public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, BindingResult bindingResult, Model model) {
         model.addAttribute("exceptionDate", exceptionDate);
         if(bindingResult.hasErrors()){
@@ -233,9 +232,10 @@ public class TeacherController {
         System.out.println("success");
         return "redirect:/jobportal/teacher/exceptionDate";
     }
-    @GetMapping("/teacher/exceptionDate/delete/id")
+    @DeleteMapping ("/teacher/exceptionDate")
     public String deleteExceptionDate(@RequestParam("id") Integer id) {
         System.out.println(id);
+        System.out.println("delete");
         service.deleteExceptionDate(id);
         return "redirect:/jobportal/teacher/exceptionDate";
     }
