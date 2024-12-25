@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -202,8 +201,8 @@ public class MainService {
     //公欠授業をリスト化
     public List<OAListDTO> toListEntity(List<OAListEntity> listEntity) {
         LocalDate today = LocalDate.now();
-        List<OAListDTO> l = listEntity.stream()
-                .collect(Collectors.groupingBy(k -> new AbstractMap.SimpleEntry<>(
+        return listEntity.stream()
+                .collect(Collectors.groupingBy(k -> Arrays.asList(
                         k.officialAbsenceId(),
                         k.studentId(),
                         k.grade(),
@@ -215,8 +214,25 @@ public class MainService {
                         k.reportStatus(),
                         k.reportRequired(),
                         k.startDate(),
-                        k.endDate()
-                        ) {}))
+                        k.endDate(),
+                        k.endDate().isBefore(today) || k.endDate().isEqual(today)
+                        ))).entrySet().stream()
+                .map(entry -> new OAListDTO(
+                        (Integer) entry.getKey().get(0),
+                        (Integer) entry.getKey().get(1),
+                        (Integer) entry.getKey().get(2),
+                        entry.getKey().get(3).toString(),
+                        entry.getKey().get(4).toString(),
+                        entry.getKey().get(5).toString(),
+                        entry.getKey().get(6).toString(),
+                        entry.getKey().get(7).toString(),
+                        entry.getKey().get(8).toString(),
+                        (Boolean) entry.getKey().get(9),
+                        entry.getKey().get(10).toString(),
+                        entry.getKey().get(11).toString(),
+                        (Boolean)entry.getKey().get(12),
+                        entry.getValue().stream().map(OAListEntity::period).collect(Collectors.toList())
+                )).toList();
     }
     //yyyy-mm-ddをyyyy年mm月dd日(曜日)にする
     public static String dateFormat(LocalDate date) {
