@@ -213,7 +213,7 @@ public interface MainRepository {
             AND classroom = #{form.classroom}
         </if>
         <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-            AND official_absences.status IN
+            AND o.status IN
                 <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
                     #{status}
                 </foreach>
@@ -225,7 +225,7 @@ public interface MainRepository {
             <if test='form.andFlag'>
                 OR
             </if>
-            reports.status IN
+            r.status IN
             <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
                 #{reportStatus}
             </foreach>
@@ -358,7 +358,8 @@ public interface MainRepository {
             teacher_check,
             career_check,
             submitted_date_histories.version,
-            (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
+            (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+            student_email
         FROM official_absences
         LEFT OUTER JOIN reports
         USING (official_absence_id)
@@ -374,8 +375,6 @@ public interface MainRepository {
             official_absence_date_histories.period,
             lesson_name
         FROM official_absence_date_histories
-        INNER JOIN lessons
-        USING (lesson_id)
         WHERE official_absence_id = #{OAId}
         AND version = #{version}
         ORDER BY official_absence_date, period;
