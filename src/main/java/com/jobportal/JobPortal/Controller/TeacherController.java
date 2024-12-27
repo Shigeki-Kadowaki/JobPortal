@@ -5,10 +5,10 @@ import com.jobportal.JobPortal.Controller.Form.ExceptionDateForm;
 import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
 import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
 import com.jobportal.JobPortal.Service.DTO.ExceptionDateDTO;
-import com.jobportal.JobPortal.Service.DTO.OALessonsDTO;
-import com.jobportal.JobPortal.Service.DTO.OAListDTO;
-import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
-import com.jobportal.JobPortal.Service.Entity.*;
+import com.jobportal.JobPortal.Service.Entity.ExceptionDateEntity;
+import com.jobportal.JobPortal.Service.Entity.OADateInfoEntity;
+import com.jobportal.JobPortal.Service.Entity.OAMainInfoEntity;
+import com.jobportal.JobPortal.Service.Entity.TimeTableEntity;
 import com.jobportal.JobPortal.Service.MainService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -35,7 +35,6 @@ public class TeacherController {
     public HttpSession session;
 
     public final String sendAddress = "40104kk@saisen.ac.jp";
-    final Integer pageSize = 25;
     final Map<String, String> colors = new HashMap<>(){
         {
             put("受理", "list-group-item-success");
@@ -57,95 +56,20 @@ public class TeacherController {
         if(session.getAttribute("searchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("searchForm");
         }
-        if(page == 0){
-            page = 1;
-            if(session.getAttribute("searchForm") == null) {
-                session.setAttribute("page", page);
-            }else{
-                page = (Integer) session.getAttribute("page");
-            }
-        }else{
-            session.setAttribute("page", page);
-        }
-        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page, pageSize);
-        if(!listEntity.isEmpty()) {
-            List<OAListDTO> listDTO = service.toListEntity(listEntity);
-            model.addAttribute("mainList", listDTO);
-        }
-        Integer size = service.countOA();
-        model.addAttribute("size", size);
-        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
-        model.addAttribute("searchForm", form);
-        model.addAttribute("colors", colors);
-        model.addAttribute("page", page);
-        System.out.println((int)Math.ceil((double) size / pageSize));
-        return "teacher_OAList";
+        return service.getTeacherOAList(page, form, model, session);
     }
     //OAList検索
     @GetMapping(value = "/teacher/OAList", params = "search")
     public String showTeacherOAListSearch(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page){
         session.setAttribute("searchForm", form);
-        if(page == 0){
-            page = 1;
-            if(session.getAttribute("searchForm") == null) {
-                session.setAttribute("page", page);
-            }else{
-                page = (Integer) session.getAttribute("page");
-            }
-        }else{
-            session.setAttribute("page", page);
-        }
-        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, page, pageSize);
-        if(!listEntity.isEmpty()) {
-            List<OAListDTO> listDTO = service.toListEntity(listEntity);
-            model.addAttribute("mainList", listDTO);
-        }
-        Integer size = service.countSearchOA(form);
-        model.addAttribute("size", size);
-        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
-        model.addAttribute("searchForm", form);
-        model.addAttribute("colors", colors);
-        model.addAttribute("page", page);
-        System.out.println((int)Math.ceil((double) size / pageSize));
-        return "teacher_OAList";
+        return service.getTeacherOAList(page, form, model, session);
     }
     //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        //公欠日時をMapにする
-        if(!dateInfoEntities.isEmpty()){
-            Map<String, List<OALessonsDTO>> lessonInfoEntities = service.toLessonInfoDTO(dateInfoEntities);
-            OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
-//        //共通部分抽出
-//        OAMainInfoDTO mainInfoDTO = allInfoDTO.getFirst().toOAMainInfoDTO();
-            switch (mainInfoEntity.reason()){
-                case jobSearch -> {
-                    JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-                    model.addAttribute("jobSearchInfo", jobSearch);
-                }
-                case seminar -> {
-                    SeminarEntity seminar = service.findSeminarInfo(OAId);
-                    model.addAttribute("seminarInfo", seminar);
-                }
-                case bereavement -> {
-                    BereavementEntity bereavement = service.findBereavementInfo(OAId);
-                    model.addAttribute("bereavementInfo", bereavement);
-                }
-                case attendanceBan -> {
-                    AttendanceBanEntity attendanceBan = service.findAttendanceBanInfo(OAId);
-                    model.addAttribute("attendanceBanInfo", attendanceBan);
-                }
-                case other -> {
-                    OtherEntity other = service.findOtherInfo(OAId);
-                    model.addAttribute("otherInfo", other);
-                }
-            }
-            model.addAttribute("lessonInfo", lessonInfoEntities);
-            model.addAttribute("mainInfo", mainInfoDTO);
-        }
-        return "teacher_OAInfo";
+        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "teacher_");
     }
     //OA承認
     @PutMapping(value="/teacher/{OAId}", params = "acceptance")

@@ -11,6 +11,7 @@ import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
 import com.jobportal.JobPortal.Service.Entity.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
@@ -39,6 +40,7 @@ public class MainService {
     private final MainRepository repository;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
+    final Integer pageSize = 25;
     public final Subject[][] subjects = {
             {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
             {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
@@ -579,7 +581,7 @@ public class MainService {
         return "OAList";
     }
 
-    public String getOAInfo(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model) {
+    public String getOAInfo(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model, String teacher) {
         if(!dateInfoEntities.isEmpty()){
             Map<String, List<OALessonsDTO>> lessonInfoEntities = toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
@@ -609,7 +611,7 @@ public class MainService {
             model.addAttribute("mainInfo", mainInfoDTO);
             model.addAttribute("mode", "info");
         }
-        return "OAInfo";
+        return teacher + "OAInfo";
     }
     public String getOAInfoByVersion(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model, Integer version) {
         if(!dateInfoEntities.isEmpty()){
@@ -678,6 +680,32 @@ public class MainService {
         updateCheck(OAId, "teacher", false);
         updateCheck(OAId, "career", false);
         return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+    public String getTeacherOAList(Integer page, TeacherOASearchForm form, Model model, HttpSession session) {
+        if(page == 0){
+            page = 1;
+            if(session.getAttribute("page") == null) {
+                session.setAttribute("page", page);
+            }else{
+                page = (Integer) session.getAttribute("page");
+            }
+        }else{
+            session.setAttribute("page", page);
+        }
+        List<OAListEntity> listEntity = teacherFindAllOAs(form, page, pageSize);
+        if(!listEntity.isEmpty()) {
+            List<OAListDTO> listDTO = toListEntity(listEntity);
+            model.addAttribute("mainList", listDTO);
+        }
+        Integer size = countOA();
+        model.addAttribute("size", size);
+        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
+        model.addAttribute("searchForm", form);
+        model.addAttribute("colors", colors);
+        model.addAttribute("page", page);
+        System.out.println((int)Math.ceil((double) size / pageSize));
+        return "teacher_OAList";
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

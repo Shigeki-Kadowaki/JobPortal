@@ -213,7 +213,7 @@ public interface MainRepository {
             AND classroom = #{form.classroom}
         </if>
         <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-            AND official_absences.status IN
+            AND o.status IN
                 <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
                     #{status}
                 </foreach>
@@ -225,7 +225,7 @@ public interface MainRepository {
             <if test='form.andFlag'>
                 OR
             </if>
-            reports.status IN
+            r.status IN
             <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
                 #{reportStatus}
             </foreach>
