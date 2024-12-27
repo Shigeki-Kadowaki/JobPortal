@@ -688,7 +688,7 @@ public interface MainRepository {
     @Select("""
     <script>
         SELECT
-        	COUNT(*)
+        	COUNT(DISTINCT official_absence_id)
         FROM official_absences
         LEFT OUTER JOIN official_absence_date_histories
         USING (official_absence_id)
