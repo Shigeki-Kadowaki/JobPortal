@@ -1,5 +1,6 @@
 package com.jobportal.JobPortal.Service.Entity;
 
+import com.jobportal.JobPortal.Service.OAReason;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ public class OAMainEntity {
     final Integer studentId;
     final Boolean reportRequired;
     final String status;
-    final String reason;
+    final OAReason reason;
     final boolean reportSubmittedFlag;
     final boolean careerCheckRequired;
     final boolean teacherCheck;

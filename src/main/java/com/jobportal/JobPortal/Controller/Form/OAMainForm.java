@@ -4,6 +4,7 @@ import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.Entity.*;
 import com.jobportal.JobPortal.Service.JobSearchWork;
+import com.jobportal.JobPortal.Service.OAReason;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -95,7 +96,7 @@ public class OAMainForm {
                         studentId,
                         checkReportRequired(reasonForAbsence),
                         "unaccepted",
-                        reasonForAbsence,
+                        OAReason.valueOf(reasonForAbsence),
                         false,
                         checkReportRequired(reasonForAbsence),
                         false,
@@ -170,16 +171,14 @@ public class OAMainForm {
                 periodMap.forEach((date,periods)->{
                         final int[] index = {0};
                                 periods.forEach(period->{
-                                        //(String date(yyyymmdd), String period)を(LocalDate date(yyyy-mm-dd), Integer period)にする。
                                         dates.add(new OADatesEntity(
                                                 Integer.parseInt(period),
                                                 LocalDate.parse(formatDate(date,"-")),
                                                 subjectMap.get(date).get(index[0]++))
                                                 );
                                 });
-                        });
+                });
                 return dates;
-
         }
 
         public static  boolean checkJobSearchFlag(String reason){
