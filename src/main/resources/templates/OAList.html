@@ -76,14 +76,6 @@
       </th:block>
 
       <a th:href="@{/jobportal/student/{studentId}/OAList/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
-<!--&lt;!&ndash;      報告書未提出&ndash;&gt;-->
-<!--      <th:block th:if="${value.reportRequired}">-->
-<!--        <a th:href="@{/jobportal/student/{studentId}/reportform/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" th:classappend="|${(value.reportSubmissionFlag and value.reportRequired)?'btn-primary':'btn-secondary'} ${(value.reportSubmissionFlag and value.reportRequired)?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書提出</h5></a>-->
-<!--      </th:block>-->
-<!--&lt;!&ndash;      報告書提出済み&ndash;&gt;-->
-<!--      <th:block th:unless="${value.reportRequired}">-->
-<!--        <a th:href="@{/jobportal/student/{studentId}/reportinfo/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}"  type="button" class="btn reportbtn btn-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>-->
-<!--      </th:block>-->
       <a th:href="@{/jobportal/student/{studentId}/reportform/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})}" th:classappend="|${(value.reportSubmittedFlag and value.reportRequired)?'btn-primary':'btn-secondary'} ${(value.reportSubmittedFlag and value.reportRequired)?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5 th:text="${value.reportStatus == '未提出'?'報告書提出':'報告書詳細'}">報告書提出</h5></a>
     </ul>
   </div>

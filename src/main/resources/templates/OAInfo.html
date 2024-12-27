@@ -33,14 +33,6 @@
     <br>
     <div id="versionChangeButton" class="text-end"></div>
     <br>
-    <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
-        <div>
-            [[${mapEntry.key}]]<br>
-            <div th:each="v : ${mapEntry.value}">
-                [[${v.period}]]限目:[[${v.lessonName}]]
-            </div>
-        </div>
-    </div>
     <div>
         ステータス : [[${mainInfo.status}]]<br>
         提出日 : [[${mainInfo.submittedDate}]]<br>
@@ -72,6 +64,14 @@
             理由 : [[*{otherReason}]]<br>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
+    </div>
+    <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
+        <div>
+            [[${mapEntry.key}]]<br>
+            <div th:each="v : ${mapEntry.value}">
+                [[${v.period}]]限目:[[${v.lessonName}]]
+            </div>
+        </div>
     </div>
     <br><br><br>
     <th:block th:if="${mode == 'info'}">

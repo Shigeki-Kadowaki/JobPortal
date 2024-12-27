@@ -581,7 +581,7 @@ public class MainService {
         return "OAList";
     }
 
-    public String getOAInfo(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model, String teacher) {
+    public String getOAInfo(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model, String teacher, String mode) {
         if(!dateInfoEntities.isEmpty()){
             Map<String, List<OALessonsDTO>> lessonInfoEntities = toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
@@ -609,7 +609,7 @@ public class MainService {
             }
             model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
-            model.addAttribute("mode", "info");
+            model.addAttribute("mode", mode);
         }
         return teacher + "OAInfo";
     }
@@ -698,14 +698,18 @@ public class MainService {
             List<OAListDTO> listDTO = toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
-        Integer size = countOA();
+        Integer size = countSearchOA(form);
         model.addAttribute("size", size);
         model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
+        System.out.println(size);
         System.out.println((int)Math.ceil((double) size / pageSize));
         return "teacher_OAList";
+    }
+
+    public void serachStudent(String studentId) {
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();

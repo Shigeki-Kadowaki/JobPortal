@@ -185,15 +185,15 @@ public class StudentController {
     @GetMapping("/student/{studentId}/OAList")
     public String showStudentOAList(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
         //session取得
-        if(session.getAttribute("searchForm") != null){
-            form = (StudentOASearchForm) session.getAttribute("searchForm");
+        if(session.getAttribute("StudentSearchForm") != null){
+            form = (StudentOASearchForm) session.getAttribute("StudentSearchForm");
         }
         return service.getStudentOAList(studentId, form, model);
     }
     //OAList検索
     @GetMapping(value = "/student/{studentId}/OAList", params = "search")
     public String showStudentOAListSearch(@PathVariable("studentId") Integer studentId, StudentOASearchForm form, Model model){
-        session.setAttribute("searchForm", form);
+        session.setAttribute("StudentSearchForm", form);
         return service.getStudentOAList(studentId, form, model);
     }
     //公欠届詳細
@@ -202,7 +202,7 @@ public class StudentController {
         //OAInfo取得
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "");
+        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "", "info");
     }
     //公欠届別バージョン詳細
     @GetMapping("/student/{studentId}/{OAId}")

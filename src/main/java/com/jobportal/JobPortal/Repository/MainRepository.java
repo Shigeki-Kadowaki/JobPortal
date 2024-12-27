@@ -173,7 +173,7 @@ public interface MainRepository {
     @Select("""
     <script>
         WITH List AS(
-        SELECT DISTINCT official_absence_id
+        SELECT official_absence_id
         FROM official_absences
         ORDER BY official_absence_id DESC
         LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
@@ -197,7 +197,7 @@ public interface MainRepository {
         USING (official_absence_id)
         LEFT OUTER JOIN reports r
         USING (official_absence_id)
-        JOIN List
+        LEFT OUTER JOIN List
         USING(official_absence_id)
         WHERE (o.official_absence_id, version) IN (
         	SELECT
@@ -688,7 +688,7 @@ public interface MainRepository {
     @Select("""
     <script>
         SELECT
-        	COUNT(*)
+        	COUNT(DISTINCT official_absence_id)
         FROM official_absences
         LEFT OUTER JOIN official_absence_date_histories
         USING (official_absence_id)
