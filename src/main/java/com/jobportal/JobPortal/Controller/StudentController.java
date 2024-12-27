@@ -202,7 +202,7 @@ public class StudentController {
         //OAInfo取得
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "");
+        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "", "info");
     }
     //公欠届別バージョン詳細
     @GetMapping("/student/{studentId}/{OAId}")

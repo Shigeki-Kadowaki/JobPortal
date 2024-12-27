@@ -13,7 +13,12 @@
 </head>
 <body>
 <section layout:fragment="content">
-  <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
+  <th:block th:if="${mode eq 'info'}">
+    <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
+  </th:block>
+  <th:block th:if="${mode eq 'search'}">
+    <a type="button" th:href="@{/jobportal/teacher/studentSearch(studentId=${mainInfo.studentId})}" class="btn btn-primary">戻る</a><br>
+  </th:block>
   <div>
     メール : [[${mainInfo.studentEmail}]]<br>
     ステータス : [[${mainInfo.status}]]<br>
@@ -56,10 +61,12 @@
     </div>
   </div>
   <br><br><br>
-  <div class="d-flex justify-content-between">
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
-  </div>
+  <th:block th:if="${mode eq 'info'}">
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
+    </div>
+  </th:block>
 
   <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

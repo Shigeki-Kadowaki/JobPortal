@@ -1,9 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
-import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
-import com.jobportal.JobPortal.Controller.Form.ExceptionDateForm;
-import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
+import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Service.DTO.ExceptionDateDTO;
 import com.jobportal.JobPortal.Service.Entity.ExceptionDateEntity;
 import com.jobportal.JobPortal.Service.Entity.OADateInfoEntity;
@@ -69,7 +66,7 @@ public class TeacherController {
     public String showTeacherOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "teacher_");
+        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "teacher_", "info");
     }
     //OA承認
     @PutMapping(value="/teacher/{OAId}", params = "acceptance")
@@ -156,11 +153,30 @@ public class TeacherController {
         System.out.println("success");
         return "redirect:/jobportal/teacher/exceptionDate";
     }
+
     @DeleteMapping ("/teacher/exceptionDate")
     public String deleteExceptionDate(@RequestParam("id") Integer id) {
         System.out.println(id);
         System.out.println("delete");
         service.deleteExceptionDate(id);
         return "redirect:/jobportal/teacher/exceptionDate";
+    }
+
+    @GetMapping("/teacher/studentSearch")
+    public String showStudentSearch(@ModelAttribute("studentId") @RequestParam(value = "studentId", required = false) Integer studentId, Model model) {
+        model.addAttribute("studentId", studentId);
+        System.out.println(studentId);
+        service.getStudentOAList(studentId, new StudentOASearchForm(null, null), model);
+        DesiredOccupation desiredOccupation = service.getOccupation(studentId);
+        model.addAttribute("desiredOccupation", desiredOccupation);
+        return "studentSearch";
+    }
+
+    //OA詳細
+    @GetMapping("/teacher/studentSearch/{OAId}")
+    public String showSearchStudentOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
+        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "teacher_", "search");
     }
 }
