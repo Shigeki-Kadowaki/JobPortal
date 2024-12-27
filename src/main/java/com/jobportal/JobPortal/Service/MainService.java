@@ -698,12 +698,13 @@ public class MainService {
             List<OAListDTO> listDTO = toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
-        Integer size = countOA();
+        Integer size = countSearchOA(form);
         model.addAttribute("size", size);
         model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
+        System.out.println(size);
         System.out.println((int)Math.ceil((double) size / pageSize));
         return "teacher_OAList";
     }
