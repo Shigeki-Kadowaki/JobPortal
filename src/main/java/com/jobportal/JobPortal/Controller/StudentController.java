@@ -95,17 +95,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}";
     }
 
-    @GetMapping("/test")
-    public String getTest(Model model){
-        model.addAttribute("exampleForm", new exampleForm());
-        return "test";
-    }
-    @PostMapping("/test")
-    public String postTest(exampleForm exampleForm, Model model){
-        exampleForm.getData().forEach((k,v)->System.out.println(k+v));
-        model.addAttribute("exampleForm", exampleForm);
-        return "redirect:test";
-    }
+
 //
 //    @PostMapping(value="/test", params="button1")
 //    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
