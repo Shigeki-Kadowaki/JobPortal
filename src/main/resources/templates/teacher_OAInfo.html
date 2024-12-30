@@ -13,16 +13,14 @@
 </head>
 <body>
 <section layout:fragment="content">
-  <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
-  <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
-    <div>
-      [[${mapEntry.key}]]<br>
-      <div th:each="v : ${mapEntry.value}">
-        [[${v.period}]]限目:[[${v.lessonName}]]
-      </div>
-    </div>
-  </div>
+  <th:block th:if="${mode eq 'info'}">
+    <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
+  </th:block>
+  <th:block th:if="${mode eq 'search'}">
+    <a type="button" th:href="@{/jobportal/teacher/studentSearch(studentId=${mainInfo.studentId})}" class="btn btn-primary">戻る</a><br>
+  </th:block>
   <div>
+    メール : [[${mainInfo.studentEmail}]]<br>
     ステータス : [[${mainInfo.status}]]<br>
     提出日 : [[${mainInfo.submittedDate}]]<br>
     公欠理由 : [[${mainInfo.reason}]]<br>
@@ -54,11 +52,21 @@
       <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
     </th:block>
   </div>
-  <br><br><br>
-  <div class="d-flex justify-content-between">
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
+  <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
+    <div>
+      [[${mapEntry.key}]]<br>
+      <div th:each="v : ${mapEntry.value}">
+        [[${v.period}]]限目:[[${v.lessonName}]]
+      </div>
+    </div>
   </div>
+  <br><br><br>
+  <th:block th:if="${mode eq 'info'}">
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
+    </div>
+  </th:block>
 
   <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

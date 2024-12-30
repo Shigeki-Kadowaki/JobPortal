@@ -116,17 +116,4 @@ window.addEventListener('DOMContentLoaded',()=>{
     for (let exceptionDate of exceptionDates){
         exceptionMap.set(exceptionDate.exceptionDate, exceptionDate.weekdayNumber);
     }
-    console.log(exceptionDates);
-    console.log("----------");
-    for (let exceptionDate of exceptionDates){
-        console.log(exceptionDate);
-    }
-    console.log("----------");
-    for (let exceptionDate in exceptionDates){
-        console.log(exceptionDate);
-    }
-    console.log("----------");
-    for (let exceptionDate in exceptionDates){
-        console.log(exceptionDates[exceptionDate]);
-    }
 })

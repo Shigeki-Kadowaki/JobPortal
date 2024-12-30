@@ -133,17 +133,17 @@ public interface MainRepository {
             classroom,
             course,
             student_name,
-            official_absences.status,
+            o.status,
             reason,
-            reports.status AS reportStatus,
+            r.status AS reportStatus,
             report_required,
-            MIN(official_absence_date) AS startDate,
-            MAX(official_absence_date) AS endDate,
-            official_absence_date_histories.period
-        FROM official_absences
-        LEFT OUTER JOIN official_absence_date_histories
+            (SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+            d.period
+        FROM official_absences o
+        LEFT OUTER JOIN official_absence_date_histories d
         USING (official_absence_id)
-        LEFT OUTER JOIN reports
+        LEFT OUTER JOIN reports r
         USING (official_absence_id)
         WHERE student_id = #{studentId}
         AND (official_absence_id, version) IN (
@@ -165,7 +165,7 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
         </if>
-        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,official_absences.status,reason,reportStatus,official_absence_date_histories.period,report_required
+        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required
         ORDER BY official_absence_id DESC, period;
         </script>
     """)
@@ -173,33 +173,33 @@ public interface MainRepository {
     @Select("""
     <script>
         WITH List AS(
-        SELECT DISTINCT official_absence_id
+        SELECT official_absence_id
         FROM official_absences
         ORDER BY official_absence_id DESC
         LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
         )
         SELECT
-        	official_absences.official_absence_id,
+        	o.official_absence_id,
         	student_id,
         	grade,
         	classroom,
         	course,
         	student_name,
-        	official_absences.status,
+        	o.status,
         	reason,
-        	reports.status AS reportStatus,
+        	r.status AS reportStatus,
         	report_required,
-        	MIN(official_absence_date_histories.official_absence_date) AS startDate,
-        	MAX(official_absence_date_histories.official_absence_date) AS endDate,
-        	official_absence_date_histories.period
-        FROM official_absences
-        LEFT OUTER JOIN official_absence_date_histories
+        	(SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
+        	d.period
+        FROM official_absences o
+        LEFT OUTER JOIN official_absence_date_histories d
         USING (official_absence_id)
-        LEFT OUTER JOIN reports
+        LEFT OUTER JOIN reports r
         USING (official_absence_id)
-        JOIN List
+        LEFT OUTER JOIN List
         USING(official_absence_id)
-        WHERE (official_absences.official_absence_id, version) IN (
+        WHERE (o.official_absence_id, version) IN (
         	SELECT
         		official_absence_id,
         		MAX(version)
@@ -213,7 +213,7 @@ public interface MainRepository {
             AND classroom = #{form.classroom}
         </if>
         <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-            AND official_absences.status IN
+            AND o.status IN
                 <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
                     #{status}
                 </foreach>
@@ -225,7 +225,7 @@ public interface MainRepository {
             <if test='form.andFlag'>
                 OR
             </if>
-            reports.status IN
+            r.status IN
             <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
                 #{reportStatus}
             </foreach>
@@ -233,7 +233,7 @@ public interface MainRepository {
         <if test='form.todayOAFlag'>
             AND official_absence_date = CURRENT_DATE
         </if>
-        GROUP BY official_absences.official_absence_id,student_id,course,student_name,official_absences.status,reason,reportStatus,report_required,official_absence_date_histories.period
+        GROUP BY o.official_absence_id,student_id,course,student_name,o.status,reason,reportStatus,report_required,d.period
         ORDER BY official_absence_id DESC, period;
     </script>
     """)
@@ -358,7 +358,8 @@ public interface MainRepository {
             teacher_check,
             career_check,
             submitted_date_histories.version,
-            (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId})
+            (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+            student_email
         FROM official_absences
         LEFT OUTER JOIN reports
         USING (official_absence_id)
@@ -374,8 +375,6 @@ public interface MainRepository {
             official_absence_date_histories.period,
             lesson_name
         FROM official_absence_date_histories
-        INNER JOIN lessons
-        USING (lesson_id)
         WHERE official_absence_id = #{OAId}
         AND version = #{version}
         ORDER BY official_absence_date, period;
@@ -646,7 +645,7 @@ public interface MainRepository {
 
     @Delete("""
         DELETE FROM exception_dates
-        WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day LIMIT 1 OFFSET #{id});
+        WHERE exception_day = (SELECT exception_day FROM exception_dates ORDER BY exception_day DESC LIMIT 1 OFFSET #{id});
     """)
     void deleteExceptionDate(@Param("id") Integer id);
 
@@ -689,7 +688,7 @@ public interface MainRepository {
     @Select("""
     <script>
         SELECT
-        	COUNT(*)
+        	COUNT(DISTINCT official_absence_id)
         FROM official_absences
         LEFT OUTER JOIN official_absence_date_histories
         USING (official_absence_id)

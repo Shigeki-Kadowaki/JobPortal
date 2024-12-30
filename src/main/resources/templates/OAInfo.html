@@ -33,14 +33,6 @@
     <br>
     <div id="versionChangeButton" class="text-end"></div>
     <br>
-    <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
-        <div>
-            [[${mapEntry.key}]]<br>
-            <div th:each="v : ${mapEntry.value}">
-                [[${v.period}]]限目:[[${v.lessonName}]]
-            </div>
-        </div>
-    </div>
     <div>
         ステータス : [[${mainInfo.status}]]<br>
         提出日 : [[${mainInfo.submittedDate}]]<br>
@@ -73,11 +65,21 @@
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
     </div>
-    <br><br><br>
-    <div class="d-flex justify-content-between">
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
+    <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
+        <div>
+            [[${mapEntry.key}]]<br>
+            <div th:each="v : ${mapEntry.value}">
+                [[${v.period}]]限目:[[${v.lessonName}]]
+            </div>
+        </div>
     </div>
+    <br><br><br>
+    <th:block th:if="${mode == 'info'}">
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
+        </div>
+    </th:block>
     <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -87,7 +89,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!--          modalボディー-->
-                <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}/cansel(studentId=${studentId},OAId=${mainInfo.officialAbsenceId})}" th:method="delete">
+                <form th:action="@{/jobportal/student/{studentId}/OAList/{OAId}(studentId=${studentId},OAId=${mainInfo.officialAbsenceId})}" th:method="delete">
                     <h6 class="text-center m-3"><th:block th:if="${mainInfo.maxVersion}>=2">
                         過去のバージョンも全て破棄されます。
                     </th:block>破棄すると元に戻せません。</h6>
