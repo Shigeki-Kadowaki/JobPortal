@@ -325,16 +325,17 @@ public class StudentController {
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         model.addAttribute("OADate",dateInfoEntities);
         OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
-        model.addAttribute("reason",mainInfoDTO.reason());
         switch (mainInfoDTO.reason()) {
             case "就活" -> {
                 JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+                model.addAttribute("reason",mainInfoDTO.reason());
                 model.addAttribute("work",jobSearch.work().getJapaneseName());
-                model.addAttribute("companyName",jobSearch.companyName());
+                model.addAttribute("jobSearch",jobSearch);
 
             }
             case "セミナー・合説" -> {
                 SeminarEntity seminar = service.findSeminarInfo(OAId);
+                model.addAttribute("reason",mainInfoDTO.reason());
                 model.addAttribute("seminar", seminar);
             }
         }
