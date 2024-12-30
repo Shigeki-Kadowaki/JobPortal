@@ -56,7 +56,7 @@ public class StudentController {
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-            student.setGno(40104);
+            student.setGno(99999);
             //ssoから取得用
 //            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
@@ -328,13 +328,15 @@ public class StudentController {
         switch (mainInfoDTO.reason()) {
             case "就活" -> {
                 JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-                model.addAttribute("work",jobSearch.work());
-                model.addAttribute("companyName",jobSearch.companyName());
+                model.addAttribute("reason",mainInfoDTO.reason());
+                model.addAttribute("work",jobSearch.work().getJapaneseName());
+                model.addAttribute("jobSearch",jobSearch);
 
             }
             case "セミナー・合説" -> {
                 SeminarEntity seminar = service.findSeminarInfo(OAId);
-                model.addAttribute("selectReport", seminar);
+                model.addAttribute("reason",mainInfoDTO.reason());
+                model.addAttribute("seminar", seminar);
             }
         }
         return "reportform";

@@ -154,13 +154,13 @@ public interface MainRepository {
             GROUP BY official_absence_id
         )
         <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-            AND official_absences.status IN
+            AND o.status IN
                 <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
                     #{status}
                 </foreach>
         </if>
         <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
-            AND reports.status IN
+            AND r.status IN
                 <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
                     #{reportStatus}
                 </foreach>

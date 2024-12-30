@@ -20,26 +20,26 @@
     <div class="card-body">
       <form class="row justify-content-md-center" th:action="@{/jobportal/student/{studentId}/OAList(studentId=${studentId})}" th:object="${searchForm}">
         <div class="form-group col-md-auto">
-            <label class="form-label">公欠届ステータス</label><br>
-            <div class="btn-group">
-              <input class="btn-check" type="checkbox" id="OAStatusAcceptance" name="OAStatus" value="acceptance" th:checked="*{isOAStatusChecked('acceptance')}">
-              <label class="btn btn-outline-primary" for="OAStatusAcceptance">受理</label>
-              <input class="btn-check" type="checkbox" id="OAStatusUnaccepted" name="OAStatus" value="unaccepted" th:checked="*{isOAStatusChecked('unaccepted')}">
-              <label class="btn btn-outline-primary" for="OAStatusUnaccepted">未受理</label>
-              <input class="btn-check" type="checkbox" id="OAStatusRejection" name="OAStatus" value="rejection" th:checked="*{isOAStatusChecked('rejection')}">
-              <label class="btn btn-outline-primary" for="OAStatusRejection">却下</label>
-            </div>
+          <label class="form-label">公欠届ステータス</label><br>
+          <div class="btn-group">
+            <input class="btn-check" type="checkbox" id="OAStatusAcceptance" name="OAStatus" value="acceptance" th:checked="*{isOAStatusChecked('acceptance')}">
+            <label class="btn btn-outline-primary" for="OAStatusAcceptance">受理</label>
+            <input class="btn-check" type="checkbox" id="OAStatusUnaccepted" name="OAStatus" value="unaccepted" th:checked="*{isOAStatusChecked('unaccepted')}">
+            <label class="btn btn-outline-primary" for="OAStatusUnaccepted">未受理</label>
+            <input class="btn-check" type="checkbox" id="OAStatusRejection" name="OAStatus" value="rejection" th:checked="*{isOAStatusChecked('rejection')}">
+            <label class="btn btn-outline-primary" for="OAStatusRejection">却下</label>
+          </div>
         </div>
         <div class="form-group col-md-auto">
-            <label class="form-label">報告書ステータス</label><br>
-            <div class="btn-group">
-              <input class="btn-check" type="checkbox" id="reportStatusAcceptance" name="reportStatus" value="acceptance" th:checked="*{isReportStatusChecked('acceptance')}">
-              <label class="btn btn-outline-primary" for="reportStatusAcceptance">受理</label>
-              <input class="btn-check" type="checkbox" id="reportStatusUnaccepted" name="reportStatus" value="unaccepted" th:checked="*{isReportStatusChecked('unaccepted')}">
-              <label class="btn btn-outline-primary" for="reportStatusUnaccepted">未受理</label>
-              <input class="btn-check" type="checkbox" id="reportStatusUnsubmitted" name="reportStatus" value="unsubmitted" th:checked="*{isReportStatusChecked('unsubmitted')}">
-              <label class="btn btn-outline-primary" for="reportStatusUnsubmitted">未提出</label>
-            </div>
+          <label class="form-label">報告書ステータス</label><br>
+          <div class="btn-group">
+            <input class="btn-check" type="checkbox" id="reportStatusAcceptance" name="reportStatus" value="acceptance" th:checked="*{isReportStatusChecked('acceptance')}">
+            <label class="btn btn-outline-primary" for="reportStatusAcceptance">受理</label>
+            <input class="btn-check" type="checkbox" id="reportStatusUnaccepted" name="reportStatus" value="unaccepted" th:checked="*{isReportStatusChecked('unaccepted')}">
+            <label class="btn btn-outline-primary" for="reportStatusUnaccepted">未受理</label>
+            <input class="btn-check" type="checkbox" id="reportStatusUnsubmitted" name="reportStatus" value="unsubmitted" th:checked="*{isReportStatusChecked('unsubmitted')}">
+            <label class="btn btn-outline-primary" for="reportStatusUnsubmitted">未提出</label>
+          </div>
         </div>
         <div class="m-3 text-end col-md-auto">
           <button type="submit" class="btn btn-primary btn-lg" name="search">検索</button>
