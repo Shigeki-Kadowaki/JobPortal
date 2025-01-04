@@ -19,7 +19,11 @@ public record OAListEntity (
         boolean reportRequired,
         LocalDate startDate,
         LocalDate endDate,
-        Integer period
+        Integer period,
+        Integer jobSearchVisitStartHour,
+        Integer jobSearchVisitStartMinute,
+        Integer seminarVisitStartHour,
+        Integer seminarVisitStartMinute
 ){
 
 //    public OAListDTO toListDTO() {

@@ -2,10 +2,8 @@ package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Service.DTO.ExceptionDateDTO;
-import com.jobportal.JobPortal.Service.Entity.ExceptionDateEntity;
-import com.jobportal.JobPortal.Service.Entity.OADateInfoEntity;
-import com.jobportal.JobPortal.Service.Entity.OAMainInfoEntity;
-import com.jobportal.JobPortal.Service.Entity.TimeTableEntity;
+import com.jobportal.JobPortal.Service.DTO.OAListDTO;
+import com.jobportal.JobPortal.Service.Entity.*;
 import com.jobportal.JobPortal.Service.MainService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -72,11 +70,6 @@ public class TeacherController {
     @PutMapping(value="/teacher/{OAId}", params = "acceptance")
     public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
         service.updateCheck(OAId, teacherType, true);
-        if(careerCheckRequired) {
-            if(service.checkConditionJudge(OAId, true)){service.updateOAStatus(OAId, "acceptance");}
-        }else{
-            if(service.checkConditionJudge(OAId, false)){service.updateOAStatus(OAId, "acceptance");}
-        }
         service.updateReportRequired(OAId, reportRequired != null);
         return "redirect:/jobportal/teacher/OAList";
     }
@@ -84,19 +77,18 @@ public class TeacherController {
     @PutMapping(value = "/teacher/{OAId}", params = "rejection")
     public String OAUnaccepted(HttpServletRequest request, @PathVariable("OAId") Integer OAId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
         service.updateOAStatus(OAId,"rejection");
-        System.out.println(reasonForRejection);
         //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
     }
 
-    //授業区分入力フォーム
+    //授業区分入力フォーム表示
     @GetMapping("/teacher/classificationForm")
     public String showScheduleClassification(@ModelAttribute("classification") ClassificationForm classification, Model model) {
         List<String> courses = service.getCourses();
         model.addAttribute("courses", courses);
         return "classificationForm";
     }
-    //授業区分ポスト、授業区分別時間割入力フォーム
+    //授業区分ポスト、授業区分別時間割入力フォーム表示
     @PostMapping("/teacher/classification")
     public String postScheduleClassification(@Validated @ModelAttribute("classification") ClassificationForm classification, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()){
@@ -131,6 +123,7 @@ public class TeacherController {
 
         return "redirect:/jobportal/teacher";
     }
+
     //例外時間割
     @GetMapping("/teacher/exceptionDate")
     public String exceptionDate(@ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, Model model) {
@@ -141,6 +134,7 @@ public class TeacherController {
         model.addAttribute("exceptionDateList", exceptionDateDTO);
         return "exceptionDate";
     }
+
     //例外時間割ポスト
     @PostMapping("/teacher/exceptionDate")
     public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, BindingResult bindingResult, Model model) {
@@ -154,6 +148,7 @@ public class TeacherController {
         return "redirect:/jobportal/teacher/exceptionDate";
     }
 
+    //例外日削除
     @DeleteMapping ("/teacher/exceptionDate")
     public String deleteExceptionDate(@RequestParam("id") Integer id) {
         System.out.println(id);
@@ -162,6 +157,7 @@ public class TeacherController {
         return "redirect:/jobportal/teacher/exceptionDate";
     }
 
+    //学生検索
     @GetMapping("/teacher/studentSearch")
     public String showStudentSearch(@ModelAttribute("studentId") @RequestParam(value = "studentId", required = false) Integer studentId, Model model) {
         model.addAttribute("studentId", studentId);
@@ -172,11 +168,38 @@ public class TeacherController {
         return "studentSearch";
     }
 
-    //OA詳細
+    //学生情報からOA詳細
     @GetMapping("/teacher/studentSearch/{OAId}")
     public String showSearchStudentOAInfo(@PathVariable("OAId") Integer OAId, Model model) {
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "teacher_", "search");
+    }
+
+    @GetMapping("/teacher/approvalMode")
+    public String showTeacherApprovalMode(@RequestParam("teacherType") String teacherType, Model model) {
+        TeacherOASearchForm form;
+        if(teacherType.equals("teacher")){
+            form = new TeacherOASearchForm(0, "all", List.of("unaccepted"), "false", null, true, List.of("unaccepted"), null);
+        }else{
+            form = new TeacherOASearchForm(0, "all", List.of("unaccepted"), null, "false", true, List.of("unaccepted"), null);
+        }
+        List<OAListEntity> listEntity = service.teacherFindAllOAs(form, 1, 100);
+        if(!listEntity.isEmpty()) {
+            List<OAListDTO> listDTO = service.toListEntity(listEntity);
+            model.addAttribute("mainList", listDTO);
+        }
+        model.addAttribute("teacherType", teacherType);
+        model.addAttribute("mode", "approval");
+        return "teacher_OAList";
+    }
+
+    @PostMapping("/teacher/approvalMode")
+    public String postTeacherApprovalMode(ApprovalForm approval, Model model){
+        System.out.println(approval);
+        approval.getApproval().forEach((k,v)->{
+            service.updateCheck(Integer.parseInt(k), approval.getTeacherType(), true);
+        });
+        return showTeacherApprovalMode(approval.getTeacherType(), model);
     }
 }

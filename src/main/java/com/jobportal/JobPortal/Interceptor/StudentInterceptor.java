@@ -21,7 +21,7 @@ public class StudentInterceptor implements HandlerInterceptor {
         System.out.println("studentPreHandle");
         //localでテスト用
         Student student = new Student();
-        student.setGno(99999);
+        student.setGno(40104);
         student.setSurname("YourSurName");
         student.setGivenname("YourGivenName");
         student.setGroup("生徒");
