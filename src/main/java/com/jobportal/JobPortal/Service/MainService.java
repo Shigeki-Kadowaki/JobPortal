@@ -40,7 +40,7 @@ public class MainService {
     private final MainRepository repository;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
-    final Integer pageSize = 25;
+    final Integer pageSize = 10;
     public final Subject[][] subjects = {
             {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
             {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
@@ -107,7 +107,8 @@ public class MainService {
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
-    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form, Integer page, Integer pageSize){return repository.teacherFindAllOAs(form, page, pageSize);
+    public List<OAListEntity> teacherFindAllOAs(TeacherOASearchForm form, Integer page, Integer pageSize){
+        return repository.teacherFindAllOAs(form, page, pageSize);
     }
     //info取得
     public OAMainInfoEntity findMainInfo(Integer oaId) {return  repository.selectMainInfo(oaId);
@@ -195,7 +196,17 @@ public class MainService {
     public void updateReportRequired(Integer OAId, boolean flag) {repository.updateReportRequired(OAId, flag);
     }
     
-    public void updateCheck(Integer OAId, String type, boolean check) {repository.updateCheck(OAId, type, check);
+    public void updateCheck(Integer OAId, String type, Boolean check) {
+        repository.updateCheck(OAId, type, check);
+        boolean careerCheckRequired = getCareerCheckRequired(OAId);
+        if(careerCheckRequired) {
+            if(checkConditionJudge(OAId, true)){updateOAStatus(OAId, "acceptance");}
+        }else{
+            if(checkConditionJudge(OAId, false)){updateOAStatus(OAId, "acceptance");}
+        }
+    }
+    public boolean getCareerCheckRequired(Integer OAId) {
+        return repository.getCareerCheckRequired(OAId);
     }
 
     //重複データを排除するために、ListをMapにするメソッド
@@ -226,7 +237,11 @@ public class MainService {
                         k.reportRequired(),
                         dateFormat(k.startDate()),
                         dateFormat(k.endDate()),
-                        k.endDate().isBefore(today) || k.endDate().isEqual(today)
+                        k.endDate().isBefore(today) || k.endDate().isEqual(today),
+                        k.jobSearchVisitStartHour(),
+                        k.jobSearchVisitStartMinute(),
+                        k.seminarVisitStartHour(),
+                        k.seminarVisitStartMinute()
                         ),LinkedHashMap::new,Collectors.toList())).entrySet().stream()
                 .map(entry -> new OAListDTO(
                         (Integer) entry.getKey().get(0),
@@ -242,6 +257,10 @@ public class MainService {
                         entry.getKey().get(10).toString(),
                         entry.getKey().get(11).toString(),
                         (Boolean)entry.getKey().get(12),
+                        (Integer) entry.getKey().get(13),
+                        (Integer) entry.getKey().get(14),
+                        (Integer) entry.getKey().get(15),
+                        (Integer) entry.getKey().get(16),
                         entry.getValue().stream().map(OAListEntity::period).collect(Collectors.toList())
                 )).toList();
     }
@@ -683,29 +702,30 @@ public class MainService {
     }
 
     public String getTeacherOAList(Integer page, TeacherOASearchForm form, Model model, HttpSession session) {
-        if(page == 0){
-            page = 1;
-            if(session.getAttribute("page") == null) {
-                session.setAttribute("page", page);
-            }else{
-                page = (Integer) session.getAttribute("page");
-            }
-        }else{
-            session.setAttribute("page", page);
+        if (page == 0) {
+            Integer sessionPage = (Integer) session.getAttribute("page");
+            page = (sessionPage == null) ? 1 : sessionPage;
         }
+        session.setAttribute("page", page);
         List<OAListEntity> listEntity = teacherFindAllOAs(form, page, pageSize);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
         Integer size = countSearchOA(form);
+        int maxSize = (int)Math.ceil((double) size / pageSize);
+        int pageCount = Math.min(maxSize, 5);
+        int start = Math.max(1, Math.min(page - (pageCount - 1) / 2, maxSize - pageCount + 1));
+        int end = Math.min(maxSize, start + pageCount - 1);
         model.addAttribute("size", size);
-        model.addAttribute("maxSize", (int)Math.ceil((double) size / pageSize));
+        model.addAttribute("maxSize", maxSize);
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
         model.addAttribute("page", page);
-        System.out.println(size);
-        System.out.println((int)Math.ceil((double) size / pageSize));
+        model.addAttribute("pageCount", pageCount);
+        model.addAttribute("start", start);
+        model.addAttribute("end", end);
+        model.addAttribute("mode", "list");
         return "teacher_OAList";
     }
 

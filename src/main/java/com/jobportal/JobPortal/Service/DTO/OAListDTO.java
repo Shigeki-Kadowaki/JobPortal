@@ -16,6 +16,10 @@ public record OAListDTO(
         String startDate,
         String endDate,
         boolean reportSubmittedFlag,
+        Integer jobSearchVisitStartHour,
+        Integer jobSearchVisitStartMinute,
+        Integer seminarVisitStartHour,
+        Integer seminarVisitStartMinute,
         List<Integer> lessons
 ){
 //    public String checkColor (String status) {
