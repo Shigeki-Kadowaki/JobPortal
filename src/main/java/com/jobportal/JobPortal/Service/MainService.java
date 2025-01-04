@@ -709,7 +709,7 @@ public class MainService {
         return "teacher_OAList";
     }
 
-    public void serachStudent(String studentId) {
+    public void searchStudent(String studentId) {
     }
 //    public Map<LocalDate, List<Integer>> toLessonList(List<OAListDTO> list) {
 //        Map<LocalDate, List<Integer>> map = new TreeMap<>();
