@@ -139,34 +139,22 @@ public interface MainRepository {
             report_required,
             (SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
             (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
-            d.period
-        FROM official_absences o
-        LEFT OUTER JOIN official_absence_date_histories d
-        USING (official_absence_id)
-        LEFT OUTER JOIN reports r
-        USING (official_absence_id)
-        WHERE student_id = #{studentId}
-        AND (official_absence_id, version) IN (
-            SELECT 
-                official_absence_id,
-                MAX(version)
-            FROM official_absence_date_histories
-            GROUP BY official_absence_id
-        )
-        <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-            AND o.status IN
-                <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
-                    #{status}
-                </foreach>
-        </if>
-        <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
-            AND r.status IN
-                <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
-                    #{reportStatus}
-                </foreach>
-        </if>
-        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required
-        ORDER BY official_absence_id DESC, period;
+                d.period
+                FROM official_absences o
+                LEFT OUTER JOIN official_absence_date_histories d
+                USING (official_absence_id)
+                LEFT OUTER JOIN reports r
+                USING (official_absence_id)
+                WHERE student_id = 99999
+                AND (official_absence_id, version) IN (
+                    SELECT
+                    official_absence_id,
+                    MAX(version)
+                    FROM official_absence_date_histories
+                    GROUP BY official_absence_id
+                    )
+                    GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required
+                        ORDER BY official_absence_id DESC, period;
         </script>
     """)
     List<OAListEntity> selectAll(@Param("studentId") Integer studentId, @Param("form")StudentOASearchForm form);
