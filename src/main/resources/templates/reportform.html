@@ -24,7 +24,7 @@
         <form th:action="@{jobportal/student/{studentId}/reportform/{oaId}(studentId=${studentId},oaId=${OAId})}" th:method="post">
             <div th:class="mt-3">
                 <script th:inline="javascript">
-                    const reason = /*[[${reason}]]*/;
+                    const reason = /*[[${reason}]]*/"reason";
                     console.log(reason);
                 </script>
                 <label th:text="${reason}"></label>

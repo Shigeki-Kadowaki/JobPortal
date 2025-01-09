@@ -7,11 +7,13 @@ public record TeacherOASearchForm(
         Integer grade,
         String classroom,
         List<String> OAStatus,
+        String teacherCheckFlag,
+        String careerCheckFlag,
         Boolean andFlag,
         List<String> reportStatus,
         Boolean todayOAFlag
 ) {
-    public boolean isOAStatusChecked(String status){
+    public boolean isOAStatusSelected(String status){
         return Optional.ofNullable(OAStatus)
                 .map(l -> l.contains(status))
                 .orElse(false);

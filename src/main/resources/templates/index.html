@@ -12,41 +12,9 @@
 </head>
 <body>
     <section layout:fragment="content">
-        Hello!?<br>
+        Hello<br>
         <a th:href="@{/student}" class="button">学生用ページ</a><br>
         <a th:href="@{/teacher}" class="button">先生用ページ</a>
-
-        <div th:if()></div>
-<!--        <form th:action="@{/test}" method="post" th:object="${form}">-->
-<!--            <input type="text" name="text" id="text" th:value="${value}">-->
-<!--            <div class="form-group mt-3">-->
-<!--                <h3>公欠日時</h3>-->
-<!--                <label class="form-label mt-3" for="date">公欠日を選択:</label>-->
-<!--                <input type="date" id="date" name="OADate" onchange="addOADate(this.value)" required>-->
-<!--                <div id="OADates"></div>-->
-<!--                <br><br>-->
-<!--            </div>-->
-<!--            <label for="a"><input type="text" id="a" name="parentValue[]" value="parentA" readonly></label>-->
-<!--            <label><input type="checkbox" id="a-1" name="child[exaA][]" value="a-1">pushA-1</label>-->
-<!--            <label><input type="checkbox" id="a-2" name="child[exaA][]" value="a-2">pushA-2</label>-->
-<!--            <label for="b"><input type="text" id="b" name="parentValue[]" value="parentB" readonly></label>-->
-<!--            <label><input type="checkbox" id="b-1" name="child[exaB][]" value="b-1">pushB-1</label>-->
-<!--            <label><input type="checkbox" id="b-2" name="child[exaB][]" value="b-2">pushB-2</label>-->
-<!--            <span th:errors="*{child}"></span>-->
-<!--            <input type="text" name="text">-->
-<!--            <span th:errors="*{text}"></span>-->
-<!--            <button type="submit" class="btn btn-primary">作成</button>-->
-<!--        </form>-->
-<!--        <form th:action="@{/validatedTest}" method="post" th:object="${form}">-->
-<!--            <input type="text" name="text" th:field="*{text}">-->
-<!--            <span th:errors="${validateTest.test.text}"></span>-->
-
-
-<!--            <input type="text" th:field="*{title}">-->
-<!--            <input type="text" th:field="*{body}">-->
-<!--            <button type="submit" class="btn btn-primary" name="button1">送信a</button>-->
-<!--            <button type="submit" class="btn btn-primary" name="button2">送信b</button>-->
-        </form>
     </section>
 </body>
 </html>

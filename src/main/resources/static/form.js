@@ -94,11 +94,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(prevSelected==="firstLoad"){
         prevSelected=document.getElementsByName("reasonForAbsence")[0].value;
     }
-//    document.getElementById('jobSearchForm').style.display='none';
-//    document.getElementById('seminarForm').style.display='none';
-//    document.getElementById('bereavementForm').style.display='none';
-//    document.getElementById('attendanceBanForm').style.display='none';
-//    document.getElementById('otherForm').style.display='none';
     document.getElementsByClassName('jobSearch')[0].style.display='none';
     document.getElementsByClassName('seminar')[0].style.display='none';
     document.getElementsByClassName('bereavement')[0].style.display='none';
@@ -116,4 +111,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     for (let exceptionDate of exceptionDates){
         exceptionMap.set(exceptionDate.exceptionDate, exceptionDate.weekdayNumber);
     }
+
+    document.getElementById('jobSearch').checked = true;
 })

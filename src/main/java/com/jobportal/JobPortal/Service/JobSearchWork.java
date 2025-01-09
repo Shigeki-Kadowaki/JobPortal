@@ -1,6 +1,7 @@
 package com.jobportal.JobPortal.Service;
 
 public enum JobSearchWork {
+    jobInterview("面接"),
     briefing("説明会"),
     test("試験"),
     visit("訪問"),
