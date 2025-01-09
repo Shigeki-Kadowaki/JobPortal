@@ -22,14 +22,6 @@ public record OAListDTO(
         Integer seminarVisitStartMinute,
         List<Integer> lessons
 ){
-//    public String checkColor (String status) {
-//        switch (status) {
-//            case "accepted" -> {
-//                return "a";}
-//            case "rejected" -> {return "r";}
-//            case "pending" -> {return "p";}
-//            default -> {return "list-group-item-warning";}
-//        }
-//    }
+
 
 }
