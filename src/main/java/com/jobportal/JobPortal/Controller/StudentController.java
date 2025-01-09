@@ -1,6 +1,7 @@
 package com.jobportal.JobPortal.Controller;
 
 import com.jobportal.JobPortal.Controller.Form.OAMainForm;
+import com.jobportal.JobPortal.Controller.Form.ReportForm;
 import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
 import com.jobportal.JobPortal.Controller.ValidationGroup.*;
 import com.jobportal.JobPortal.Service.DTO.OAMainInfoDTO;
@@ -293,5 +294,14 @@ public class StudentController {
         }
         return "reportform";
     }
+    @PostMapping("/student/{studentId}/reportform/{oaId}")
+    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        ReportForm form,
+                                        Model model)
+    {
+        CommonReportEntity commonReportEntity = service.createReport();;
 
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
 }
