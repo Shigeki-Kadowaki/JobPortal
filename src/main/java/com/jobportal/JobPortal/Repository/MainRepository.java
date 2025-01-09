@@ -146,8 +146,8 @@ public interface MainRepository {
             reason,
             r.status AS reportStatus,
             report_required,
-            CURRENT_DATE,
-            CURRENT_DATE,
+            min,
+            max,
             d.period,
             NULL,
             NULL,
@@ -173,7 +173,7 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
         </if>
-        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required
+        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required, dl.min, dl.max
         ORDER BY official_absence_id DESC, period;
         </script>
     """)
