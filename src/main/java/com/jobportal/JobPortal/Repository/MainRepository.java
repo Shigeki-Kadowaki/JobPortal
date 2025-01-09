@@ -126,8 +126,17 @@ public interface MainRepository {
     //List取得
     @Select("""
         <script>
-        SELECT
-            official_absence_id,
+        WITH DateList AS(
+            SELECT official_absence_id,
+                MIN(official_absence_date) as min,
+                MAX(official_absence_date) as max
+            FROM official_absence_date_histories d
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
+            GROUP BY official_absence_id
+            ORDER BY official_absence_id DESC
+        )
+        SELECT DISTINCT
+            o.official_absence_id,
             student_id,
             grade,
             classroom,
@@ -137,69 +146,21 @@ public interface MainRepository {
             reason,
             r.status AS reportStatus,
             report_required,
-            (SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
-            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
-                d.period
-                FROM official_absences o
-                LEFT OUTER JOIN official_absence_date_histories d
-                USING (official_absence_id)
-                LEFT OUTER JOIN reports r
-                USING (official_absence_id)
-                WHERE student_id = 99999
-                AND (official_absence_id, version) IN (
-                    SELECT
-                    official_absence_id,
-                    MAX(version)
-                    FROM official_absence_date_histories
-                    GROUP BY official_absence_id
-                    )
-                    GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required
-                        ORDER BY official_absence_id DESC, period;
-        </script>
-    """)
-    List<OAListEntity> selectAll(@Param("studentId") Integer studentId, @Param("form")StudentOASearchForm form);
-    @Select("""
-    <script>
-        WITH List AS(
-        SELECT official_absence_id
-        FROM official_absences
-        ORDER BY official_absence_id DESC
-        LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
-        )
-        SELECT
-        	o.official_absence_id,
-        	student_id,
-        	grade,
-        	classroom,
-        	course,
-        	student_name,
-        	o.status,
-        	reason,
-        	r.status AS reportStatus,
-        	report_required,
-        	(SELECT MIN(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
-            (SELECT MAX(official_absence_date) FROM official_absence_date_histories WHERE official_absence_id = o.official_absence_id),
-        	d.period
+            min,
+            max,
+            d.period,
+            NULL,
+            NULL,
+            NULL,
+            NULL
         FROM official_absences o
-        LEFT OUTER JOIN official_absence_date_histories d
-        USING (official_absence_id)
-        LEFT OUTER JOIN reports r
-        USING (official_absence_id)
-        LEFT OUTER JOIN List
-        USING(official_absence_id)
-        WHERE (o.official_absence_id, version) IN (
-        	SELECT
-        		official_absence_id,
-        		MAX(version)
-        	FROM official_absence_date_histories
-        	GROUP BY official_absence_id
-        )
-        <if test='form.grade != 0 and form.grade != null'>
-            AND grade = #{form.grade}
-        </if>
-        <if test='form.classroom != "all" and form.classroom != null'>
-            AND classroom = #{form.classroom}
-        </if>
+        LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+        LEFT JOIN reports r
+            USING (official_absence_id)
+        LEFT JOIN DateList dl
+            USING (official_absence_id)
+        WHERE student_id = #{studentId}
         <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
             AND o.status IN
                 <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
@@ -207,21 +168,116 @@ public interface MainRepository {
                 </foreach>
         </if>
         <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
-            <if test='form.andFlag == null'>
-                AND
-            </if>
-            <if test='form.andFlag'>
-                OR
-            </if>
-            r.status IN
-            <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
-                #{reportStatus}
-            </foreach>
+            AND r.status IN
+                <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                    #{reportStatus}
+                </foreach>
         </if>
-        <if test='form.todayOAFlag'>
-            AND official_absence_date = CURRENT_DATE
-        </if>
-        GROUP BY o.official_absence_id,student_id,course,student_name,o.status,reason,reportStatus,report_required,d.period
+        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required, dl.min, dl.max
+        ORDER BY official_absence_id DESC, period;
+        </script>
+    """)
+    List<OAListEntity> selectAll(@Param("studentId") Integer studentId, @Param("form")StudentOASearchForm form);
+    @Select("""
+    <script>
+        WITH List AS(
+            SELECT official_absence_id
+            FROM official_absences o
+            LEFT JOIN reports r
+            USING (official_absence_id)
+            WHERE true
+             <if test='form.grade != 0 and form.grade != null'>
+                AND grade = #{form.grade}
+            </if>
+            <if test='form.classroom != "all" and form.classroom != null'>
+                AND classroom = #{form.classroom}
+            </if>
+            
+            <if test='form.teacherCheckFlag != null'>
+                AND o.teacher_check = false
+            </if>
+            <if test='form.careerCheckFlag != null'>
+                AND o.career_check = false
+            </if>
+            <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
+                AND o.status IN
+                    <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
+                        #{status}
+                    </foreach>
+            </if>
+            <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
+                <if test='form.andFlag == null'>
+                    AND
+                </if>
+                <if test='form.andFlag'>
+                    OR
+                </if>
+                r.status IN
+                <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                    #{reportStatus}
+                </foreach>
+            </if>
+            <if test='form.todayOAFlag'>
+                AND official_absence_date = CURRENT_DATE
+            </if>
+            ORDER BY official_absence_id DESC
+            LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
+        ),
+        DateList AS(
+            SELECT official_absence_id,
+                MIN(official_absence_date) as min,
+                MAX(official_absence_date) as max
+            FROM official_absence_date_histories d
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
+            GROUP BY official_absence_id
+            ORDER BY official_absence_id DESC
+        ),
+        JobList AS(
+            SELECT official_absence_id,
+             visit_start_minute,
+             visit_start_hour
+            FROM job_search_histories j
+            WHERE version = (SELECT MAX(version) FROM job_search_histories WHERE official_absence_id = j.official_absence_id)
+        ),
+        SeminarList AS(
+            SELECT official_absence_id,
+                visit_start_hour,
+            visit_start_minute
+                FROM seminar_histories s
+            WHERE version = (SELECT MAX(version) FROM seminar_histories WHERE official_absence_id = s.official_absence_id)
+        )
+        SELECT DISTINCT
+            o.official_absence_id,
+            student_id,
+            grade,
+            classroom,
+            course,
+            student_name,
+            o.status,
+            reason,
+            r.status AS reportStatus,
+            report_required,
+            min,
+            max,
+            d.period,
+            j.visit_start_hour AS job_visit_start_hour,
+            j.visit_start_minute AS job_visit_start_minute,
+            s.visit_start_hour AS seminar_visit_start_hour,
+            s.visit_start_minute AS seminar_visit_start_minute
+        FROM official_absences o
+        LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+        LEFT JOIN reports r
+            USING (official_absence_id)
+        RIGHT JOIN List
+            USING (official_absence_id)
+        LEFT JOIN DateList dl
+            USING (official_absence_id)
+        LEFT JOIN JobList j
+            USING (official_absence_id)
+        LEFT JOIN SeminarList s
+            USING (official_absence_id)
+        GROUP BY o.official_absence_id,student_id,course,student_name,o.status,reason,reportStatus,report_required,d.period, d.official_absence_date, min, max, j.visit_start_hour, j.visit_start_minute,s.visit_start_hour,s.visit_start_minute
         ORDER BY official_absence_id DESC, period;
     </script>
     """)
@@ -565,7 +621,7 @@ public interface MainRepository {
             WHERE official_absence_id = #{OAId};
         </script>
     """)
-    void updateCheck(@Param("OAId") Integer OAId,@Param("type") String type, @Param("check") boolean check);
+    void updateCheck(@Param("OAId") Integer OAId,@Param("type") String type, @Param("check") Boolean check);
     @Update("""
         UPDATE official_absences
         SET status = #{status}
@@ -675,48 +731,77 @@ public interface MainRepository {
 
     @Select("""
     <script>
-        SELECT
-        	COUNT(DISTINCT official_absence_id)
-        FROM official_absences
-        LEFT OUTER JOIN official_absence_date_histories
-        USING (official_absence_id)
-        LEFT OUTER JOIN reports
-        USING (official_absence_id)
-        WHERE (official_absences.official_absence_id, version) IN (
-        	SELECT
-        		official_absence_id,
-        		MAX(version)
-        	FROM official_absence_date_histories
-        	GROUP BY official_absence_id
-        )
-        <if test='form.grade != 0 and form.grade != null'>
-            AND grade = #{form.grade}
-        </if>
-        <if test='form.classroom != "all" and form.classroom != null'>
-            AND classroom = #{form.classroom}
-        </if>
-        <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-            AND official_absences.status IN
-                <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
-                    #{status}
-                </foreach>
-        </if>
-        <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
-            <if test='form.andFlag == null'>
-                AND
+        WITH List AS(
+            SELECT official_absence_id
+            FROM official_absences o
+            LEFT JOIN reports r
+            USING (official_absence_id)
+            WHERE true
+             <if test='form.grade != 0 and form.grade != null'>
+                AND grade = #{form.grade}
             </if>
-            <if test='form.andFlag'>
-                OR
+            <if test='form.classroom != "all" and form.classroom != null'>
+                AND classroom = #{form.classroom}
             </if>
-                reports.status IN
-                    <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
-                        #{reportStatus}
+            
+            <if test='form.teacherCheckFlag != null'>
+                AND o.teacher_check = false
+            </if>
+            <if test='form.careerCheckFlag != null'>
+                AND o.career_check = false
+            </if>
+            <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
+                AND o.status IN
+                    <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
+                        #{status}
                     </foreach>
-        </if>
-        <if test='form.todayOAFlag'>
-            AND official_absence_date = CURRENT_DATE
-        </if>;
+            </if>
+            <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
+                <if test='form.andFlag == null'>
+                    AND
+                </if>
+                <if test='form.andFlag'>
+                    OR
+                </if>
+                r.status IN
+                <foreach item='reportStatus' collection='form.reportStatus' open='(' separator=',' close=')'>
+                    #{reportStatus}
+                </foreach>
+            </if>
+            <if test='form.todayOAFlag'>
+                AND official_absence_date = CURRENT_DATE
+            </if>
+            ORDER BY official_absence_id DESC
+        ),
+        DateList AS(
+            SELECT official_absence_id,
+                MIN(official_absence_date) as min,
+                MAX(official_absence_date) as max
+            FROM official_absence_date_histories d
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
+            GROUP BY official_absence_id
+            ORDER BY official_absence_id DESC
+        )
+        SELECT
+            COUNT(DISTINCT official_absence_id)
+        FROM official_absences o
+        LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+        LEFT JOIN reports r
+            USING (official_absence_id)
+        RIGHT JOIN List
+            USING (official_absence_id)
+        LEFT JOIN DateList dl
+            USING (official_absence_id)
     </script>
     """)
     Integer countSearchOA(@Param("form") TeacherOASearchForm form);
+
+    @Select("""
+        SELECT
+            report_required
+        FROM official_absences
+        WHERE official_absence_id = #{oaId};
+    """)
+    boolean getCareerCheckRequired(@Param("oaId") Integer oaId);
 }

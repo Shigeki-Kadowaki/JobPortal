@@ -9,7 +9,6 @@ import com.jobportal.JobPortal.Service.MainService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -56,7 +54,7 @@ public class StudentController {
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-            student.setGno(99999);
+            student.setGno(40104);
             //ssoから取得用
 //            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
@@ -93,52 +91,6 @@ public class StudentController {
             service.insertDesired(studentId, business, occupation);
         }
         return "redirect:/jobportal/student/{studentId}";
-    }
-
-
-//
-//    @PostMapping(value="/test", params="button1")
-//    public String test(@ModelAttribute("validateTest") @Validated({atext.class})validateTest validatetest, BindingResult bindingResult, Model model) {
-//        System.out.println("success??");
-//        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-//        Set<ConstraintViolation<List<validateTestChild>>> violations = validator.validate(validatetest.getList1(), atext.class);
-//        if(!violations.isEmpty()){
-//            System.out.println("error");
-//            showErrorDetails(violations);
-//            return "index";
-//        }else {
-//            System.out.println("successa");
-//            return "redirect:/index";
-//        }
-//    }
-//
-//    @PostMapping(value="/test", params="button2")
-//    public String test2(@ModelAttribute("validateTest") @Validated({btext.class}) validateTest validatetest, BindingResult bindingResult, Model model) {
-//        System.out.println("success??");
-//        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-//        Set<ConstraintViolation<List<validateTestChild>>> violations = validator.validate(validatetest.getList1(), btext.class);
-//        if(!violations.isEmpty()){
-//            System.out.println("error");
-//            showErrorDetails(violations);
-//            return "index";
-//        }else {
-//            System.out.println("successb");
-//            return "redirect:/index";
-//        }
-//    }
-
-    private static <T> void showErrorDetails(
-            Set<ConstraintViolation<T>> constraintViolations) {
-        for (ConstraintViolation<T> violation : constraintViolations) {
-            System.out.println("----------");
-            System.out.println(
-                    "MessageTemplate : " + violation.getMessageTemplate());
-            System.out.println("Message : " + violation.getMessage());
-            System.out.println("InvalidValue : " + violation.getInvalidValue());
-            System.out.println("PropertyPath : " + violation.getPropertyPath());
-            System.out.println("RootBeanClass : " + violation.getRootBeanClass());
-            System.out.println("RootBean : " + violation.getRootBean());
-        }
     }
 
     //Form画面
