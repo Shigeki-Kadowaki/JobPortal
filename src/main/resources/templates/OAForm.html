@@ -70,7 +70,11 @@
             <div class="form-group mt-3">
                 <h3>活動内容</h3>
                 <span th:errors="*{work}"></span>
-                <h5 class="ms-3"><label class="form-check-label" for="briefing">
+                <h5 class="ms-3"><label class="form-check-label" for="jobInterview">
+                    <input checked class="form-check-input" id="jobInterview" name="work" type="radio" value="jobInterview" th:checked="*{work == 'jobInterview'}">
+                    面接
+                </label>
+                <label class="form-check-label" for="briefing">
                     <input checked class="form-check-input" id="briefing" name="work" type="radio" value="briefing" th:checked="*{work == 'briefing'}">
                     説明会
                 </label>
