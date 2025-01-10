@@ -12,5 +12,11 @@ public interface ValidationGroup {
     public static interface atext extends Default {}
     public static interface btext extends Default {}
 
-    public interface briefingSessionHistoryGroup extends Default{}
+    public interface briefingSessionGroup extends Default{}
+    public interface examGroup extends Default{}
+    public interface InterviewGroup extends Default{}
+    public interface informalDecisionCeremonyGroup extends Default{}
+    public interface trainingGroup extends Default{}
+    public interface reportSeminarGroup extends Default{}
+    public interface reportOtherGroup extends Default{}
 }

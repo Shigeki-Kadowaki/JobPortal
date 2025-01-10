@@ -294,14 +294,64 @@ public class StudentController {
         }
         return "reportform";
     }
-    @PostMapping("/student/{studentId}/reportform/{oaId}")
+//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="briefingSession")
+//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+//                                        @PathVariable("oaId") Integer OAId,
+//                                        @Validated(briefingSessionGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+//                                        Model model)
+//    {
+//
+//    }
+//
+//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="briefingSession")
+//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+//                                        @PathVariable("oaId") Integer OAId,
+//                                        @Validated(examGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+//                                        Model model)
+//    {
+//
+//    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="Interview")
     public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
                                         @PathVariable("oaId") Integer OAId,
-                                        ReportForm form,
+                                        @Validated(InterviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                         Model model)
     {
-        CommonReportEntity commonReportEntity = service.createReport();;
-
+        System.out.println(form);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
+//
+//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="informalDecisionCeremony")
+//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+//                                        @PathVariable("oaId") Integer OAId,
+//                                        @Validated(informalDecisionCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+//                                        Model model)
+//    {
+//
+//    }
+//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="training")
+//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+//                                        @PathVariable("oaId") Integer OAId,
+//                                        @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+//                                        Model model)
+//    {
+//
+//    }
+//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportSeminar")
+//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+//                                        @PathVariable("oaId") Integer OAId,
+//                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+//                                        Model model)
+//    {
+//
+//    }
+//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportOther")
+//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
+//                                        @PathVariable("oaId") Integer OAId,
+//                                        @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+//                                        Model model)
+//    {
+//
+//    }
+
 }
