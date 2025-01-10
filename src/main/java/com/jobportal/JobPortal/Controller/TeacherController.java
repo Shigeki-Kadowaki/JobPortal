@@ -55,9 +55,9 @@ public class TeacherController {
     }
     //OAList検索
     @GetMapping(value = "/teacher/OAList", params = "search")
-    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page){
+    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model,@ModelAttribute("currentPage") @RequestParam(defaultValue = "0", value = "currentPage") Integer currentPage){
         session.setAttribute("teacherSearchForm", form);
-        return service.getTeacherOAList(page, form, model, session);
+        return service.getTeacherOAList(currentPage, form, model, session);
     }
     //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")

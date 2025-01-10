@@ -89,15 +89,15 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination pagination-lg d-flex justify-content-center">
                 <li class="page-item">
-                    <a class="page-link" th:classappend="${page == 1}?'disabled':''" th:href="@{/jobportal/teacher/OAList(page=${page - 1})}">prev</a>
+                    <a class="page-link" th:classappend="${currentPage == 1}?'disabled':''" th:href="@{/jobportal/teacher/OAList(currentPage=${currentPage - 1})}">prev</a>
                 </li>
                 <th:block th:each="i : ${#numbers.sequence(start, end)}">
                     <li class="page-item">
-                        <a class="page-link" th:classappend="${i == page}?'active':''" th:href="@{/jobportal/teacher/OAList(page=${i})}">[[${i}]]</a>
+                        <a class="page-link" th:classappend="${i == currentPage}?'active':''" th:href="@{/jobportal/teacher/OAList(currentPage=${i})}">[[${i}]]</a>
                     </li>
                 </th:block>
                 <li class="page-item">
-                    <a class="page-link" th:classappend="${page == maxSize}?'disabled':''" th:href="@{/jobportal/teacher/OAList(page=${page + 1})}">next</a>
+                    <a class="page-link" th:classappend="${currentPage == maxSize}?'disabled':''" th:href="@{/jobportal/teacher/OAList(currentPage=${currentPage + 1})}">next</a>
                 </li>
             </ul>
         </nav>
