@@ -701,28 +701,26 @@ public class MainService {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
-    public String getTeacherOAList(Integer page, TeacherOASearchForm form, Model model, HttpSession session) {
-        if (page == 0) {
-            Integer sessionPage = (Integer) session.getAttribute("page");
-            page = (sessionPage == null) ? 1 : sessionPage;
+    public String getTeacherOAList(Integer currentPage, TeacherOASearchForm form, Model model, HttpSession session) {
+        if (currentPage == 0) {
+            Integer sessionPage = (Integer) session.getAttribute("currentPage");
+            currentPage = (sessionPage == null) ? 1 : sessionPage;
         }
-        session.setAttribute("page", page);
-        List<OAListEntity> listEntity = teacherFindAllOAs(form, page, pageSize);
+        session.setAttribute("currentPage", currentPage);
+        List<OAListEntity> listEntity = teacherFindAllOAs(form, currentPage, pageSize);
         if(!listEntity.isEmpty()) {
             List<OAListDTO> listDTO = toListEntity(listEntity);
             model.addAttribute("mainList", listDTO);
         }
-        Integer size = countSearchOA(form);
-        int maxSize = (int)Math.ceil((double) size / pageSize);
-        int pageCount = Math.min(maxSize, 5);
-        int start = Math.max(1, Math.min(page - (pageCount - 1) / 2, maxSize - pageCount + 1));
-        int end = Math.min(maxSize, start + pageCount - 1);
-        model.addAttribute("size", size);
-        model.addAttribute("maxSize", maxSize);
+        Integer count = countSearchOA(form);
+        int maxSize = (int)Math.ceil((double) count / pageSize);
+        int displayPageCount = Math.min(maxSize, 5);
+        int start = Math.max(1, Math.min(currentPage - (displayPageCount - 1) / 2, maxSize - displayPageCount + 1));
+        int end = Math.min(maxSize, start + displayPageCount - 1);
         model.addAttribute("searchForm", form);
         model.addAttribute("colors", colors);
-        model.addAttribute("page", page);
-        model.addAttribute("pageCount", pageCount);
+        model.addAttribute("maxSize", maxSize);
+        model.addAttribute("currentPage", currentPage);
         model.addAttribute("start", start);
         model.addAttribute("end", end);
         model.addAttribute("mode", "list");
