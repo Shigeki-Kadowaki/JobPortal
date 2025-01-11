@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -212,7 +213,7 @@ public class MainService {
     //重複データを排除するために、ListをMapにするメソッド
     public Map<String, List<OALessonsDTO>> toLessonInfoDTO(List<OADateInfoEntity> allInfoDTO) {
         return allInfoDTO.stream().collect(
-                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new,Collectors.toList())
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new, toList())
         ).entrySet().stream().collect(
                 Collectors.toMap(
                         e->e.getKey().toString(),
@@ -242,7 +243,7 @@ public class MainService {
                         k.jobSearchVisitStartMinute(),
                         k.seminarVisitStartHour(),
                         k.seminarVisitStartMinute()
-                        ),LinkedHashMap::new,Collectors.toList())).entrySet().stream()
+                        ),LinkedHashMap::new, toList())).entrySet().stream()
                 .map(entry -> new OAListDTO(
                         (Integer) entry.getKey().get(0),
                         (Integer) entry.getKey().get(1),
@@ -257,13 +258,22 @@ public class MainService {
                         entry.getKey().get(10).toString(),
                         entry.getKey().get(11).toString(),
                         (Boolean)entry.getKey().get(12),
-                        (Integer) entry.getKey().get(13),
-                        (Integer) entry.getKey().get(14),
-                        (Integer) entry.getKey().get(15),
-                        (Integer) entry.getKey().get(16),
-                        entry.getValue().stream().map(OAListEntity::period).collect(Collectors.toList())
+                        padLeft(String.valueOf(entry.getKey().get(13)),2,'0'),
+                        padLeft(String.valueOf(entry.getKey().get(14)),2,'0'),
+                        padLeft(String.valueOf(entry.getKey().get(15)),2,'0'),
+                        padLeft(String.valueOf(entry.getKey().get(16)),2,'0'),
+                        entry.getValue().stream().map(OAListEntity::period).collect(toList())
                 )).toList();
     }
+
+    public static String padLeft(String target, int length, char padChar) {
+        int targetLength = target.length();
+        if (targetLength >= length) {
+            return target;
+        }
+        return String.valueOf(padChar).repeat(length - targetLength) + target;
+    }
+
     //yyyy-mm-ddをyyyy年mm月dd日(曜日)にする
     public static String dateFormat(LocalDate date) {
         String yyyy = String.valueOf(date.getYear());
@@ -534,7 +544,7 @@ public class MainService {
 
     public Map<String, List<String>> toOAPeriods(List<OADateInfoEntity> dateInfoEntities) {
         return dateInfoEntities.stream().collect(
-                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new,Collectors.toList())
+                Collectors.groupingBy(OADateInfoEntity::officialAbsenceDate,LinkedHashMap::new, toList())
         ).entrySet().stream().collect(
             Collectors.toMap(
                 e->e.getKey().toString().replaceAll("-",""),
