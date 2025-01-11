@@ -670,7 +670,7 @@ public class MainService {
             }
             model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
-            model.addAttribute("mode", "info");
+            model.addAttribute("mode", "read");
         }
         return "OAInfo";
     }

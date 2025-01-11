@@ -194,6 +194,7 @@ public class TeacherController {
         return "teacher_OAList";
     }
 
+    //一括承認
     @PostMapping("/teacher/approvalMode")
     public String postTeacherApprovalMode(ApprovalForm approval, Model model){
         System.out.println(approval);
