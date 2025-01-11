@@ -50,6 +50,11 @@ public class StudentController {
         {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
     };
 
+    @GetMapping("/dockerTest")
+    public String dockerTest(Model model) {
+        return "dockerTest";
+    }
+
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
