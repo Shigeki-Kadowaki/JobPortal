@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   springboot:
-    build: .  # Dockerfileを使ってビルド
+    build: .
     image: springboot:latest
     ports:
       - "8080:8080"
