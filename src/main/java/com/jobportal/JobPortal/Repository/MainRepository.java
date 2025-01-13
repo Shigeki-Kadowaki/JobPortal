@@ -181,11 +181,15 @@ public interface MainRepository {
     @Select("""
     <script>
         WITH List AS(
-            SELECT official_absence_id
+            SELECT official_absence_id, 
+                MIN(official_absence_date) as min,
+                MAX(official_absence_date) as max
             FROM official_absences o
             LEFT JOIN reports r
             USING (official_absence_id)
-            WHERE true
+            LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
              <if test='form.grade != 0 and form.grade != null'>
                 AND grade = #{form.grade}
             </if>
@@ -217,20 +221,12 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
             </if>
+            GROUP BY o.official_absence_id
             <if test='form.todayOAFlag'>
-                AND official_absence_date = CURRENT_DATE
+                HAVING (CURRENT_DATE BETWEEN MIN(d.official_absence_date) and MAX(d.official_absence_date)) OR MAX(d.official_absence_date) = CURRENT_DATE
             </if>
             ORDER BY official_absence_id DESC
             LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
-        ),
-        DateList AS(
-            SELECT official_absence_id,
-                MIN(official_absence_date) as min,
-                MAX(official_absence_date) as max
-            FROM official_absence_date_histories d
-            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
-            GROUP BY official_absence_id
-            ORDER BY official_absence_id DESC
         ),
         JobList AS(
             SELECT official_absence_id,
@@ -270,8 +266,6 @@ public interface MainRepository {
         LEFT JOIN reports r
             USING (official_absence_id)
         RIGHT JOIN List
-            USING (official_absence_id)
-        LEFT JOIN DateList dl
             USING (official_absence_id)
         LEFT JOIN JobList j
             USING (official_absence_id)
@@ -736,7 +730,9 @@ public interface MainRepository {
             FROM official_absences o
             LEFT JOIN reports r
             USING (official_absence_id)
-            WHERE true
+            LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
              <if test='form.grade != 0 and form.grade != null'>
                 AND grade = #{form.grade}
             </if>
@@ -768,18 +764,10 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
             </if>
+            GROUP BY o.official_absence_id
             <if test='form.todayOAFlag'>
-                AND official_absence_date = CURRENT_DATE
+                HAVING (CURRENT_DATE BETWEEN MIN(d.official_absence_date) and MAX(d.official_absence_date)) OR MAX(d.official_absence_date) = CURRENT_DATE
             </if>
-            ORDER BY official_absence_id DESC
-        ),
-        DateList AS(
-            SELECT official_absence_id,
-                MIN(official_absence_date) as min,
-                MAX(official_absence_date) as max
-            FROM official_absence_date_histories d
-            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
-            GROUP BY official_absence_id
             ORDER BY official_absence_id DESC
         )
         SELECT
@@ -790,8 +778,6 @@ public interface MainRepository {
         LEFT JOIN reports r
             USING (official_absence_id)
         RIGHT JOIN List
-            USING (official_absence_id)
-        LEFT JOIN DateList dl
             USING (official_absence_id)
     </script>
     """)
