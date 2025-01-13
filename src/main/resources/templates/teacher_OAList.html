@@ -14,6 +14,7 @@
     <th:block th:if="${mode == 'list'}">
         <a type="button" th:href="@{/jobportal/teacher}" class="btn btn-primary">戻る</a><br>
     </th:block>
+    <script th:src="@{/list.js}"></script>
     <th:block th:if="${mode == 'approval'}">
         <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
     </th:block>
