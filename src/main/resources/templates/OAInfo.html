@@ -41,14 +41,14 @@
             活動内容 : [[*{work.getJapaneseName()}]]<br>
             会社名 : [[*{companyName}]]<br>
             住所 : [[*{address}]]<br>
-            開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+            開始時間 : [[${#numbers.formatInteger(jobSearchInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(jobSearchInfo.visitStartMinute,2)}]]分<br>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
             セミナー・合説名 : [[*{seminarName}]]<br>
             実施場所 : [[*{location}]]<br>
             会場名 : [[*{venueName}]]<br>
-            開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+            開始時間 : [[${#numbers.formatInteger(seminarInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(seminarInfo.visitStartMinute,2)}]]分<br>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">

@@ -47,11 +47,11 @@ public class TeacherController {
 
     //OAList
     @GetMapping("/teacher/OAList")
-    public String showTeacherOAList(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page) {
+    public String showTeacherOAList(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "currentPage") Integer currentPage) {
         if(session.getAttribute("teacherSearchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("teacherSearchForm");
         }
-        return service.getTeacherOAList(page, form, model, session);
+        return service.getTeacherOAList(currentPage, form, model, session);
     }
     //OAList検索
     @GetMapping(value = "/teacher/OAList", params = "search")
@@ -194,6 +194,7 @@ public class TeacherController {
         return "teacher_OAList";
     }
 
+    //一括承認
     @PostMapping("/teacher/approvalMode")
     public String postTeacherApprovalMode(ApprovalForm approval, Model model){
         System.out.println(approval);

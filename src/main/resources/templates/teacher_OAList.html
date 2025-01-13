@@ -14,6 +14,7 @@
     <th:block th:if="${mode == 'list'}">
         <a type="button" th:href="@{/jobportal/teacher}" class="btn btn-primary">戻る</a><br>
     </th:block>
+    <script th:src="@{/list.js}"></script>
     <th:block th:if="${mode == 'approval'}">
         <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
     </th:block>
@@ -47,10 +48,8 @@
                         <div class="btn-group">
                             <input class="btn-check" type="checkbox" id="OAStatusAcceptance" name="OAStatus" value="acceptance" th:checked="*{isOAStatusSelected('acceptance')}">
                             <label class="btn btn-outline-primary" for="OAStatusAcceptance">受理</label>
-                            <input class="btn-check" type="checkbox" id="OATeacherStatusUnaccepted" name="teacherCheckFlag" value="teacherUnaccepted" th:checked="*{teacherCheckFlag == 'teacherUnaccepted'}">
-                            <label class="btn btn-outline-primary" for="OATeacherStatusUnaccepted">担任未承認</label>
-                            <input class="btn-check" type="checkbox" id="OACareerStatusUnaccepted" name="careerCheckFlag" value="careerUnaccepted" th:checked="*{careerCheckFlag == 'careerUnaccepted'}">
-                            <label class="btn btn-outline-primary" for="OACareerStatusUnaccepted">キャリア未承認</label>
+                            <input class="btn-check" type="checkbox" id="OAStatusUnaccepted" name="OAStatus" value="unaccepted" th:checked="*{isOAStatusSelected('unaccepted')}">
+                            <label class="btn btn-outline-primary" for="OAStatusUnaccepted">未受理</label>
                             <input class="btn-check" type="checkbox" id="OAStatusRejection" name="OAStatus" value="rejection" th:checked="*{isOAStatusSelected('rejection')}">
                             <label class="btn btn-outline-primary" for="OAStatusRejection">却下</label>
                         </div>
@@ -60,14 +59,23 @@
                         <label class="btn btn-outline-primary" style="width: 60px" for="andFlag" id="andFlagLabel" th:text="*{andFlag}?'OR':'AND'">AND</label><br>
                     </div>
                     <div class="form-group col-md-auto border-end border-2 border-dark border-opacity-75 pe-4">
-                        <label class="form-label">報告書ステータス</label><br>
-                        <div class="btn-group">
+                        報告書ステータス <br>
+                        <div class="btn-group mt-1">
                             <input class="btn-check" type="checkbox" id="reportStatusAcceptance" name="reportStatus" value="acceptance" th:checked="*{isReportStatusChecked('acceptance')}">
                             <label class="btn btn-outline-primary" for="reportStatusAcceptance">受理</label>
                             <input class="btn-check" type="checkbox" id="reportStatusUnaccepted" name="reportStatus" value="unaccepted" th:checked="*{isReportStatusChecked('unaccepted')}">
                             <label class="btn btn-outline-primary" for="reportStatusUnaccepted">未受理</label>
                             <input class="btn-check" type="checkbox" id="reportStatusUnsubmitted" name="reportStatus" value="unsubmitted" th:checked="*{isReportStatusChecked('unsubmitted')}">
                             <label class="btn btn-outline-primary" for="reportStatusUnsubmitted">未提出</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-auto border-end border-2 border-dark border-opacity-75 pe-4 ps-4">
+                        承認ステータス <br>
+                        <div class="btn-group mt-1">
+                            <input class="btn-check" type="checkbox" id="OATeacherStatusUnaccepted" name="teacherCheckFlag" value="teacherUnaccepted" th:checked="*{teacherCheckFlag == 'teacherUnaccepted'}">
+                            <label class="btn btn-outline-primary" for="OATeacherStatusUnaccepted">担任未承認</label>
+                            <input class="btn-check" type="checkbox" id="OACareerStatusUnaccepted" name="careerCheckFlag" value="careerUnaccepted" th:checked="*{careerCheckFlag == 'careerUnaccepted'}">
+                            <label class="btn btn-outline-primary" for="OACareerStatusUnaccepted">キャリア未承認</label>
                         </div>
                     </div>
                     <div class="m-3 form-group col-md-auto ps-4">
@@ -83,8 +91,8 @@
     </th:block>
     <th:block th:if="${maxSize != 0 and mode == 'list'}">
         <div class="text-center my-3">
-            <a class="btn btn-primary btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=teacher}">担任承認モード</a>
-            <a class="btn btn-primary btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
+            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=teacher}">担任承認モード</a>
+            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination pagination-lg d-flex justify-content-center">
@@ -102,79 +110,78 @@
             </ul>
         </nav>
     </th:block>
+    <br>
     <form th:action="@{/jobportal/teacher/approvalMode}" method="post">
         <input type="hidden" th:name="teacherType" th:value="${teacherType}">
-        <th:block th:if="${mode == 'approval'}">
-            <div class="text-center my-3">
+        <div th:each="value : ${mainList}" th:object="${value}">
+            <ul class="list-group list-group-horizontal row d-flex justify-content-center" style="width: 90vw; box-sizing:border-box;margin-left: calc(-45vw + 50%);">
+                <th:block th:if="${mode == 'list'}">
+                    <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[${value.status}]]</li>
+                            <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
+                        </ul>
+                    </li>
+                </th:block>
+                <li class="list-group-item col-5 text-center px-0 d-flex align-items-center justify-content-center">
+                    <h4 class="my-1">[[*{grade}]][[*{classroom}]]   [[*{course}]]   [[*{name}]]</h4>
+                </li>
+                <th:block th:if="${mode == 'approval'}">
+                    <th:block th:if="${value.reason() == '就活'}">
+                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
+                            <h4 class="my-1">就活</h4>
+                        </li>
+                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
+                            <h4 class="my-1">[[${value.jobSearchVisitStartHour}]] : [[${value.jobSearchVisitStartMinute}]] ~</h4>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${value.reason() == 'セミナー・合説'}">
+                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
+                            <h4 class="my-1">合説</h4>
+                        </li>
+                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
+                            <h4 class="my-1">[[${value.seminarVisitStartHour}]] : [[${value.seminarVisitStartMinute}]] ~</h4>
+                        </li>
+                    </th:block>
+                    <th:block th:unless="${value.reason() == '就活' or value.reason() == 'セミナー・合説'}">
+                        <li class="list-group-item col-2 text-center d-flex align-items-center justify-content-center">
+                            <h4 class="my-1">[[${value.reason}]]</h4>
+                        </li>
+                    </th:block>
+                </th:block>
+                <th:block th:if="${value.startDate} == ${value.endDate}">
+                    <li class="list-group-item col-3 text-center d-flex align-items-center justify-content-center ">
+                        <h5  class="my-1">
+                            <span>[[*{startDate}]]</span>
+                            <span th:each="lesson, iterStat : ${value.lessons}" th:object="${lesson}">
+                               [[${lesson}]]
+                                <span th:unless="${iterStat.last}">,</span>
+                            </span>限目
+                        </h5>
+                    </li>
+                </th:block>
+                <th:block th:unless="${value.startDate} == ${value.endDate}">
+                    <li class="list-group-item col-3 text-center px-0 d-flex align-items-center justify-content-center">
+                        <h5 class="">[[*{startDate}]] - [[*{endDate}]]</h5>
+                    </li>
+                </th:block>
+                <th:block th:if="${mode == 'list'}">
+                    <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
+                    <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
+                </th:block>
+                <th:block th:if="${mode == 'approval'}">
+                        <input type="checkbox" class="btn-check"  name="options-outlined" th:id="${value.officialAbsenceId()} + acceptance" th:name="approval[__${value.officialAbsenceId()}__]" value="true" autocomplete="off">
+                        <label class="btn btn-outline-primary reportbtn col-1 text-center d-flex align-items-center justify-content-center" th:for="${value.officialAbsenceId()} + acceptance"><h4 class="my-1">承認</h4></label>
+                </th:block>
+            </ul>
+        </div>
+        <th:block th:if="${mode == 'approval' && mainList != null}">
+            <div class="submitbtn">
                 <button type="submit" class="btn btn-primary btn-lg">送信</button>
             </div>
         </th:block>
-    <div th:each="value : ${mainList}" th:object="${value}">
-        <ul class="list-group list-group-horizontal row d-flex justify-content-center" style="width: 90vw; box-sizing:border-box;margin-left: calc(-45vw + 50%);">
-            <th:block th:if="${mode == 'list'}">
-                <li class="list-group-item col-2 m-0 p-1 bg-light align-self-center">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.status}__]}">公欠届 : [[${value.status}]]</li>
-                        <li class="list-group-item m-0 p-0 d-flex align-items-center justify-content-center" th:classappend="${colors[__${value.reportStatus}__]}">報告書 : [[${value.reportStatus}]]</li>
-                    </ul>
-                </li>
-            </th:block>
-            <th:block th:if="${mode == 'approval'}">
-                <th:block th:if="${value.reason() == '就活'}">
-                    <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
-                        <h4 class="my-1">就活</h4>
-                    </li>
-                    <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
-                        <h4 class="my-1">[[${value.jobSearchVisitStartHour}]] : [[${value.jobSearchVisitStartMinute}]]</h4>
-                    </li>
-                </th:block>
-                <th:block th:if="${value.reason() == 'セミナー・合説'}">
-                    <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
-                        <h4 class="my-1">合説</h4>
-                    </li>
-                    <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
-                        <h4 class="my-1">[[${value.seminarVisitStartHour}]] : [[${value.seminarVisitStartMinute}]]</h4>
-                    </li>
-                </th:block>
-                <th:block th:unless="${value.reason() == '就活' or value.reason() == 'セミナー・合説'}">
-                    <li class="list-group-item col-2 text-center d-flex align-items-center justify-content-center">
-                        <h4 class="my-1">[[${value.reason}]]</h4>
-                    </li>
-                </th:block>
-            </th:block>
-            <th:block th:if="${value.startDate} == ${value.endDate}">
-                <li class="list-group-item col-3 text-center d-flex align-items-center justify-content-center ">
-                    <h5>
-                        <span>[[*{startDate}]]</span>
-                        <span th:each="lesson, iterStat : ${value.lessons}" th:object="${lesson}">
-                           [[${lesson}]]
-                            <span th:unless="${iterStat.last}">,</span>
-                        </span>限目
-                    </h5>
-                </li>
-            </th:block>
-            <th:block th:unless="${value.startDate} == ${value.endDate}">
-                <li class="list-group-item col-3 text-center px-0 d-flex align-items-center justify-content-center">
-                    <h5 class="">[[*{startDate}]] - [[*{endDate}]]</h5>
-                </li>
-            </th:block>
-            <li class="list-group-item col-5 text-center px-0 d-flex align-items-center justify-content-center">
-                <h4>[[*{grade}]][[*{classroom}]]   [[*{course}]]   [[*{name}]]</h4>
-            </li>
-            <th:block th:if="${mode == 'list'}">
-                <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
-                <a th:href="@{/jobportal/teacher/reportInfo/{oaId}(oaId=${value.officialAbsenceId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
-            </th:block>
-            <th:block th:if="${mode == 'approval'}">
-                    <input type="checkbox" class="btn-check"  name="options-outlined" th:id="${value.officialAbsenceId()} + acceptance" th:name="approval[__${value.officialAbsenceId()}__]" value="true" autocomplete="off">
-                    <label class="btn btn-outline-primary reportbtn col-1 text-center d-flex align-items-center justify-content-center" th:for="${value.officialAbsenceId()} + acceptance"><h4>承認</h4></label>
-            </th:block>
-        </ul>
-    </div>
-        <th:block th:if="${mode == 'approval'}">
-            <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary btn-lg">送信</button>
-            </div>
+        <th:block th:if="${mode == 'approval' && mainList == null}">
+            <h3 class="text-center">全て承認済みです</h3>
         </th:block>
     </form>
     <br><br><br><br><br>
