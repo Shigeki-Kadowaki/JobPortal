@@ -29,7 +29,7 @@ public class OAMainForm {
         private boolean reportRequired;
 //就活部分
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        @Pattern(regexp = "jobInterview|briefing|test|visit|jobOther", groups = jobSearchFormGroup.class)
+        @Pattern(regexp = "jobInterview|briefing|test|training|informalDecisionCeremony|jobOther", groups = jobSearchFormGroup.class)
         private String work;
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
         private String companyName;

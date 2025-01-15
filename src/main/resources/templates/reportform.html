@@ -4,16 +4,6 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <style>
-        #visitedCompany {
-            display: none; /* テンプレートは非表示 */
-            margin-bottom: 20px;
-        }
-        fieldset {
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-    </style>
     <script th:src="@{/reportForm.js}"></script>
     <meta charset="UTF-8">
     <title>createReport</title>
@@ -21,111 +11,152 @@
 <body>
     <section layout:fragment="content">
         <a type="button" th:href="@{/jobportal/student/{studentId}/OAList(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
-        <form th:action="@{jobportal/student/{studentId}/reportform/{oaId}(studentId=${studentId},oaId=${OAId})}" th:method="post">
+        <form th:action="@{/jobportal/student/{studentId}/reportform/{oaId} (studentId=${studentId},oaId=${oaId})}" th:method="post" th:object="${ReportForm}">
             <div th:class="mt-3">
-                <script th:inline="javascript">
-                    const reason = /*[[${reason}]]*/"reason";
-                    console.log(reason);
-                </script>
-                <label th:text="${reason}"></label>
                 <th:block th:if="${reason == '就活'}">
                 <h1><label>訪問企業:</label><label th:text="${jobSearch.companyName}"></label></h1>
                 <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
-            <th:block th:switch="${work}">
-                <span th:case="'説明会'">
                     &emsp;活動時間：
-                    <input type="number" min="1" max="999">分<br>
-                    <h3><label class="" for="">説明会内容</label></h3>
-                    <textarea  class="" type="text" id="" name="" rows="3" placeholder="説明会内容"></textarea>
-                    <h3><label>感想</label></h3>
-                    <textarea rows="3" placeholder="感想"></textarea>
-                </span>
-                <span th:case="'試験'">
-                    <div aria-label="Basic radio toggle button group" class="btn-group" id="TestSelect" role="group">
-                        <input autocomplete="off" checked class="btn-check" id="AptitudeTest" name="testSelect" type="radio" value="AptitudeTest" th:checked="*{testSelect == 'AptitudeTest'}">
-                        <label class="btn btn-outline-primary" for="AptitudeTest">試験</label>
-                        <input autocomplete="off" class="btn-check" id="Interview" name="testSelect" type="radio" value="Interview" th:checked="*{testSelect == 'Interview'}">
-                        <label class="btn btn-outline-primary" for="Interview">面接</label>
-                    </div>
-                    <th:block th:switch="*{testSelect}">
+                    <input type="number" min="1" max="999" name="activityTime">分<br>
+                    <th:block th:switch="${work}">
+                        <span th:case="'説明会'">
+                            <div class="briefing">
+                            <h3><label class="" for="">説明会内容</label></h3>
+                            <textarea  class="" type="text" id="" name="briefingContent" rows="3" placeholder="説明会内容"></textarea>
+                            <h3><label>感想</label></h3>
+                           <textarea rows="3" name="briefingSessionImpressions" placeholder="感想"></textarea>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="briefingSession">説明会</button>
+                                </div>
+                            </div>
+                            </span>
                         <span th:case="'試験'">
-                            <h2><span class="primary p-2">試験</span></h2>
-                            <input type="hidden" name="testSelect" value="AptitudeTest">
+                                <div class="aptitudeTest">
+                                    <div>
+                                        <label>職業：</label>
+                                        問題数 <input type="number" min="0" max="99" name="jobQuestionNumber">
+                                        、種類 <input type="text" name="jobQuestionType">
+                                    </div>
+                                    <div>
+                                        <label>SPI：</label>
+                                        言語系,問題数 <input type="number" min="0" max="99" name="SPILanguageSystemNumber">
+                                        非言語系,問題数 <input type="number" min="0" max="99" name="SPINonLanguageSystemNumber">
+                                        他,問題数 <input type="number" min="0" max="99" name="SPIOthersNumber">
+                                    </div>
+                                    <div>
+                                        <label>性格：</label>
+                                        問題数 <input type="number" min="0" max="99" name="personalityDiagnosisNumber">
+                                        、種類 <input type="text" name="personalityDiagnosisType">
+                                    </div>
+                                    <div>
+                                        <label>国語：</label>
+                                        問題数 <input type="number" min="0" max="99" name="nationalLanguageNumber">
+                                        、種類 <input type="text" name="nationalLanguageType">
+                                    </div>
+                                    <div>
+                                        <label>数学：</label>
+                                        問題数 <input type="number" min="0" max="99" name="mathNumber">
+                                        、種類 <input type="text" name="mathType">
+                                    </div>
+                                    <div>
+                                        <label>英語：</label>
+                                        問題数 <input type="number" min="0" max="99" name="englishNumber">
+                                        、種類 <input type="text" name="englishType">
+                                    </div>
+                                    <div>
+                                        <label>時事問題：</label>
+                                        問題数 <input type="number" min="0" max="99" name="currentAffairsNumber">
+                                        、種類 <input type="text" name="currentAffairsType">
+                                    </div>
+                                    <div>
+                                        <label>作文：</label>
+                                        時間 <input type="number" min="0" max="99" name="writingTimer">
+                                        文字数 <input type="text" name="writingNumberOfCharacters">
+                                        テーマ　<input type="text" name="writingTheme">
+                                    </div>
+                                    <div>
+                                        <label>専門：</label>
+                                       問題数 <input type="number" min="0" max="99" name="expertiseNumber">
+                                        、種類 <input type="text" name="expertiseType">
+                                    </div>
+                                    <div>
+                                        <label>その他：</label>
+                                        <input type="text" name="others">
+                                    </div>
+                                    <h3><label>感想</label></h3>
+                                    <textarea rows="3" name="aptitudeTestImpressions" placeholder="感想"></textarea>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary" name="aptitudeTest">試験</button>
+                                    </div>
+                                </div>
+<!--                            </div>-->
+<!--                            <div class="prev">-->
                         </span>
                         <span th:case="'面接'">
-                            <h2><span class="primary p-2">面接</span></h2>
-                            <input type="hidden" name="testSelect" value="Interview">
+                                <div class="Interview">
+                                    &emsp;面接官：
+                                    <input type="number" min="1" max="10" name="interviewerNumber">人<br>
+                                    &emsp;種類：
+                                    <input type="radio" name="interviewType" value="individual">個人
+                                    <input type="radio" name="interviewType" value="group">集団
+                                    <input type="radio" name="interviewType" value="groupDiscussion">GD<br>
+                                    &emsp;質問内容<br>
+                                    &emsp;<textarea cols="50" rows="7" name="interviewContent"></textarea>
+                                    <h3><label>感想</label></h3>
+                                    <textarea rows="3" name="interviewImpressions" placeholder="感想"></textarea>
+                                    <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="Interview">面接</button>
+                                    </div>
+                                </div>
+<!--                            </div>-->
                         </span>
+                        <span th:case="'内定式'">
+                                <h3><label>感想</label></h3>
+                                <textarea rows="3" name="informalDecisionCeremonyImpressions" placeholder="感想"></textarea>
+                            <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="informalDecisionCeremony">内定式</button>
+                            </div>
+                    </span>
+                        <span th:case="'研修'">
+                                <h3><label>感想</label></h3>
+                                <textarea rows="3" name="trainingImpressions" placeholder="感想"></textarea>
+                            <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="training">研修</button>
+                            </div>
+                    </span>
+                    <span th:case="'その他'">
+                        <h1><label>その他：</label><input type="text" placeholder="活動内容" name="activityContent"/></h1>
+                        <h3><label>感想</label></h3>
+                        <textarea rows="3" name="othersImpressions" placeholder="感想"></textarea>
+                        <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="other">内定式</button>
+                            </div>
+                    </span>
                     </th:block>
-                    <div class="AptitudeTest">
-                        &emsp;活動時間：
-                        <input type="number" min="1" max="999">分<br>
-                        &emsp;職業：問題数
-                        <input type="number" min="0" max="99">、種類
-                        <input type="text"><br>&emsp;SPI：言語系
-                        <input type="number" min="0" max="99">個・非言語系
-                        <input type="number" min="0" max="99">個・他
-                        <input type="text"><br>&emsp;性格：問題数
-                        <input type="number" min="0" max="99">、種類
-                        <input type="text"><br>&emsp;国語：問題数
-                        <input type="number" min="0" max="99">、種類
-                        <input type="text"><br>&emsp;数学：問題数
-                        <input type="number" min="0" max="99">、種類
-                        <input type="text"><br>&emsp;英語：問題数
-                        <input type="number" min="0" max="99">、種類
-                        <input type="text"><br>&emsp;時事問題：問題数：
-                        <input type="number" min="0" max="99">、種類
-                        <input type="text"><br>
-                        &emsp;その他：<input type="text"><br><br>
+                    <div id="isSelection">
+                        <input type="radio" name="isSelection" value="doNot" checked onclick="isSelectionsChoice()"> しない
+                        <input type="radio" name="isSelection" value="underConsideration" onclick="isSelectionsChoice()"> 検討中
+                        <input type="radio" name="isSelection" value="examination" onclick="isSelectionsChoice()"> 受験する
+                        <input type="radio" name="isSelection" value="unofficiallyDecided" onclick="isSelectionsChoice()"> 内定済み
                     </div>
-                    <div class="Interview">
-                        &emsp;面接官：
-                        <input type="number" min="1" max="10">人<br>
-                        &emsp;種類：
-                        <input type="radio" name="interview">個人
-                        <input type="radio" name="interview">集団
-                        <input type="radio" name="interview">GD<br>
-                        &emsp;質問内容<br>
-                        &emsp;<textarea cols="50" rows="7"></textarea>
+                    <div id="nextAction" style="display:none">
+                        <input type="radio" name="nextAction" value="documentMailing" checked> 書類郵送
+                        <input type="radio" name="nextAction" value="briefingSession"> 説明会参加
+                        <input type="radio" name="nextAction" value="interview"> 面接
+                        <input type="radio" name="nextAction" value="academicExam"> 学科試験
+                        <input type="radio" name="nextAction" value="aptitudeTest"> 適性検査
                     </div>
-                    <h3><label>感想</label></h3>
-                    <textarea rows="3" placeholder="感想"></textarea>
-                </span>
-                <span th:case="'訪問'">
-                    &emsp;活動時間：
-                        <input type="number" min="1" max="999">分<br>
-                    <h3>活動内容</h3>
-                    <h5 class="ms-3"><label class="form-check-label" for="JobOfferCeremony">
-                        <input checked class="form-check-input" id="JobOfferCeremony" name="visited" type="radio" value="JobOfferCeremony" th:checked="*{visited == 'JobOfferCeremony'}">
-                        内定式
-                    </label>
-                    <label class="form-check-label" for="training">
-                        <input class="form-check-input" id="training" name="visited" type="radio" value="training" th:checked="*{visited == 'training'}">
-                        研修
-                    </label>
-                    <h3><label>感想</label></h3>
-                    <textarea rows="3" placeholder="感想"></textarea>
-                </span>
-                <span th:case="'その他'">
-                    &emsp;活動時間：
-                        <input type="number" min="1" max="999">分<br>
-                    <h1><label>その他：</label><input type="text" placeholder="活動内容" /></h1>
-                    <h3><label>感想</label></h3>
-                    <textarea rows="3" placeholder="感想"></textarea>
-                </span>
-                </th:block>
                 </th:block>
             </div>
         </form>
-        <form>
             <div th:class="mt-3">
                 <th:block th:if="${reason == 'セミナー・合説'}">
                     <h1><label>セミナー名:</label><label th:text="${seminar.seminarName}"></label><br>
                     <label>実施場所</label><label th:text="${seminar.location}"></label><br>
                     <label>会場</label><label th:text="${seminar.venueName}"></label></h1>
                     <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4><br>
-                        <input type="button" id="add">企業を追加</input>
-                    <div id="container">
+                    <button id="add">企業を追加</button>
+                    <form>
                         <div id="visitedCompany">
 <!--                        <fieldset>-->
 <!--                            <legend id="title">訪問企業</legend>-->
@@ -145,10 +176,9 @@
 <!--                            </div>-->
 <!--                        </fieldset>-->
                         </div>
-                    </div>
+                    </form>
                 </th:block>
             </div>
-        </form>
     </section>
 </body>
 </html>
