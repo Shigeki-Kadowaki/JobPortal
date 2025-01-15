@@ -18,6 +18,7 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.RestTemplate;
@@ -554,6 +555,7 @@ public class MainService {
         );
     }
 
+    @Transactional
     public String postOA(BindingResult bindingResult, HttpServletRequest request, OAMainForm form, Model model) {
         Student student = (Student) request.getAttribute("student");
         Integer studentId = student.getGno();
@@ -612,6 +614,7 @@ public class MainService {
     }
 
     public String getOAInfo(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model, String teacher, String mode) {
+        model.addAttribute("mode", mode);
         if(!dateInfoEntities.isEmpty()){
             Map<String, List<OALessonsDTO>> lessonInfoEntities = toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
@@ -639,7 +642,6 @@ public class MainService {
             }
             model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
-            model.addAttribute("mode", mode);
         }
         return teacher + "OAInfo";
     }
@@ -676,6 +678,7 @@ public class MainService {
         return "OAInfo";
     }
 
+    @Transactional
     public String rePostOA(BindingResult bindingResult, Integer OAId, OAMainForm form) {
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -775,6 +778,7 @@ public class MainService {
 //        });
 //    }
 
+    @Transactional
     public String postReport(BindingResult bindingResult, HttpServletRequest request, OAMainForm form, Model model) {
         Student student = (Student) request.getAttribute("student");
         Integer studentId = student.getGno();
