@@ -18,6 +18,7 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.RestTemplate;
@@ -105,6 +106,7 @@ public class MainService {
     public void createReport(Integer officialAbsenceId, boolean reportRequired) {
         repository.createReport(officialAbsenceId, reportRequired);
     }
+
     //List取得
     public List<OAListEntity> findAllOAs(Integer studentId, StudentOASearchForm form){return repository.selectAll(studentId, form);
     }
@@ -553,6 +555,7 @@ public class MainService {
         );
     }
 
+    @Transactional
     public String postOA(BindingResult bindingResult, HttpServletRequest request, OAMainForm form, Model model) {
         Student student = (Student) request.getAttribute("student");
         Integer studentId = student.getGno();
@@ -611,6 +614,7 @@ public class MainService {
     }
 
     public String getOAInfo(OAMainInfoEntity mainInfoEntity, List<OADateInfoEntity> dateInfoEntities, Integer OAId, Model model, String teacher, String mode) {
+        model.addAttribute("mode", mode);
         if(!dateInfoEntities.isEmpty()){
             Map<String, List<OALessonsDTO>> lessonInfoEntities = toLessonInfoDTO(dateInfoEntities);
             OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
@@ -638,7 +642,6 @@ public class MainService {
             }
             model.addAttribute("lessonInfo", lessonInfoEntities);
             model.addAttribute("mainInfo", mainInfoDTO);
-            model.addAttribute("mode", mode);
         }
         return teacher + "OAInfo";
     }
@@ -675,6 +678,7 @@ public class MainService {
         return "OAInfo";
     }
 
+    @Transactional
     public String rePostOA(BindingResult bindingResult, Integer OAId, OAMainForm form) {
         if(bindingResult.hasErrors()){
             System.out.println("error");
@@ -773,4 +777,51 @@ public class MainService {
 //            values.forEach(value->repository.insertOADates(key, value));
 //        });
 //    }
+
+    @Transactional
+    public String postReport(BindingResult bindingResult, HttpServletRequest request, OAMainForm form, Model model) {
+        Student student = (Student) request.getAttribute("student");
+        Integer studentId = student.getGno();
+        model.addAttribute("studentId",studentId);
+        model.addAttribute("mode", "create");
+        List<ExceptionDateEntity> exceptionDates = getExceptionDates();
+        //学校で使う用
+        //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
+        model.addAttribute("subjects", subjects);
+        model.addAttribute("exceptionDates", exceptionDates);
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "OAForm";
+        }
+        OAMainEntity mainEntity = form.toMainEntity(studentId, student);
+        createOA(mainEntity);
+        Integer officialAbsenceId = mainEntity.getOfficialAbsenceId();
+        List<OADatesEntity> dateList = form.toDatesEntity();
+        createSubmitted(officialAbsenceId);
+        createOADates(dateList, officialAbsenceId);
+        createReport(officialAbsenceId, mainEntity.getReportRequired());
+        switch (mainEntity.getReason()){
+            case jobSearch -> {
+                JobSearchEntity jobSearchEntity = form.toJobSearchEntity(officialAbsenceId);
+                createJobSearch(jobSearchEntity);
+            }
+            case seminar -> {
+                SeminarEntity seminarEntity = form.toSeminarEntity(officialAbsenceId);
+                createSeminar(seminarEntity);
+            }
+            case bereavement -> {
+                BereavementEntity bereavementEntity = form.toBereavementEntity(officialAbsenceId);
+                createBereavement(bereavementEntity);
+            }
+            case attendanceBan -> {
+                AttendanceBanEntity attendanceBanEntity = form.toAttendanceBanEntity(officialAbsenceId);
+                createAttendanceBan(attendanceBanEntity);
+            }
+            case other -> {
+                OtherEntity otherEntity = form.toOtherEntity(officialAbsenceId);
+                createOther(otherEntity);
+            }
+        }
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
 }
