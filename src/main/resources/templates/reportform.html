@@ -111,29 +111,23 @@
 <!--                            </div>-->
                         </span>
                         <span th:case="'内定式'">
-                        &emsp;活動時間：
-                            <input type="number" min="1" max="999">分<br>
                                 <h3><label>感想</label></h3>
-                                <textarea rows="3" name="informalDecisionCeremonyFeedback" placeholder="感想"></textarea>
+                                <textarea rows="3" name="informalDecisionCeremonyImpressions" placeholder="感想"></textarea>
                             <div class="text-end">
                                     <button type="submit" class="btn btn-primary" name="informalDecisionCeremony">内定式</button>
                             </div>
                     </span>
                         <span th:case="'研修'">
-                        &emsp;活動時間：
-                            <input type="number" min="1" max="999">分<br>
                                 <h3><label>感想</label></h3>
-                                <textarea rows="3" name="trainingFeadback" placeholder="感想"></textarea>
+                                <textarea rows="3" name="trainingImpressions" placeholder="感想"></textarea>
                             <div class="text-end">
                                     <button type="submit" class="btn btn-primary" name="training">研修</button>
                             </div>
                     </span>
                     <span th:case="'その他'">
-                        &emsp;活動時間：
-                            <input type="number" min="1" max="999">分<br>
-                        <h1><label>その他：</label><input type="text" placeholder="活動内容"/></h1>
+                        <h1><label>その他：</label><input type="text" placeholder="活動内容" name="activityContent"/></h1>
                         <h3><label>感想</label></h3>
-                        <textarea rows="3" name="otherFeedback" placeholder="感想"></textarea>
+                        <textarea rows="3" name="othersImpressions" placeholder="感想"></textarea>
                         <div class="text-end">
                                     <button type="submit" class="btn btn-primary" name="other">内定式</button>
                             </div>

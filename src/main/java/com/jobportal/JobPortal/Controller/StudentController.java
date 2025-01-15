@@ -324,38 +324,42 @@ public class StudentController {
         System.out.println(form);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
-//
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="informalDecisionCeremony")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(informalDecisionCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="training")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportSeminar")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportOther")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
+
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="informalDecisionCeremony")
+    public String informalDecisionCeremonyReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(informalDecisionCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="training")
+    public String trainingReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportSeminar")
+    public String seminarReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportOther")
+    public String otherReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
 
 }

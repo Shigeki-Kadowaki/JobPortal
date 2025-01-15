@@ -93,15 +93,23 @@ public class ReportForm {
     private String interviewImpressions;
 
     //研修.
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.trainingGroup.class)
     private String trainingImpressions;
     //内定式.
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.informalDecisionCeremonyGroup.class)
     private String informalDecisionCeremonyImpressions;
     //セミナー.
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
     private String companyName;
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
     private String manager;
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
     private String industry;
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
     private String seminarImpressions;
     //その他.
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.reportOtherGroup.class)
     private String activityContent;
+    @NotBlank(message = "必須項目です", groups = ValidationGroup.reportOtherGroup.class)
     private String othersImpressions;
 }
