@@ -294,64 +294,72 @@ public class StudentController {
         }
         return "reportform";
     }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="briefingSession")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(briefingSessionGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="briefingSession")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(examGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="Interview")
+
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="briefingSession")
     public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
                                         @PathVariable("oaId") Integer OAId,
-                                        @Validated(InterviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        @Validated(briefingSessionGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                         Model model)
     {
         System.out.println(form);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
-//
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="informalDecisionCeremony")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(informalDecisionCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="training")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportSeminar")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
-//    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportOther")
-//    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-//                                        @PathVariable("oaId") Integer OAId,
-//                                        @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-//                                        Model model)
-//    {
-//
-//    }
+
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="aptitudeTest")
+    public String aptitudeTestReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(aptitudeTestGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="Interview")
+    public String interviewReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(interviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="informalDecisionCeremony")
+    public String informalDecisionCeremonyReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(informalDecisionCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="training")
+    public String trainingReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportSeminar")
+    public String seminarReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportOther")
+    public String otherReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        Model model)
+    {
+        System.out.println(form);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
 
 }

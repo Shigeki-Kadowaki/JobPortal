@@ -1,54 +1,10 @@
 
 window.addEventListener('DOMContentLoaded',()=>{
-    if(document.getElementById("add")){
-    const btn = document.getElementById("add");
-    btn.addEventListener("click", addElement, false);
-    }
-    if(document.getElementById("TestSelect") || document.getElementById("visited")){
-    testSelect();
+    if(document.getElementById("add")) {
+        const btn = document.getElementById("add");
+        btn.addEventListener("click", addElement, false);
     }
 });
-
-let prevSelected = "firstLoad";
-function testSelect() {
-
-    const formRadio = document.getElementsByName('radioSelect');
-    const formSections = {
-        "cur": document.querySelectorAll('.cur'),
-        "prev": document.querySelectorAll('.prev')
-    };
-
-    // ラジオボタン変更時の処理
-    Array.from(formRadio).forEach(target => {
-        if (target.checked) {
-            prevSelected = target.value;
-        }
-
-        target.addEventListener('change', () => {
-            // 以前のフォームをすべて非表示
-            Object.values(formSections).forEach(section => {
-                section.forEach(el => el.style.display = 'none');
-            });
-
-            // 現在選択されているフォームを表示
-            formSections[target.value].forEach(el => el.style.display = 'block');
-
-            // 現在の選択を記録
-            prevSelected = target.value;
-        });
-    });
-
-    // 初期状態の設定
-    if (prevSelected === "firstLoad") {
-        prevSelected = formRadio[0]?.value || "cur";
-    }
-
-    // 初期フォームの表示設定
-    Object.values(formSections).forEach(section => {
-        section.forEach(el => el.style.display = 'none');
-    });
-    formSections[prevSelected].forEach(el => el.style.display = 'block');
-}
 
 let cnt = 0;
 function addElement() {
@@ -102,6 +58,7 @@ function isSelectionsChoice(){
                 if(isSelection[2].checked == true){
                     document.getElementById("nextAction").style.display="";
                 }else{
+                    document.getElementsByName("nextAction").value="";
                     document.getElementById("nextAction").style.display="none";
                 }
     }
