@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>報告書詳細</title>
+    <script th:src="@{/info.js}"></script>
+</head>
+<body id="container">
+<section layout:fragment="content">
+    <script th:inline="javascript">
+        const reportId = /*[[${mainInfo.reportId}]]*/"reportId";
+        const studentId = /*[[${mainInfo.studentId}]]*/"studentId";
+        const version =/*[[${mainInfo.version}]]*/"version";
+        const maxVersion =/*[[${mainInfo.maxVersion}]]*/"maxVersion";
+    </script>
+    <div class="d-flex justify-content-between">
+        <a type="button" th:href="${mode == 'info'} ?
+        @{/jobportal/student/{id}/OAList(id=${studentId})} :
+        @{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a>
+        <th:block th:if="${mode != 'teacher'}">
+            <th:block th:if="${mainInfo.maxVersion}>=2">
+                <select class="form-select" id="versionSelect" aria-label="Default select example" onchange="reportVersionChange(this.value)" style="width:150px;">
+                    <option value="0">現バージョン</option>
+                    <th:block th:each="i:${#numbers.sequence(__${mainInfo.maxVersion}__-1,1)}">
+                        <option th:value="${i}">version:[[${i}]]</option>
+                    </th:block>
+                </select>
+            </th:block>
+        </th:block>
+    </div>
+    <br>
+    <br>
+    ステータス : [[${mainInfo.status}]]<br>
+    提出日 : [[${mainInfo.submittedDate}]]<br>
+    <th:block th:switch="${mainInfo.reason.toString()}">
+        活動内容 : [[${mainInfo.reason.getJapaneseName}]]<br>
+        <span th:case="jobInterview">
+            面接官人数 : [[${interviewEntity.interviewerNumber}]] 人<br>
+            タイプ : [[${interviewEntity.interviewType}]]<br>
+            内容 : [[${interviewEntity.interviewContent}]]<br>
+            感想 : [[${interviewEntity.interviewImpressions}]]<br>
+        </span>
+        <span th:case="briefing">
+            内容 : [[${briefingEntity.briefingContent}]]<br>
+        </span>
+        <span th:case="test">
+            [[${testEntity.generalKnowledgeNumber}]]<br>
+            [[${testEntity.generalKnowledgeType}]]<br>
+            [[${testEntity.jobQuestionNumber}]]<br>
+            [[${testEntity.jobQuestionType}]]<br>
+            [[${testEntity.SPILanguageSystemNumber}]]<br>
+            [[${testEntity.SPINonLanguageSystemNumber}]]<br>
+            [[${testEntity.SPIOthersNumber}]]<br>
+            [[${testEntity.personalityDiagnosisNumber}]]<br>
+            [[${testEntity.personalityDiagnosisType}]]<br>
+            [[${testEntity.nationalLanguageNumber}]]<br>
+            [[${testEntity.nationalLanguageType}]]<br>
+            [[${testEntity.mathNumber}]]<br>
+            [[${testEntity.mathType}]]<br>
+            [[${testEntity.englishNumber}]]<br>
+            [[${testEntity.englishType}]]<br>
+            [[${testEntity.currentAffairsNumber}]]<br>
+            [[${testEntity.currentAffairsType}]]<br>
+            [[${testEntity.writingTimer}]]<br>
+            [[${testEntity.writingNumberOfCharacters}]]<br>
+            [[${testEntity.writingTheme}]]<br>
+            [[${testEntity.expertiseNumber}]]<br>
+            [[${testEntity.expertiseType}]]<br>
+            [[${testEntity.others}]]<br>
+            [[${testEntity.testImpressions}]]<br>
+        </span>
+        <span th:case="informalCeremony">
+            感想 : [[${informalCeremonyEntity.informalCeremonyImpressions}]]<br>
+        </span>
+        <span th:case="training">
+            感想 : [[${trainingEntity.trainingImpressions}]]<br>
+        </span>
+        <span th:case="jobOther">
+            [[${otherEntity.activityContent}]]<br>
+            [[${otherEntity.othersImpressions}]]<br>
+        </span>
+        <span th:case="seminar">
+            <div th:each="seminar, stat : ${seminarEntities}">
+                <div class="card">
+                    <div class="card-header">
+                        訪問企業 [[${stat.count}]]
+                    </div>
+                    <div class="card-body">
+                        会社名 : [[${seminar.companyName}]]<br>
+                        担当者名 : [[${seminar.manager}]]<br>
+                        業種 : [[${seminar.industry}]]<br>
+                        感想 : [[${seminar.seminarImpressions}]]<br>
+                        今後の受験 : [[${seminar.seminarIsSelection.getJapaneseName()}]]<br>
+                        <th:block th:if="${seminar.seminarNextAction != null}">
+                            [[${seminar.seminarNextAction.getJapaneseName()}]]<br>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </span>
+    </th:block>
+    <th:block th:if="${mainInfo.reason.toString() != 'seminar'}">
+        今後の受験 : [[${mainInfo.companyDecision.getJapaneseName()}]]<br>
+        <th:block th:if="${mainInfo.nextAction != null}">
+            [[${mainInfo.nextAction.getJapaneseName()}]]<br>
+        </th:block>
+    </th:block>
+    <br><br><br>
+    <th:block th:if="${mainInfo.status.toString() != 'acceptance'}">
+        <th:block th:if="${mode == 'info'}">
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
+            </div>
+        </th:block>
+        <th:block th:if="${mode == 'teacher'}">
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
+            </div>
+        </th:block>
+    </th:block>
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!--          modalヘッダー-->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="cancelModalLabel">本当に破棄しますか？</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!--          modalボディー-->
+                <form th:action="@{/jobportal/student/{studentId}/report/{reportId}(studentId=${studentId},reportId=${mainInfo.reportId})}" th:method="delete">
+                    <h6 class="text-center m-3"><th:block th:if="${mainInfo.maxVersion}>=2">
+                        過去のバージョンも全て破棄されます。
+                    </th:block>破棄すると元に戻せません。</h6>
+                    <!--          modalフッター-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">破棄</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="reSubmissionModal" tabindex="-1" aria-labelledby="reSubmissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!--          modalヘッダー-->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="reSubmissionModalLabel">再提出すると未受理状態になります。よろしいですか？</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!--          modalボディー-->
+                <form th:action="@{/jobportal/student/{studentId}/report/{reportId}/reportEditForm (studentId=${mainInfo.studentId}, reportId=${mainInfo.reportId})}" method="post">
+                    <!--          modalフッター-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">再提出</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!--          modalヘッダー-->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="rejectionModalLabel">却下理由を入力してください</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!--          modalボディー-->
+                <form th:action="@{/jobportal/teacher/report/{reportId}(reportId=${mainInfo.reportId})}" th:method="put">
+                    <div class="modal-body">
+                        <input type="hidden" th:value="${mainInfo.studentEmail}" name="studentEmail">
+                        <div class="mb-3">
+                            <label for="reasonForRejection" class="col-form-label">却下理由:</label>
+                            <textarea class="form-control" id="reasonForRejection" name="reasonForRejection"></textarea>
+                        </div>
+                    </div>
+                    <!--          modalフッター-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" name="rejection">却下</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="acceptanceModal" tabindex="-1" aria-labelledby="acceptanceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!--          modalヘッダー-->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="acceptanceModalLabel">承認しますか？</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!--            modalボディー-->
+                <form th:action="@{/jobportal/teacher/report/{reportId}(reportId=${mainInfo.reportId})}" th:method="put">
+                    <!--            modalフッター-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" name="acceptance">承認</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br><br><br>
+</section>
+</body>
+</html>
