@@ -170,7 +170,7 @@ public class MainService {
     }
     //再提出
     
-    public void updateSubmittedDate(Integer OAId) {repository.updateSubmittedDate(OAId, LocalDate.now());
+    public void updateOASubmittedDate(Integer OAId) {repository.updateSubmittedDate(OAId, LocalDate.now());
     }
     
     public void updateOADates(List<OADatesEntity> dateList, Integer OAId) {repository.updateOADates(dateList, OAId);
@@ -229,6 +229,7 @@ public class MainService {
         return listEntity.stream()
                 .collect(Collectors.groupingBy(k -> Arrays.asList(
                         k.officialAbsenceId(),
+                        k.reportId(),
                         k.studentId(),
                         k.grade(),
                         k.classroom(),
@@ -245,25 +246,26 @@ public class MainService {
                         k.jobSearchVisitStartMinute(),
                         k.seminarVisitStartHour(),
                         k.seminarVisitStartMinute()
-                        ),LinkedHashMap::new, toList())).entrySet().stream()
+                ), LinkedHashMap::new, toList())).entrySet().stream()
                 .map(entry -> new OAListDTO(
                         (Integer) entry.getKey().get(0),
                         (Integer) entry.getKey().get(1),
                         (Integer) entry.getKey().get(2),
-                        entry.getKey().get(3).toString(),
+                        (Integer) entry.getKey().get(3),
                         entry.getKey().get(4).toString(),
                         entry.getKey().get(5).toString(),
                         entry.getKey().get(6).toString(),
                         entry.getKey().get(7).toString(),
                         entry.getKey().get(8).toString(),
-                        (Boolean) entry.getKey().get(9),
-                        entry.getKey().get(10).toString(),
+                        entry.getKey().get(9).toString(),
+                        (Boolean) entry.getKey().get(10),
                         entry.getKey().get(11).toString(),
-                        (Boolean)entry.getKey().get(12),
-                        padLeft(String.valueOf(entry.getKey().get(13)),2,'0'),
-                        padLeft(String.valueOf(entry.getKey().get(14)),2,'0'),
-                        padLeft(String.valueOf(entry.getKey().get(15)),2,'0'),
-                        padLeft(String.valueOf(entry.getKey().get(16)),2,'0'),
+                        entry.getKey().get(12).toString(),
+                        (Boolean) entry.getKey().get(13),
+                        padLeft(String.valueOf(entry.getKey().get(14)), 2, '0'),
+                        padLeft(String.valueOf(entry.getKey().get(15)), 2, '0'),
+                        padLeft(String.valueOf(entry.getKey().get(16)), 2, '0'),
+                        padLeft(String.valueOf(entry.getKey().get(17)), 2, '0'),
                         entry.getValue().stream().map(OAListEntity::period).collect(toList())
                 )).toList();
     }
@@ -679,12 +681,12 @@ public class MainService {
     }
 
     @Transactional
-    public String rePostOA(BindingResult bindingResult, Integer OAId, OAMainForm form) {
+    public String repostOA(BindingResult bindingResult, Integer OAId, OAMainForm form) {
         if(bindingResult.hasErrors()){
             System.out.println("error");
             return "OAForm";
         }
-        updateSubmittedDate(OAId);
+        updateOASubmittedDate(OAId);
         List<OADatesEntity> dateList = form.toDatesEntity();
         updateOADates(dateList, OAId);
         switch (OAReason.valueOf(form.getReasonForAbsence())){
@@ -823,5 +825,266 @@ public class MainService {
             }
         }
         return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+    public void updateReportStatus(Integer reportId, String status){
+        repository.updateReportStatus(reportId, status);
+        Integer OAId = repository.getOAId(reportId);
+        checkOAAndReportCondition(OAId, reportId);
+    }
+    public void checkOAAndReportCondition(Integer OAId, Integer reportId){
+        if(repository.selectOAStatus(OAId).equals("acceptance") && (repository.selectReportStatus(reportId).equals("unnecessary") || repository.selectReportStatus(reportId).equals("acceptance"))){
+            System.out.println("公欠反映------------------------------");
+        }
+    }
+    @Transactional
+    public void postInterviewReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertReportHistories(reportId, form);
+        repository.insertInterviewReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+        repository.insertJobFuture(form, reportId);
+    }
+    @Transactional
+    public void postBriefingReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertReportHistories(reportId, form);
+        repository.insertBriefingReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+        repository.insertJobFuture(form, reportId);
+    }
+    @Transactional
+    public void postExamReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertReportHistories(reportId, form);
+        repository.insertExamReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+        repository.insertJobFuture(form, reportId);
+    }
+    @Transactional
+    public void postInformalCeremonyReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertReportHistories(reportId, form);
+        repository.insertInformalCeremonyReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+        repository.insertJobFuture(form, reportId);
+    }
+    @Transactional
+    public void postTrainingReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertTrainingReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+        repository.insertJobFuture(form, reportId);
+    }
+    @Transactional
+    public void postOtherReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertReportHistories(reportId, form);
+        repository.insertOtherReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+        repository.insertJobFuture(form, reportId);
+    }
+    @Transactional
+    public void postSeminarReport(ReportForm form, Integer oaId) {
+        Integer reportId = repository.getReportID(oaId);
+        repository.insertReportHistories(reportId, form);
+        repository.insertSeminarReport(form, reportId);
+        repository.updateReportStatus(reportId, "unaccepted");
+        repository.updateReportInfo(form, reportId);
+    }
+
+    public ReportInfoEntity getReportInfo(Integer reportId) {
+        return repository.selectReportInfo(reportId);
+    }
+
+    public ReportInterviewEntity getInterviewEntity(Integer reportId) {
+        return repository.selectReportInterview(reportId);
+    }
+
+    public ReportBriefingEntity getBriefingEntity(Integer reportId) {
+        return repository.selectReportBriefing(reportId);
+    }
+
+    public ReportTestEntity getTestEntity(Integer reportId) {
+        return repository.selectReportTest(reportId);
+    }
+
+    public ReportInformalCeremonyEntity getInformalCeremonyEntity(Integer reportId) {
+        return repository.selectReportInformalCeremony(reportId);
+    }
+
+    public ReportTrainingEntity getTrainingEntity(Integer reportId) {
+        return repository.selectReportTraining(reportId);
+    }
+
+    public ReportOtherEntity getOtherEntity(Integer reportId) {
+        return repository.selectReportOther(reportId);
+    }
+
+    public List<ReportSeminarEntity> getSeminarEntity(Integer reportId) {
+        return repository.selectReportSeminar(reportId);
+    }
+
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, ReportInterviewEntity interviewEntity) {
+        return new ReportForm(
+            mainInfo,
+            interviewEntity
+        );
+    }
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, ReportBriefingEntity briefingEntity) {
+        return new ReportForm(
+            mainInfo,
+            briefingEntity
+        );
+    }
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, ReportTestEntity testEntity) {
+        return new ReportForm(
+            mainInfo,
+            testEntity
+        );
+    }
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, ReportInformalCeremonyEntity informalCeremonyEntity) {
+        return new ReportForm(
+            mainInfo,
+            informalCeremonyEntity
+        );
+    }
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, ReportTrainingEntity otherEntity) {
+        return new ReportForm(
+            mainInfo,
+            otherEntity
+        );
+    }
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, ReportOtherEntity otherEntity) {
+        return new ReportForm(
+            mainInfo,
+            otherEntity
+        );
+    }
+    public ReportForm toReportForm(ReportInfoEntity mainInfo, List<ReportSeminarEntity> seminarEntities) {
+        return new ReportForm(
+            mainInfo,
+            seminarEntities
+        );
+    }
+
+    @Transactional
+    public String repostReport(Integer reportId, ReportForm form, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            return "reportForm";
+        }
+        form.setReportId(reportId);
+        updateReportHistories(reportId, form);
+        switch (ReportType.valueOf(form.getReason())){
+            case jobInterview -> {
+                updateReportInterview(form);
+                updateJobFuture(form);
+            }
+            case briefing -> {
+                updateReportBriefing(form);
+                updateJobFuture(form);
+            }
+            case test -> {
+                updateReportTest(form);
+                updateJobFuture(form);
+            }
+            case informalCeremony -> {
+                updateReportInformalCeremony(form);
+                updateJobFuture(form);
+            }
+            case training -> {
+                updateReportTraining(form);
+                updateJobFuture(form);
+            }
+            case jobOther -> {
+                updateReportOther(form);
+                updateJobFuture(form);
+            }
+            case seminar -> {
+                updateReportSeminar(form);
+            }
+        }
+        updateReportStatus(reportId, "unaccepted");
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+    private void updateReportHistories(Integer reportId, ReportForm form) {
+        repository.updateReportHistories(reportId, form);
+    }
+
+
+    private void updateReportBriefing(ReportForm form) {
+        repository.updateReportBriefing(form);
+    }
+
+    private void updateReportInterview(ReportForm form) {
+        repository.updateReportInterview(form);
+    }
+
+    private void updateReportTest(ReportForm form) {
+        repository.updateReportTest(form);
+    }
+
+    private void updateReportInformalCeremony(ReportForm form) {
+        repository.updateReportInformalCeremony(form);
+    }
+
+    private void updateReportTraining(ReportForm form) {
+        repository.updateReportTraining(form);
+    }
+
+    private void updateReportOther(ReportForm form) {
+        repository.updateReportOther(form);
+    }
+
+    private void updateReportSeminar(ReportForm form) {
+        repository.updateReportSeminar(form);
+    }
+
+    private void updateJobFuture(ReportForm form) {
+        repository.updateJobFuture(form);
+    }
+
+    public ReportInfoEntity getReportInfoByVersion(Integer reportId, Integer version) {
+        return repository.selectReportInfoByVersion(reportId, version);
+    }
+
+    public ReportInterviewEntity getInterviewEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportInterviewByVersion(reportId, version);
+    }
+
+    public ReportBriefingEntity getBriefingEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportBriefingByVersion(reportId, version);
+    }
+
+    public ReportTestEntity getTestEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportTestByVersion(reportId, version);
+    }
+
+    public ReportInformalCeremonyEntity getInformalCeremonyEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportInformalCeremonyByVersion(reportId, version);
+    }
+
+    public ReportTrainingEntity getTrainingEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportTrainingByVersion(reportId, version);
+    }
+
+    public ReportOtherEntity getOtherEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportOtherByVersion(reportId, version);
+    }
+
+    public List<ReportSeminarEntity> getSeminarEntityByVersion(Integer reportId, Integer version) {
+        return repository.selectReportSeminarByVersion(reportId, version);
+    }
+
+    public Integer getReportId(Integer OAId) {
+        return repository.getReportID(OAId);
     }
 }

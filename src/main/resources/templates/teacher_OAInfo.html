@@ -61,11 +61,13 @@
     </div>
   </div>
   <br><br><br>
-  <th:block th:if="${mode eq 'info'}">
-    <div class="d-flex justify-content-between">
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
-    </div>
+  <th:block th:if="${mainInfo.status != '受理'}">
+    <th:block th:if="${mode eq 'info'}">
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
+      </div>
+    </th:block>
   </th:block>
 
   <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">

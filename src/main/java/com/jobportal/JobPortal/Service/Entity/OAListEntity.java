@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 public record OAListEntity (
         Integer officialAbsenceId,
+        Integer reportId,
         Integer studentId,
         Integer grade,
         String classroom,
