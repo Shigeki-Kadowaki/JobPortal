@@ -5,6 +5,9 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 @RequiredArgsConstructor
 public class ReportForm {
@@ -13,8 +16,8 @@ public class ReportForm {
     private String reportReason;
     @NotNull(message = "必須項目です")
     private Integer activityTime;
-    private String isSelection;
-    private String nextAction;
+    private Map<String, List<String>> isSelection;
+    private Map<String, List<String>> nextAction;
 
     //説明会.
     @NotEmpty(message = "必須項目です", groups = ValidationGroup.briefingSessionGroup.class)
