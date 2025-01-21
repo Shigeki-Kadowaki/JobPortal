@@ -27,8 +27,9 @@ public class ReportForm {
     private String briefingImpressions;
 
     //試験.
-    @Size(max = 64, message = "64文字以内で入力してください",groups = ValidationGroup.testGroup.class)
-    private String generalKnowledgeNumber;//一般常識問題数
+    @Max(value = 100, groups = ValidationGroup.testGroup.class)
+    @Min(value = 0, groups = ValidationGroup.testGroup.class)
+    private Integer generalKnowledgeNumber;//一般常識問題数
     @Size(max = 64, message = "64文字以内で入力してください",groups = ValidationGroup.testGroup.class)
     private String generalKnowledgeType;//一般常識問題種類
     @Max(value = 100, groups = ValidationGroup.testGroup.class)

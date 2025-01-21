@@ -859,8 +859,9 @@ public interface MainRepository {
             #{form.SPIOthersNumber},
             #{form.personalityDiagnosisNumber},
             #{form.personalityDiagnosisType},
-            #{form.other},
-            #{form.testImpressions}
+            #{form.others},
+            #{form.testImpressions},
+            #{form.generalKnowledgeNumber}
         );
     """)
     void insertExamReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
@@ -1093,7 +1094,6 @@ public interface MainRepository {
         INSERT INTO report_exam_histories VALUES (
             #{form.reportId},
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
-            #{form.generalKnowledgeNumber},
             #{form.generalKnowledgeType},
             #{form.jobQuestionNumber},
             #{form.jobQuestionType},
@@ -1116,7 +1116,8 @@ public interface MainRepository {
             #{form.expertiseNumber},
             #{form.expertiseType},
             #{form.others},
-            #{form.testImpressions}
+            #{form.testImpressions},
+            #{form.generalKnowledgeNumber}
         );
     """)
     void updateReportTest(@Param("form") ReportForm form);
@@ -1362,10 +1363,48 @@ public interface MainRepository {
                 (#{OAId},
                 #{studentId},
                 #{date.officialAbsenceDate},
-                #{date.period})
+                #{date.period},
+                false)
             </foreach>
         ;
         </script>
     """)
     void insertApplovedLeaveRequests(@Param("OAId") Integer OAId,@Param("studentId") Integer studentId,@Param("dateEntities") List<OADateInfoEntity> dateEntities);
+
+    @Delete("""
+        DELETE report_interview_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportJobInterview(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_briefing_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportBriefing(Integer oaId);
+    @Delete("""
+        DELETE report_exam_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportTest(Integer oaId);
+    @Delete("""
+        DELETE report_informal_ceremony_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportInformalCeremony(Integer oaId);
+    @Delete("""
+        DELETE report_training_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportTraining(Integer oaId);
+    @Delete("""
+        DELETE report_other_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportJobOther(Integer oaId);
+    @Delete("""
+        DELETE report_seminar_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportSeminar(Integer oaId);
+    @Delete("""
+        DELETE report_job_future_selection WHERE report_id = #{reportId};
+    """)
+    void deleteJobFutureSelection(Integer oaId);
+    @Delete("""
+        DELETE report_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportHistories(Integer oaId);
 }

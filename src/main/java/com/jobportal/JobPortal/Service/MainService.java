@@ -486,8 +486,40 @@ public class MainService {
         repository.deleteExceptionDate(id);
     }
 
-    public void deleteReport(Integer oaId) {
-        repository.deleteReport(oaId);
+    @Transactional
+    public void deleteReports(Integer reportId) {
+        ReportInfoEntity info = repository.selectReportInfo(reportId);
+        switch (info.reason()){
+            case jobInterview -> {
+                repository.deleteReportJobInterview(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case briefing -> {
+                repository.deleteReportBriefing(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case test -> {
+                repository.deleteReportTest(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case informalCeremony -> {
+                repository.deleteReportInformalCeremony(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case training -> {
+                repository.deleteReportTraining(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case jobOther -> {
+                repository.deleteReportJobOther(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case seminar -> {
+                repository.deleteReportSeminar(reportId);
+            }
+        }
+        repository.deleteReportHistories(reportId);
+        repository.deleteReport(reportId);
     }
 
     public Subject[][] getSubjectArr(ClassificationForm classification) {
@@ -1090,5 +1122,31 @@ public class MainService {
 
     public Integer getReportId(Integer OAId) {
         return repository.selectReportID(OAId);
+    }
+
+    @Transactional
+    public void deleteOA(Integer OAId) {
+        OAMainInfoEntity mainInfoEntity = findMainInfo(OAId);
+        switch (mainInfoEntity.reason()){
+            case jobSearch -> {
+                deleteJobSearch(OAId);
+            }
+            case seminar -> {
+                deleteSeminar(OAId);
+            }
+            case bereavement -> {
+                deleteBereavement(OAId);
+            }
+            case attendanceBan -> {
+                deleteAttendanceBan(OAId);
+            }
+            case other -> {
+                deleteOther(OAId);
+            }
+        }
+        deleteDate(OAId);
+        deleteSubmittedDate(OAId);
+        deleteReports(OAId);
+        deleteMain(OAId);
     }
 }
