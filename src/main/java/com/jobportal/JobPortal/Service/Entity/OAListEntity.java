@@ -14,7 +14,7 @@ public record OAListEntity (
         String classroom,
         String course,
         String name,
-        OAStatus status,
+        OAStatus OAStatus,
         OAReason reason,
         OAStatus reportStatus,
         boolean reportRequired,

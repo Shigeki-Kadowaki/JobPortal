@@ -309,7 +309,7 @@ public interface MainRepository {
     """)
     OAMainInfoEntity selectMainInfo(@Param("OAId") Integer OAId);
     @Select("""
-        SELECT  
+        SELECT
             official_absence_date_histories.official_absence_date,
             official_absence_date_histories.period,
             lesson_name
@@ -810,7 +810,7 @@ public interface MainRepository {
         WHERE official_absence_id = #{oaId}
         LIMIT 1;
     """)
-    Integer getReportID(@Param("oaId") Integer oaId);
+    Integer selectReportID(@Param("oaId") Integer oaId);
 
     @Insert("""
         INSERT INTO report_interview_histories VALUES (
@@ -1346,5 +1346,26 @@ public interface MainRepository {
         WHERE report_id = #{reportId}
         LIMIT 1;
     """)
-    Integer getOAId(@Param("reportId") Integer reportId);
+    Integer selectOAId(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT student_id
+        FROM official_absences
+        WHERE official_absence_id = #{OAId};
+    """)
+    int selectStudentId(@Param("OAId") Integer OAId);
+
+    @Insert("""
+        <script>
+        INSERT INTO approved_leave_requests VALUES
+            <foreach item='date' collection='dateEntities' separator=','>
+                (#{OAId},
+                #{studentId},
+                #{date.officialAbsenceDate},
+                #{date.period})
+            </foreach>
+        ;
+        </script>
+    """)
+    void insertApplovedLeaveRequests(@Param("OAId") Integer OAId,@Param("studentId") Integer studentId,@Param("dateEntities") List<OADateInfoEntity> dateEntities);
 }
