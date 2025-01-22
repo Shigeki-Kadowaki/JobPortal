@@ -1425,7 +1425,7 @@ public interface MainRepository {
             h.version,
             (SELECT MAX(version) FROM report_histories),
             o.student_email,
-            company_name,
+            h.company_name,
             activity_time,
             f.hope_for_employment,
             f.next_selection_details
@@ -1436,6 +1436,8 @@ public interface MainRepository {
         USING (report_id)
         LEFT OUTER JOIN report_job_future_selection f
         USING (report_id, version)
+        LEFT OUTER JOIN report_seminar_histories s
+        USING (report_id, version)
         WHERE (report_id, h.version) IN (
             SELECT
                 report_id,
@@ -1444,11 +1446,41 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            AND company_name LIKE concat('%',#{companyName},'%')
+            AND h.company_name LIKE concat('%',#{companyName},'%')
+            OR s.company_name LIKE concat('%',#{companyName},'%')
         </if>
-        GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.hope_for_employment, f.next_selection_details, company_name
-        ORDER BY report_id
+        GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.hope_for_employment, f.next_selection_details, h.company_name
+        ORDER BY report_id;
         </script>
     """)
-    List<ReportInfoEntity> selectReportInfosByCompanyName(@Param("companyName") String companyName);
+    List<ReportInfoEntity> selectReportInfosByCompanyName(@Param("companyName") String companyName, @Param("page") Integer page, @Param("maxPage") Integer maxPage);
+
+    @Select("""
+        <script>
+        SELECT
+            COUNT(h.report_id)
+        FROM official_absences o
+        JOIN reports r
+        USING (official_absence_id)
+        JOIN report_histories h
+        USING (report_id)
+        LEFT OUTER JOIN report_job_future_selection f
+        USING (report_id, version)
+        LEFT OUTER JOIN report_seminar_histories s
+        USING (report_id, version)
+        WHERE (report_id, h.version) IN (
+            SELECT
+                report_id,
+                MAX(version)
+            FROM report_histories
+            GROUP BY report_id
+        )
+        <if test="companyName != '' and companyName != null">
+            AND h.company_name LIKE concat('%',#{companyName},'%')
+            OR s.company_name LIKE concat('%',#{companyName},'%')
+        </if>
+        ;
+        </script>
+    """)
+    Integer countReportInfosByCompanyName(@Param("companyName") String companyName);
 }

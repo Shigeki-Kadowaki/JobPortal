@@ -137,7 +137,7 @@ public class ReportForm {
         this.nextAction = String.valueOf(mainInfo.nextAction());
 
         this.interviewerNumber = interviewEntity.interviewerNumber();
-        this.interviewType = interviewEntity.interviewType();
+        this.interviewType = String.valueOf(interviewEntity.interviewType());
         this.interviewContent = interviewEntity.interviewContent();
         this.interviewImpressions = interviewEntity.interviewImpressions();
     }

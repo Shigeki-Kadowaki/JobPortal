@@ -765,12 +765,12 @@ public class MainService {
         int displayPageCount = Math.min(maxSize, 5);
         int start = Math.max(1, Math.min(currentPage - (displayPageCount - 1) / 2, maxSize - displayPageCount + 1));
         int end = Math.min(maxSize, start + displayPageCount - 1);
-        model.addAttribute("searchForm", form);
-        model.addAttribute("colors", colors);
         model.addAttribute("maxSize", maxSize);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("start", start);
         model.addAttribute("end", end);
+        model.addAttribute("searchForm", form);
+        model.addAttribute("colors", colors);
         model.addAttribute("mode", "list");
         return "teacher_OAList";
     }
@@ -1150,9 +1150,9 @@ public class MainService {
         deleteMain(OAId);
     }
 
-    public List<ReportLogEntity> searchReportLogs(String companyName) {
+    public List<ReportLogEntity> searchReportLogs(String companyName, Integer page) {
         List<ReportLogEntity> logEntities = new ArrayList<>();
-        List<ReportInfoEntity> infoEntities = repository.selectReportInfosByCompanyName(companyName);
+        List<ReportInfoEntity> infoEntities = repository.selectReportInfosByCompanyName(companyName, page, pageSize);
         for (ReportInfoEntity reportInfoEntity : infoEntities) {
             switch (reportInfoEntity.reason()){
                 case jobInterview -> {
@@ -1186,5 +1186,9 @@ public class MainService {
             }
         }
         return logEntities;
+    }
+
+    public Integer countSearchReportLogs(String companyName) {
+        return repository.countReportInfosByCompanyName(companyName);
     }
 }
