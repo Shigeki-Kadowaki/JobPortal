@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'com.jobportal'
-version = '0.0.1-SNAPSHOT'
 
 sourceCompatibility = '23'
 targetCompatibility = '23'
@@ -47,8 +46,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	//implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.0'
 	implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '3.0.3'
-
 }
+
+jar.archiveBaseName = 'JobPortal'
+version = '0.0.1'
 
 tasks.named('test') {
 	useJUnitPlatform()

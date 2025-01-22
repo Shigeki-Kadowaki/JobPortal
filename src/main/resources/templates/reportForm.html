@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja"
+      layout:decorate="~{layout/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script th:src="@{/reportForm.js}"></script>
+    <meta charset="UTF-8">
+    <title>createReport</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <a type="button" th:href="@{/jobportal/student/{studentId}/OAList(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
+        [[${mode}]]
+        <form th:action="${mode == 'create'} ?
+            @{/jobportal/student/{studentId}/reportCreationForm/{oaId} (studentId=${studentId},oaId=${oaId})} :
+            @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
+        th:method="post" th:object="${ReportForm}">
+            [[${reason}]]
+            <div th:class="mt-3">
+                <th:block th:if="${reason != 'seminar'}">
+                <h1><label>訪問企業:</label><label th:text="${jobSearch.companyName}"></label></h1>
+                <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
+                    <span th:errors="${ReportForm.activityTime}"></span>
+                    <label>
+                        &emsp;活動時間：
+                        <input type="number" min="1" max="999" name="activityTime" th:value="${ReportForm.activityTime}">
+                    </label>分<br>
+                    <th:block th:switch="${jobSearch.work().toString()}">
+                        <span th:case="briefing">
+                            <div class="briefing">
+                            <input type="hidden" name="reason" value="briefing">
+                            <h3><label class="" for="">説明会内容</label></h3>
+                            <textarea  class="" type="text" id="" name="briefingContent" rows="3" placeholder="説明会内容">[[${ReportForm.briefingContent}]]</textarea>
+                            <h3><label>感想</label></h3>
+                           <textarea rows="3" name="briefingImpressions" placeholder="感想">[[${ReportForm.briefingImpressions}]]</textarea>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="briefing">説明会</button>
+                                </div>
+                            </div>
+                            </span>
+                        <span th:case="test">
+                                <input type="hidden" name="reason" value="test">
+                                <div class="test">
+                                    <div>
+                                        <label>一般常識：</label>
+                                        問題数 <input type="number" min="0" max="99" name="generalKnowledgeNumber" th:value="${ReportForm.generalKnowledgeNumber}">
+                                        、種類 <input type="text" name="generalKnowledgeType" th:value="${ReportForm.generalKnowledgeType}">
+                                    </div>
+                                    <div>
+                                        <label>職業：</label>
+                                        問題数 <input type="number" min="0" max="99" name="jobQuestionNumber" th:value="${ReportForm.jobQuestionNumber}">
+                                        、種類 <input type="text" name="jobQuestionType" th:value="${ReportForm.jobQuestionType}">
+                                    </div>
+                                    <div>
+                                        <label>SPI：</label>
+                                        言語系,問題数 <input type="number" min="0" max="99" name="SPILanguageSystemNumber" th:value="${ReportForm.SPILanguageSystemNumber}">
+                                        非言語系,問題数 <input type="number" min="0" max="99" name="SPINonLanguageSystemNumber" th:value="${ReportForm.SPINonLanguageSystemNumber}">
+                                        他,問題数 <input type="number" min="0" max="99" name="SPIOthersNumber" th:value="${ReportForm.SPIOthersNumber}">
+                                    </div>
+                                    <div>
+                                        <label>性格：</label>
+                                        問題数 <input type="number" min="0" max="99" name="personalityDiagnosisNumber" th:value="${ReportForm.personalityDiagnosisNumber}">
+                                        、種類 <input type="text" name="personalityDiagnosisType" th:value="${ReportForm.personalityDiagnosisType}">
+                                    </div>
+                                    <div>
+                                        <label>国語：</label>
+                                        問題数 <input type="number" min="0" max="99" name="nationalLanguageNumber" th:value="${ReportForm.nationalLanguageNumber}">
+                                        、種類 <input type="text" name="nationalLanguageType" th:value="${ReportForm.nationalLanguageType}">
+                                    </div>
+                                    <div>
+                                        <label>数学：</label>
+                                        問題数 <input type="number" min="0" max="99" name="mathNumber" th:value="${ReportForm.mathNumber}">
+                                        、種類 <input type="text" name="mathType" th:value="${ReportForm.mathType}">
+                                    </div>
+                                    <div>
+                                        <label>英語：</label>
+                                        問題数 <input type="number" min="0" max="99" name="englishNumber" th:value="${ReportForm.englishNumber}">
+                                        、種類 <input type="text" name="englishType" th:value="${ReportForm.englishType}">
+                                    </div>
+                                    <div>
+                                        <label>時事問題：</label>
+                                        問題数 <input type="number" min="0" max="99" name="currentAffairsNumber" th:value="${ReportForm.currentAffairsNumber}">
+                                        、種類 <input type="text" name="currentAffairsType" th:value="${ReportForm.currentAffairsType}">
+                                    </div>
+                                    <div>
+                                        <label>作文：</label>
+                                        時間 <input type="number" min="0" max="99" name="writingTimer" th:value="${ReportForm.writingTimer}">
+                                        文字数 <input type="text" name="writingNumberOfCharacters" th:value="${ReportForm.writingNumberOfCharacters}">
+                                        テーマ　<input type="text" name="writingTheme" th:value="${ReportForm.writingTheme}">
+                                    </div>
+                                    <div>
+                                        <label>専門：</label>
+                                       問題数 <input type="number" min="0" max="99" name="expertiseNumber" th:value="${ReportForm.expertiseNumber}">
+                                        、種類 <input type="text" name="expertiseType" th:value="${ReportForm.expertiseType}">
+                                    </div>
+                                    <div>
+                                        <label>その他：</label>
+                                        <input type="text" name="others" th:value="${ReportForm.others}">
+                                    </div>
+                                    <h3><label>感想</label></h3>
+                                    <textarea rows="3" name="testImpressions" placeholder="感想">[[${ReportForm.testImpressions}]]</textarea>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary" name="test">試験</button>
+                                    </div>
+                                </div>
+<!--                            </div>-->
+<!--                            <div class="prev">-->
+                        </span>
+                        <span th:case="jobInterview">
+                            <input type="hidden" name="reason" value="jobInterview">
+                                <div class="Interview">
+                                    &emsp;面接官：
+                                    <input type="number" min="1" max="10" name="interviewerNumber" th:value="${ReportForm.interviewerNumber}">人<br>
+                                    &emsp;種類：
+                                    <input type="radio" name="interviewType" value="individual" th:checked="${ReportForm.interviewType == 'individual'}">個人
+                                    <input type="radio" name="interviewType" value="group" th:checked="${ReportForm.interviewType == 'group'}">集団
+                                    <input type="radio" name="interviewType" value="groupDiscussion" th:checked="${ReportForm.interviewType == 'groupDiscussion'}">GD<br>
+                                    &emsp;質問内容<br>
+                                    &emsp;<textarea cols="50" rows="7" name="interviewContent">[[${ReportForm.interviewContent}]]</textarea>
+                                    <h3><label>感想</label></h3>
+                                    <textarea rows="3" name="interviewImpressions" placeholder="感想">[[${ReportForm.interviewImpressions}]]</textarea>
+                                    <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="jobInterview">面接</button>
+                                    </div>
+                                </div>
+<!--                            </div>-->
+                        </span>
+                        <span th:case="informalCeremony">
+                            <input type="hidden" name="reason" value="informalCeremony">
+                                <h3><label>感想</label></h3>
+                                <textarea rows="3" name="informalCeremonyImpressions" placeholder="感想">[[${ReportForm.informalCeremonyImpressions}]]</textarea>
+                            <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="informalCeremony">内定式</button>
+                            </div>
+                    </span>
+                        <span th:case="training">
+                            <input type="hidden" name="reason" value="training">
+                                <h3><label>感想</label></h3>
+                                <textarea rows="3" name="trainingImpressions" placeholder="感想">[[${ReportForm.trainingImpressions}]]</textarea>
+                            <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="training">研修</button>
+                            </div>
+                    </span>
+                    <span th:case="jobOther">
+                        <input type="hidden" name="reason" value="jobOther">
+                        <h1><label>その他：</label><input type="text" placeholder="活動内容" name="activityContent" th:value="${ReportForm.activityContent}"></h1>
+                        <h3><label>感想</label></h3>
+                        <textarea rows="3" name="otherImpressions" placeholder="感想">[[${ReportForm.othersImpressions}]]</textarea>
+                        <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" name="jobOther">その他</button>
+                            </div>
+                    </span>
+                    </th:block>
+                    <div id="isSelection">
+                        <input type="radio" name="isSelection" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'doNot' or ReportForm.isSelection == null}"> しない
+                        <input type="radio" name="isSelection" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'underConsideration'}"> 検討中
+                        <input type="radio" name="isSelection" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.isSelection == 'takingExam'}"> 受験する
+                        <input type="radio" name="isSelection" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'hasOffer'}"> 内定済み
+                    </div>
+                    <div id="nextAction" style="display:none">
+                        <input type="radio" name="nextAction" id="firstCheck" value="mailingDocuments" th:checked="${ReportForm.nextAction == 'mailingDocuments' or ReportForm.nextAction == null}"> 書類郵送
+                        <input type="radio" name="nextAction" value="attendingBriefing" th:checked="${ReportForm.nextAction == 'attendingBriefing'}"> 説明会参加
+                        <input type="radio" name="nextAction" value="jobInterview" th:checked="${ReportForm.nextAction == 'jobInterview'}"> 面接
+                        <input type="radio" name="nextAction" value="exam" th:checked="${ReportForm.nextAction == 'exam'}"> 学科試験
+                        <input type="radio" name="nextAction" value="aptitudeTest" th:checked="${ReportForm.nextAction == 'aptitudeTest'}"> 適性検査
+                    </div>
+                </th:block>
+            </div>
+            <div th:class="mt-3">
+                <th:block th:if="${reason == 'seminar'}">
+                    <input type="hidden" name="reason" value="seminar">
+                    <span th:errors="${ReportForm.activityTime}"></span>
+                    <label>
+                        活動時間：
+                        <input type="number" min="1" max="999" name="activityTime">
+                    </label>分<br>
+                    <button type="button" class="btn btn-primary" onclick="addElement()">企業を追加</button>
+                    <div id="visitedCompany"></div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary" name="reportSeminar">セミナー</button>
+                    </div>
+                </th:block>
+            </div>
+        </form>
+    </section>
+</body>
+</html>

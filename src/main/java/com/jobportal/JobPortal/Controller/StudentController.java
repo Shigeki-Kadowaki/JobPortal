@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,11 @@ public class StudentController {
         {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
         {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
     };
+
+    @GetMapping("/dockerTest")
+    public String dockerTest(Model model) {
+        return "dockerTest";
+    }
 
     @GetMapping(value = "/", produces = "text/html; charset=UTF-8")
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
@@ -166,11 +172,6 @@ public class StudentController {
         return service.getOAInfoByVersion(mainInfoEntity, dateInfoEntities, OAId, model, version);
     }
 
-    @GetMapping("/student/{studentId}/reportInfo/{OAId}")
-    public String showStudentReportInfo(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
-        return "student_reportInfo";
-    }
-
     //編集画面
     @GetMapping("/student/{studentId}/OAList/{OAId}/OAEditForm")
     public String showEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
@@ -217,27 +218,27 @@ public class StudentController {
     //就活再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "jobSearch")
     public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.rePostOA(bindingResult, OAId, form);
+        return service.repostOA(bindingResult, OAId, form);
     }
     //セミナー再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "seminar")
     public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.rePostOA(bindingResult, OAId, form);
+        return service.repostOA(bindingResult, OAId, form);
     }
     //忌引再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "bereavement")
     public String postBereavementForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.rePostOA(bindingResult, OAId, form);
+        return service.repostOA(bindingResult, OAId, form);
     }
     //出席停止再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "attendanceBan")
     public String postBanForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.rePostOA(bindingResult, OAId, form);
+        return service.repostOA(bindingResult, OAId, form);
     }
     //その他再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "other")
     public String postOtherForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.rePostOA(bindingResult, OAId, form);
+        return service.repostOA(bindingResult, OAId, form);
     }
 
     //破棄
@@ -268,7 +269,7 @@ public class StudentController {
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
-    @GetMapping("/student/{studentId}/reportform/{oaId}")
+    @GetMapping("/student/{studentId}/reportCreationForm/{oaId}")
     public String editReportForm(@PathVariable("studentId") Integer studentId,
                                  @PathVariable("oaId") Integer OAId,
                                  Model model) {
@@ -278,88 +279,353 @@ public class StudentController {
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         model.addAttribute("OADate",dateInfoEntities);
         OAMainInfoDTO mainInfoDTO = mainInfoEntity.toInfoDTO();
-        switch (mainInfoDTO.reason()) {
-            case "就活" -> {
+        switch (mainInfoEntity.reason()) {
+            case jobSearch -> {
                 JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-                model.addAttribute("reason",mainInfoDTO.reason());
-                model.addAttribute("work",jobSearch.work().getJapaneseName());
+                model.addAttribute("reason",mainInfoEntity.reason().toString());
                 model.addAttribute("jobSearch",jobSearch);
+                System.out.println(jobSearch.work().toString());
 
             }
-            case "セミナー・合説" -> {
+            case seminar -> {
                 SeminarEntity seminar = service.findSeminarInfo(OAId);
-                model.addAttribute("reason",mainInfoDTO.reason());
+                model.addAttribute("reason",mainInfoEntity.reason().toString());
                 model.addAttribute("seminar", seminar);
             }
         }
-        return "reportform";
+        model.addAttribute("ReportForm", new ReportForm());
+        model.addAttribute("mode","create");
+        return "reportForm";
     }
 
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="briefingSession")
-    public String briefingSessionReport(@PathVariable("studentId") Integer studentId,
-                                        @PathVariable("oaId") Integer OAId,
-                                        @Validated(briefingSessionGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-                                        Model model)
-    {
-        System.out.println(form);
-        return "redirect:/jobportal/student/{studentId}/OAList";
-    }
-
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="aptitudeTest")
-    public String aptitudeTestReport(@PathVariable("studentId") Integer studentId,
-                                        @PathVariable("oaId") Integer OAId,
-                                        @Validated(aptitudeTestGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-                                        Model model)
-    {
-        System.out.println(form);
-        return "redirect:/jobportal/student/{studentId}/OAList";
-    }
-
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="Interview")
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="jobInterview")
     public String interviewReport(@PathVariable("studentId") Integer studentId,
-                                        @PathVariable("oaId") Integer OAId,
-                                        @Validated(interviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-                                        Model model)
+                                  @PathVariable("oaId") Integer OAId,
+                                  @Validated(interviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                  BindingResult bindingResult,
+                                  Model model)
     {
-        System.out.println(form);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        System.out.println(jobSearch.work());
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        if(bindingResult.hasErrors()){
+            System.out.println("error");
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
+        service.postInterviewReport(form, OAId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="informalDecisionCeremony")
-    public String informalDecisionCeremonyReport(@PathVariable("studentId") Integer studentId,
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="briefing")
+    public String briefingReport(@PathVariable("studentId") Integer studentId,
                                         @PathVariable("oaId") Integer OAId,
-                                        @Validated(informalDecisionCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        @Validated(briefingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        BindingResult bindingResult,
                                         Model model)
     {
-        System.out.println(form);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        if(bindingResult.hasErrors()){
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
+        service.postBriefingReport(form, OAId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="training")
+
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="test")
+    public String testReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(testGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        BindingResult bindingResult,
+                                        Model model)
+    {
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+        System.out.println(jobSearch.companyName());
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        if(bindingResult.hasErrors()){
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
+        service.postExamReport(form, OAId);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="informalCeremony")
+    public String informalCeremonyReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(informalCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        BindingResult bindingResult,
+                                        Model model)
+    {
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        if(bindingResult.hasErrors()){
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
+        service.postInformalCeremonyReport(form, OAId);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="training")
     public String trainingReport(@PathVariable("studentId") Integer studentId,
                                         @PathVariable("oaId") Integer OAId,
                                         @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        BindingResult bindingResult,
                                         Model model)
     {
-        System.out.println(form);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        if(bindingResult.hasErrors()){
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
+        service.postTrainingReport(form, OAId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportSeminar")
-    public String seminarReport(@PathVariable("studentId") Integer studentId,
-                                        @PathVariable("oaId") Integer OAId,
-                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-                                        Model model)
-    {
-        System.out.println(form);
-        return "redirect:/jobportal/student/{studentId}/OAList";
-    }
-    @PostMapping(value="/student/{studentId}/reportform/{oaId}", params="reportOther")
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="jobOther")
     public String otherReport(@PathVariable("studentId") Integer studentId,
-                                        @PathVariable("oaId") Integer OAId,
-                                        @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
-                                        Model model)
+                              @PathVariable("oaId") Integer OAId,
+                              @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                              BindingResult bindingResult,
+                              Model model)
     {
-        System.out.println(form);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        if(bindingResult.hasErrors()){
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
+        service.postOtherReport(form, OAId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
+    @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="reportSeminar")
+    public String seminarReport(@PathVariable("studentId") Integer studentId,
+                                        @PathVariable("oaId") Integer OAId,
+                                        @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                        BindingResult bindingResult,
+                                        Model model)
+    {
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
+        System.out.println(form.getSeminarForms().get(0).getSeminarIsSelection());
+        if(bindingResult.hasErrors()){
+            bindingResult.getAllErrors().forEach(error -> {
+                System.out.println("エラーコード: " + Arrays.toString(error.getCodes()));
+                System.out.println("デフォルトメッセージ: " + error.getDefaultMessage());
+            });
+            model.addAttribute("mode","create");
+            return "reportForm";
+        }
+        form.getSeminarForms().stream()
+                .filter(f -> !"takingExam".equals(f.getSeminarIsSelection()))
+                .forEach(f -> f.setSeminarNextAction(null));
+        service.postSeminarReport(form, OAId);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+
+    @PostMapping("/student/{studentId}/report/{reportId}/reportEditForm")
+    public String showReportEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, Model model){
+        ReportInfoEntity mainInfo = service.getReportInfo(reportId);
+        model.addAttribute("mainInfo", mainInfo);
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(mainInfo.officialAbsenceId());
+        model.addAttribute("OADate",dateInfoEntities);
+        ReportForm form = new ReportForm();
+        switch (mainInfo.reason()){
+            case jobInterview -> {
+                ReportInterviewEntity interviewEntity = service.getInterviewEntity(reportId);
+                form = service.toReportForm(mainInfo, interviewEntity);
+            }
+            case briefing -> {
+                ReportBriefingEntity briefingEntity = service.getBriefingEntity(reportId);
+                form = service.toReportForm(mainInfo, briefingEntity);
+            }
+            case test -> {
+                ReportTestEntity testEntity = service.getTestEntity(reportId);
+                form = service.toReportForm(mainInfo, testEntity);
+            }
+            case informalCeremony -> {
+                ReportInformalCeremonyEntity informalCeremonyEntity = service.getInformalCeremonyEntity(reportId);
+                form = service.toReportForm(mainInfo, informalCeremonyEntity);
+            }
+            case training -> {
+                ReportTrainingEntity trainingEntity = service.getTrainingEntity(reportId);
+                form = service.toReportForm(mainInfo, trainingEntity);
+            }
+            case jobOther -> {
+                ReportOtherEntity otherEntity = service.getOtherEntity(reportId);
+                form = service.toReportForm(mainInfo, otherEntity);
+            }
+            case seminar -> {
+                List<ReportSeminarEntity> seminarEntities = service.getSeminarEntity(reportId);
+                form = service.toReportForm(mainInfo, seminarEntities);
+            }
+        }
+        if(!mainInfo.reason().toString().equals("seminar")){
+            JobSearchEntity jobSearch = service.findJobSearchInfo(mainInfo.officialAbsenceId());
+            model.addAttribute("jobSearch",jobSearch);
+        }
+        model.addAttribute("reason", mainInfo.reason().toString());
+        model.addAttribute("ReportForm", form);
+        model.addAttribute("mode", "edit");
+        return "reportForm";
+    }
+
+    @GetMapping("/student/{studentId}/report/{reportId}")
+    public String showStudentReportInfo(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, Model model){
+        ReportInfoEntity mainInfo = service.getReportInfo(reportId);
+        model.addAttribute("mainInfo", mainInfo);
+        switch (mainInfo.reason()){
+            case jobInterview -> {
+                ReportInterviewEntity interviewEntity = service.getInterviewEntity(reportId);
+                model.addAttribute("interviewEntity", interviewEntity);
+            }
+            case briefing -> {
+                ReportBriefingEntity briefingEntity = service.getBriefingEntity(reportId);
+                model.addAttribute("briefingEntity", briefingEntity);
+            }
+            case test -> {
+                ReportTestEntity testEntity = service.getTestEntity(reportId);
+                model.addAttribute("testEntity", testEntity);
+            }
+            case informalCeremony -> {
+                ReportInformalCeremonyEntity informalCeremonyEntity = service.getInformalCeremonyEntity(reportId);
+                model.addAttribute("informalCeremonyEntity", informalCeremonyEntity);
+            }
+            case training -> {
+                ReportTrainingEntity trainingEntity = service.getTrainingEntity(reportId);
+                model.addAttribute("trainingEntity", trainingEntity);
+            }
+            case jobOther -> {
+                ReportOtherEntity otherEntity = service.getOtherEntity(reportId);
+                model.addAttribute("otherEntity", otherEntity);
+            }
+            case seminar -> {
+                List<ReportSeminarEntity> seminarEntities = service.getSeminarEntity(reportId);
+                model.addAttribute("seminarEntities", seminarEntities);
+            }
+        }
+        model.addAttribute("mode", "info");
+        return "reportInfo";
+    }
+
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "briefing")
+    public String repostReportBriefing(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId,@Validated(briefingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                       BindingResult bindingResult,
+                                       Model model){
+        return service.repostReport(reportId, form, bindingResult);
+    }
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "test")
+    public String repostReportTest(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(testGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                   BindingResult bindingResult,
+                                   Model model){
+        return service.repostReport(reportId, form, bindingResult);
+    }
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "jobInterview")
+    public String repostReportJobInterview(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(interviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                           BindingResult bindingResult,
+                                           Model model){
+        return service.repostReport(reportId, form, bindingResult);
+    }
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "informalCeremony")
+    public String repostReportInformalCeremony(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(informalCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                               BindingResult bindingResult,
+                                               Model model){
+        return service.repostReport(reportId, form, bindingResult);
+    }
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "training")
+    public String repostReportTraining(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                       BindingResult bindingResult,
+                                       Model model){
+        return service.repostReport(reportId, form, bindingResult);
+    }
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "other")
+    public String repostReportJobOther(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                       BindingResult bindingResult,
+                                       Model model){
+        return service.repostReport(reportId, form, bindingResult);
+    }
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "seminar")
+    public String repostReportSeminar(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
+                                      BindingResult bindingResult,
+                                      Model model){
+        if(bindingResult.hasErrors()){
+            return "reportForm";
+        }
+        return service.repostReport(reportId, form, bindingResult);
+    }
+
+    //報告書別バージョン詳細
+    @GetMapping("/student/{studentId}/reportByVersion/{reportId}")
+    public String showStudentReportInfoByVersion(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("reportId") Integer reportId,@RequestParam("version") Integer version, Model model){
+        ReportInfoEntity mainInfo = service.getReportInfoByVersion(reportId, version);
+        model.addAttribute("mainInfo", mainInfo);
+        switch (mainInfo.reason()){
+            case jobInterview -> {
+                ReportInterviewEntity interviewEntity = service.getInterviewEntityByVersion(reportId, version);
+                model.addAttribute("interviewEntity", interviewEntity);
+            }
+            case briefing -> {
+                ReportBriefingEntity briefingEntity = service.getBriefingEntityByVersion(reportId, version);
+                model.addAttribute("briefingEntity", briefingEntity);
+            }
+            case test -> {
+                ReportTestEntity testEntity = service.getTestEntityByVersion(reportId, version);
+                model.addAttribute("testEntity", testEntity);
+            }
+            case informalCeremony -> {
+                ReportInformalCeremonyEntity informalCeremonyEntity = service.getInformalCeremonyEntityByVersion(reportId, version);
+                model.addAttribute("informalCeremonyEntity", informalCeremonyEntity);
+            }
+            case training -> {
+                ReportTrainingEntity trainingEntity = service.getTrainingEntityByVersion(reportId, version);
+                model.addAttribute("trainingEntity", trainingEntity);
+            }
+            case jobOther -> {
+                ReportOtherEntity otherEntity = service.getOtherEntityByVersion(reportId, version);
+                model.addAttribute("otherEntity", otherEntity);
+            }
+            case seminar -> {
+                List<ReportSeminarEntity> seminarEntities = service.getSeminarEntityByVersion(reportId, version);
+                model.addAttribute("seminarEntities", seminarEntities);
+            }
+        }
+        model.addAttribute("mode", "read");
+        return "reportInfo";
+    }
 }

@@ -41,14 +41,14 @@
             活動内容 : [[*{work.getJapaneseName()}]]<br>
             会社名 : [[*{companyName}]]<br>
             住所 : [[*{address}]]<br>
-            開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+            開始時間 : [[${#numbers.formatInteger(jobSearchInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(jobSearchInfo.visitStartMinute,2)}]]分<br>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
             セミナー・合説名 : [[*{seminarName}]]<br>
             実施場所 : [[*{location}]]<br>
             会場名 : [[*{venueName}]]<br>
-            開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+            開始時間 : [[${#numbers.formatInteger(seminarInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(seminarInfo.visitStartMinute,2)}]]分<br>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
@@ -74,11 +74,13 @@
         </div>
     </div>
     <br><br><br>
-    <th:block th:if="${mode == 'info'}">
-        <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
-        </div>
+    <th:block th:if="${mainInfo.status != '受理'}">
+        <th:block th:if="${mode == 'info'}">
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reSubmissionModal">再提出</button>
+            </div>
+        </th:block>
     </th:block>
     <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

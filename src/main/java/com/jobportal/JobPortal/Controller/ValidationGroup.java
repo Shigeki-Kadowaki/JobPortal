@@ -1,7 +1,6 @@
 package com.jobportal.JobPortal.Controller;
 
 import jakarta.validation.groups.Default;
-import lombok.Builder;
 
 public interface ValidationGroup {
     public interface jobSearchFormGroup extends Default {}
@@ -12,10 +11,10 @@ public interface ValidationGroup {
     public static interface atext extends Default {}
     public static interface btext extends Default {}
 
-    public interface briefingSessionGroup extends Default{}
-    public interface aptitudeTestGroup extends Default{}
+    public interface briefingGroup extends Default{}
+    public interface testGroup extends Default{}
     public interface interviewGroup extends Default{}
-    public interface informalDecisionCeremonyGroup extends Default{}
+    public interface informalCeremonyGroup extends Default{}
     public interface trainingGroup extends Default{}
     public interface reportSeminarGroup extends Default{}
     public interface reportOtherGroup extends Default{}

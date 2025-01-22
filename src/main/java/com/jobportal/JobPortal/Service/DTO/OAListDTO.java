@@ -4,6 +4,7 @@ import java.util.List;
 
 public record OAListDTO(
         Integer officialAbsenceId,
+        Integer reportId,
         Integer studentId,
         Integer grade,
         String classroom,
@@ -16,10 +17,10 @@ public record OAListDTO(
         String startDate,
         String endDate,
         boolean reportSubmittedFlag,
-        Integer jobSearchVisitStartHour,
-        Integer jobSearchVisitStartMinute,
-        Integer seminarVisitStartHour,
-        Integer seminarVisitStartMinute,
+        String jobSearchVisitStartHour,
+        String jobSearchVisitStartMinute,
+        String seminarVisitStartHour,
+        String seminarVisitStartMinute,
         List<Integer> lessons
 ){
 

@@ -1,10 +1,7 @@
 package com.jobportal.JobPortal.Repository;
 
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
-import com.jobportal.JobPortal.Controller.Form.ClassificationForm;
-import com.jobportal.JobPortal.Controller.Form.StudentOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.TeacherOASearchForm;
-import com.jobportal.JobPortal.Controller.Form.TimeTableInfoForm;
+import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Service.Entity.*;
 import org.apache.ibatis.annotations.*;
 
@@ -137,13 +134,14 @@ public interface MainRepository {
         )
         SELECT DISTINCT
             o.official_absence_id,
+            r.report_id,
             student_id,
             grade,
             classroom,
             course,
             student_name,
             o.status,
-            reason,
+            o.reason,
             r.status AS reportStatus,
             report_required,
             min,
@@ -173,7 +171,7 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
         </if>
-        GROUP BY official_absence_id,student_id,grade,classroom,course,student_name,o.status,reason,reportStatus,d.period,report_required, dl.min, dl.max
+        GROUP BY official_absence_id,r.report_id,student_id,grade,classroom,course,student_name,o.status,o.reason,reportStatus,d.period,report_required, dl.min, dl.max
         ORDER BY official_absence_id DESC, period;
         </script>
     """)
@@ -181,11 +179,15 @@ public interface MainRepository {
     @Select("""
     <script>
         WITH List AS(
-            SELECT official_absence_id
+            SELECT official_absence_id, 
+                MIN(official_absence_date) as min,
+                MAX(official_absence_date) as max
             FROM official_absences o
             LEFT JOIN reports r
             USING (official_absence_id)
-            WHERE true
+            LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
              <if test='form.grade != 0 and form.grade != null'>
                 AND grade = #{form.grade}
             </if>
@@ -200,7 +202,11 @@ public interface MainRepository {
                 AND o.career_check = false
             </if>
             <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
-                AND o.status IN
+                AND 
+                <if test='form.reportStatus != null and !form.reportStatus.isEmpty()'>
+                    (
+                </if>
+                    o.status IN
                     <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
                         #{status}
                     </foreach>
@@ -217,20 +223,15 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
             </if>
+            <if test='form.OAStatus != null and !form.OAStatus.isEmpty() and form.reportStatus != null and !form.reportStatus.isEmpty()'>
+                )
+            </if>
+            GROUP BY o.official_absence_id
             <if test='form.todayOAFlag'>
-                AND official_absence_date = CURRENT_DATE
+                HAVING (CURRENT_DATE BETWEEN MIN(d.official_absence_date) and MAX(d.official_absence_date)) OR MAX(d.official_absence_date) = CURRENT_DATE
             </if>
             ORDER BY official_absence_id DESC
             LIMIT #{pageSize} OFFSET (#{page} - 1) * #{pageSize}
-        ),
-        DateList AS(
-            SELECT official_absence_id,
-                MIN(official_absence_date) as min,
-                MAX(official_absence_date) as max
-            FROM official_absence_date_histories d
-            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
-            GROUP BY official_absence_id
-            ORDER BY official_absence_id DESC
         ),
         JobList AS(
             SELECT official_absence_id,
@@ -242,19 +243,20 @@ public interface MainRepository {
         SeminarList AS(
             SELECT official_absence_id,
                 visit_start_hour,
-            visit_start_minute
+                visit_start_minute
                 FROM seminar_histories s
             WHERE version = (SELECT MAX(version) FROM seminar_histories WHERE official_absence_id = s.official_absence_id)
         )
         SELECT DISTINCT
             o.official_absence_id,
+            r.report_id,
             student_id,
             grade,
             classroom,
             course,
             student_name,
             o.status,
-            reason,
+            o.reason,
             r.status AS reportStatus,
             report_required,
             min,
@@ -271,13 +273,11 @@ public interface MainRepository {
             USING (official_absence_id)
         RIGHT JOIN List
             USING (official_absence_id)
-        LEFT JOIN DateList dl
-            USING (official_absence_id)
         LEFT JOIN JobList j
             USING (official_absence_id)
         LEFT JOIN SeminarList s
             USING (official_absence_id)
-        GROUP BY o.official_absence_id,student_id,course,student_name,o.status,reason,reportStatus,report_required,d.period, d.official_absence_date, min, max, j.visit_start_hour, j.visit_start_minute,s.visit_start_hour,s.visit_start_minute
+        GROUP BY o.official_absence_id,r.report_id, student_id,course,student_name,o.status,o.reason,reportStatus,report_required,d.period, d.official_absence_date, min, max, j.visit_start_hour, j.visit_start_minute,s.visit_start_hour,s.visit_start_minute
         ORDER BY official_absence_id DESC, period;
     </script>
     """)
@@ -288,18 +288,18 @@ public interface MainRepository {
         	official_absence_id,
         	student_id,
         	report_required,
-        	official_absences.status,
-        	reason,
-        	reports.status,
+        	o.status,
+        	o.reason,
+        	r.status,
         	submitted_date,
         	career_check_required,
-        	teacher_check,
+        	o.teacher_check,
         	career_check,
         	submitted_date_histories.version,
         	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
     	    student_email
-        FROM official_absences
-        LEFT OUTER JOIN reports
+        FROM official_absences o
+        LEFT OUTER JOIN reports r
         USING (official_absence_id)
         INNER JOIN submitted_date_histories
         USING (official_absence_id)
@@ -394,18 +394,18 @@ public interface MainRepository {
             official_absence_id,
             student_id,
             report_required,
-            official_absences.status,
-            reason,
-            reports.status,
+            o.status,
+            o.reason,
+            r.status,
             submitted_date,
             career_check_required,
-            teacher_check,
+            o.teacher_check,
             career_check,
             submitted_date_histories.version,
             (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
             student_email
-        FROM official_absences
-        LEFT OUTER JOIN reports
+        FROM official_absences o
+        LEFT OUTER JOIN reports r
         USING (official_absence_id)
         INNER JOIN submitted_date_histories
         USING (official_absence_id)
@@ -736,7 +736,9 @@ public interface MainRepository {
             FROM official_absences o
             LEFT JOIN reports r
             USING (official_absence_id)
-            WHERE true
+            LEFT JOIN official_absence_date_histories d
+            USING (official_absence_id)
+            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
              <if test='form.grade != 0 and form.grade != null'>
                 AND grade = #{form.grade}
             </if>
@@ -768,18 +770,10 @@ public interface MainRepository {
                     #{reportStatus}
                 </foreach>
             </if>
+            GROUP BY o.official_absence_id
             <if test='form.todayOAFlag'>
-                AND official_absence_date = CURRENT_DATE
+                HAVING (CURRENT_DATE BETWEEN MIN(d.official_absence_date) and MAX(d.official_absence_date)) OR MAX(d.official_absence_date) = CURRENT_DATE
             </if>
-            ORDER BY official_absence_id DESC
-        ),
-        DateList AS(
-            SELECT official_absence_id,
-                MIN(official_absence_date) as min,
-                MAX(official_absence_date) as max
-            FROM official_absence_date_histories d
-            WHERE version = (SELECT MAX(version) FROM official_absence_date_histories WHERE official_absence_id = d.official_absence_id)
-            GROUP BY official_absence_id
             ORDER BY official_absence_id DESC
         )
         SELECT
@@ -790,8 +784,6 @@ public interface MainRepository {
         LEFT JOIN reports r
             USING (official_absence_id)
         RIGHT JOIN List
-            USING (official_absence_id)
-        LEFT JOIN DateList dl
             USING (official_absence_id)
     </script>
     """)
@@ -804,4 +796,555 @@ public interface MainRepository {
         WHERE official_absence_id = #{oaId};
     """)
     boolean getCareerCheckRequired(@Param("oaId") Integer oaId);
+
+    @Update("""
+        UPDATE reports
+        SET status = #{status}
+        WHERE report_id = #{reportId};
+    """)
+    void updateReportStatus(@Param("reportId") Integer reportId,@Param("status") String status);
+
+    @Select("""
+        SELECT report_id
+        FROM reports
+        WHERE official_absence_id = #{oaId}
+        LIMIT 1;
+    """)
+    Integer getReportID(@Param("oaId") Integer oaId);
+
+    @Insert("""
+        INSERT INTO report_interview_histories VALUES (
+            #{reportId},
+            1,
+            #{form.interviewerNumber},
+            #{form.interviewType},
+            #{form.interviewContent},
+            #{form.interviewImpressions}
+        );
+    """)
+    void insertInterviewReport(@Param("form") ReportForm form, @Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_briefing_histories VALUES (
+            #{reportId},
+            1,
+            #{form.briefingContent},
+            #{form.briefingImpressions}
+        );
+    """)
+    void insertBriefingReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_exam_histories VALUES (
+            #{reportId},
+            1,
+            #{form.generalKnowledgeType},
+            #{form.nationalLanguageNumber},
+            #{form.nationalLanguageType},
+            #{form.mathNumber},
+            #{form.mathType},
+            #{form.englishNumber},
+            #{form.englishType},
+            #{form.currentAffairsNumber},
+            #{form.currentAffairsType},
+            #{form.writingTimer},
+            #{form.writingNumberOfCharacters},
+            #{form.writingTheme},
+            #{form.expertiseNumber},
+            #{form.expertiseType},
+            #{form.jobQuestionNumber},
+            #{form.jobQuestionType},
+            #{form.SPILanguageSystemNumber},
+            #{form.SPINonLanguageSystemNumber},
+            #{form.SPIOthersNumber},
+            #{form.personalityDiagnosisNumber},
+            #{form.personalityDiagnosisType},
+            #{form.other},
+            #{form.testImpressions}
+        );
+    """)
+    void insertExamReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_interview_histories VALUES (
+            #{reportId},
+            1,
+            #{form.interviewNumber},
+            #{form.interviewType},
+            #{form.interviewContent},
+            #{form.interviewImpressions}
+        );
+    """)
+    void insertInformalCeremonyReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_training_histories VALUES (
+            #{reportId},
+            1,
+            #{form.Impressions}
+        );
+    """)
+    void insertTrainingReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_other_histories VALUES (
+            #{reportId},
+            1,
+            #{form.activityContent},
+            #{form.othersImpressions}
+        );
+    """)
+    void insertOtherReport(@Param("form") ReportForm form, @Param("reportId") Integer reportId);
+
+    @Insert("""
+        <script>
+        INSERT INTO report_seminar_histories VALUES
+        <foreach item='seminarForm' collection='form.seminarForms' index='index' separator=','>
+            (#{reportId},
+            #{index} + 1 ,
+            1,
+            #{seminarForm.companyName},
+            #{seminarForm.manager},
+            #{seminarForm.industry},
+            #{seminarForm.seminarImpressions},
+            #{seminarForm.seminarIsSelection},
+            #{seminarForm.seminarNextAction})
+        </foreach>
+        ;
+        </script>
+    """)
+    void insertSeminarReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT
+            o.official_absence_id,
+            report_id,
+            student_id,
+            r.status,
+            r.reason,
+            h.submitted_date,
+            h.version,
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
+            o.student_email,
+            activity_time,
+            f.hope_for_employment,
+            f.next_selection_details
+        FROM official_absences o
+        JOIN reports r
+        USING (official_absence_id)
+        JOIN report_histories h
+        USING (report_id)
+        LEFT OUTER JOIN report_job_future_selection f
+        USING (report_id)
+        WHERE report_id = #{reportId}
+        ORDER BY h.version DESC, f.version DESC
+        LIMIT 1;
+    """)
+    ReportInfoEntity selectReportInfo(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT 
+            report_id,
+            interviewer_number,
+            interview_type,
+            interview_content,
+            impressions
+        FROM report_interview_histories
+        WHERE report_id = #{reportId}
+        ORDER BY version DESC
+        LIMIT 1;
+    """)
+    ReportInterviewEntity selectReportInterview(@Param("reportId") Integer reportId);
+    @Select("""
+        SELECT
+            report_id,
+            briefing_content,
+            impressions
+        FROM report_briefing_histories
+        WHERE report_id = #{reportId}
+        ORDER BY version DESC
+        LIMIT 1;
+    """)
+    ReportBriefingEntity selectReportBriefing(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT
+            report_id,
+            general_knowledge_number,
+            general_knowledge_type,
+            job_question_number,
+            job_question_type,
+            spi_language_system_number,
+            spi_non_language_system_number,
+            spi_others_number,
+            personality_diagnosis_number,
+            personality_diagnosis_type,
+            math_number,
+            math_type,
+            english_number,
+            english_type,
+            current_affairs_number,
+            current_affairs_type,
+            writing_timer,
+            writing_number_of_characters,
+            writing_theme,
+            expertise_number,
+            expertise_type,
+            others,
+            impressions
+        FROM report_exam_histories
+        WHERE report_id = #{reportId}
+        ORDER BY version DESC
+        LIMIT 1;
+    """)
+    ReportTestEntity selectReportTest(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT
+            report_id,
+            impressions
+        FROM report_informal_ceremony_histories
+        WHERE report_id = #{reportId}
+        ORDER BY version DESC
+        LIMIT 1;
+    """)
+    ReportInformalCeremonyEntity selectReportInformalCeremony(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT
+            report_id,
+            impressions
+        FROM report_training_histories
+        WHERE report_id = #{reportId}
+        ORDER BY version DESC
+        LIMIT 1;
+    """)
+    ReportTrainingEntity selectReportTraining(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT
+            report_id,
+            activity_content,
+            impressions
+        FROM report_other_histories
+        WHERE report_id = #{reportId}
+        ORDER BY version DESC
+        LIMIT 1;
+    """)
+    ReportOtherEntity selectReportOther(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT
+            report_id,
+            company_name,
+            manager,
+            industry,
+            impressions,
+            hope_for_employment,
+            next_selection_details
+        FROM report_seminar_histories
+        WHERE report_id = #{reportId} 
+        AND version = (SELECT MAX(version) FROM report_seminar_histories WHERE report_id = #{reportId});
+    """)
+    List<ReportSeminarEntity> selectReportSeminar(@Param("reportId") Integer reportId);
+
+    @Update("""
+        <script>
+        UPDATE reports
+        SET reason = #{form.reason}
+        WHERE report_id = #{reportId};
+        </script>
+    """)
+    void updateReportInfo(@Param("form") ReportForm form, @Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_job_future_selection VALUES (
+            #{reportId},
+            1,
+            #{form.isSelection},
+            #{form.nextAction}
+        );
+    """)
+    void insertJobFuture(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
+
+    @Insert("""
+        INSERT INTO report_briefing_histories VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
+            #{form.briefingContent},
+            #{form.briefingImpressions}
+        );
+    """)
+    void updateReportBriefing(@Param("entity") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_interview_histories VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
+            #{form.interviewerNumber},
+            #{form.interviewType},
+            #{form.interviewContent},
+            #{form.interviewImpressions}
+        );
+    """)
+    void updateReportInterview(@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_exam_histories VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
+            #{form.generalKnowledgeNumber},
+            #{form.generalKnowledgeType},
+            #{form.jobQuestionNumber},
+            #{form.jobQuestionType},
+            #{form.SPILanguageSystemNumber},
+            #{form.SPINonLanguageSystemNumber},
+            #{form.SPIOthersNumber},
+            #{form.personalityDiagnosisNumber},
+            #{form.personalityDiagnosisType},
+            #{form.nationalLanguageNumber},
+            #{form.nationalLanguageType},
+            #{form.mathNumber},
+            #{form.mathType},
+            #{form.englishNumber},
+            #{form.englishType},
+            #{form.currentAffairsNumber},
+            #{form.currentAffairsType},
+            #{form.writingTimer},
+            #{form.writingNumberOfCharacters},
+            #{form.writingTheme},
+            #{form.expertiseNumber},
+            #{form.expertiseType},
+            #{form.others},
+            #{form.testImpressions}
+        );
+    """)
+    void updateReportTest(@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_informal_ceremony_histories VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
+            #{form.informalCeremonyImpressions}
+        );
+    """)
+    void updateReportInformalCeremony(@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_training_histories VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}),
+            #{form.trainingImpressions}
+        );
+    """)
+    void updateReportTraining(@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_other_histories VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}),
+            #{form.activityContent},
+            #{form.othersImpressions}
+        );
+    """)
+    void updateReportOther(@Param("form") ReportForm form);
+
+    @Insert("""
+        <script>
+        INSERT INTO report_seminar_histories VALUES
+        <foreach item='seminarForm' collection='form.seminarForms' separator=',' index='index'>
+            (#{form.reportId},
+            #{index} + 1,
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}),
+            #{seminarForm.companyName},
+            #{seminarForm.manager},
+            #{seminarForm.industry},
+            #{seminarForm.impressions},
+            #{seminarForm.seminarIsSelection},
+            #{seminarForm.seminarNextAction})
+        </foreach>
+        ;
+        </script>
+    """)
+    void updateReportSeminar(@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_job_future_selection VALUES (
+            #{form.reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}),
+            #{form.isSelection},
+            #{form.nextAction}
+        );
+    """)
+    void updateJobFuture(@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_histories VALUES (
+            #{reportId},
+            1,
+            #{form.activityTime},
+            CURRENT_DATE
+        );
+    """)
+    void insertReportHistories(@Param("reportId") Integer reportId,@Param("form") ReportForm form);
+
+    @Insert("""
+        INSERT INTO report_histories VALUES (
+            #{reportId},
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}) + 1,
+            #{form.activityTime},
+            CURRENT_DATE
+        );
+    """)
+    void updateReportHistories(@Param("reportId") Integer reportId,@Param("form") ReportForm form);
+
+    @Select("""
+        SELECT
+            o.official_absence_id,
+            report_id,
+            student_id,
+            r.status,
+            r.reason,
+            h.submitted_date,
+            h.version,
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
+            o.student_email,
+            activity_time,
+            f.hope_for_employment,
+            f.next_selection_details
+        FROM official_absences o
+        JOIN reports r
+        USING (official_absence_id)
+        JOIN report_histories h
+        USING (report_id)
+        LEFT OUTER JOIN report_job_future_selection f
+        USING (report_id)
+        WHERE report_id = #{reportId}
+        AND f.version = #{version}
+        AND h.version = #{version}
+        LIMIT 1;
+    """)
+    ReportInfoEntity selectReportInfoByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+
+    @Select("""
+        SELECT 
+            report_id,
+            interviewer_number,
+            interview_type,
+            interview_content,
+            impressions
+        FROM report_interview_histories
+        WHERE report_id = #{reportId}
+        AND version = #{version}
+        LIMIT 1;
+    """)
+    ReportInterviewEntity selectReportInterviewByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+    @Select("""
+        SELECT
+            report_id,
+            briefing_content,
+            impressions
+        FROM report_briefing_histories
+        WHERE report_id = #{reportId}
+        AND version = #{version}
+        LIMIT 1;
+    """)
+    ReportBriefingEntity selectReportBriefingByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+    @Select("""
+        SELECT
+            report_id,
+            general_knowledge_number,
+            general_knowledge_type,
+            job_question_number,
+            job_question_type,
+            spi_language_system_number,
+            spi_non_language_system_number,
+            spi_others_number,
+            personality_diagnosis_number,
+            personality_diagnosis_type,
+            math_number,
+            math_type,
+            english_number,
+            english_type,
+            current_affairs_number,
+            current_affairs_type,
+            writing_timer,
+            writing_number_of_characters,
+            writing_theme,
+            expertise_number,
+            expertise_type,
+            others,
+            impressions
+        FROM report_exam_histories
+        WHERE report_id = #{reportId}
+        AND version = #{version}
+        LIMIT 1;
+    """)
+    ReportTestEntity selectReportTestByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+    @Select("""
+        SELECT
+            report_id,
+            impressions
+        FROM report_informal_ceremony_histories
+        WHERE report_id = #{reportId}
+        AND version = #{version}
+        LIMIT 1;
+    """)
+    ReportInformalCeremonyEntity selectReportInformalCeremonyByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+    @Select("""
+        SELECT
+            report_id,
+            impressions
+        FROM report_training_histories
+        WHERE report_id = #{reportId}
+        AND version = #{version}
+        LIMIT 1;
+    """)
+    ReportTrainingEntity selectReportTrainingByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+    @Select("""
+        SELECT
+            report_id,
+            activity_content,
+            impressions
+        FROM report_other_histories
+        WHERE report_id = #{reportId}
+        AND version = #{version}
+        LIMIT 1;
+    """)
+    ReportOtherEntity selectReportOtherByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+    @Select("""
+        SELECT
+            report_id,
+            company_name,
+            manager,
+            industry,
+            impressions,
+            hope_for_employment,
+            next_selection_details
+        FROM report_seminar_histories
+        WHERE report_id = #{reportId} 
+        AND version = #{version};
+    """)
+    List<ReportSeminarEntity> selectReportSeminarByVersion(@Param("reportId") Integer reportId,@Param("version") Integer version);
+
+    @Select("""
+        SELECT status
+        FROM official_absences
+        WHERE official_absence_id = #{OAId};
+    """)
+    String selectOAStatus(@Param("OAId") Integer OAId);
+    @Select("""
+        SELECT status
+        FROM reports
+        WHERE report_id = #{reportId};
+    """)
+    String selectReportStatus(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT official_absence_id
+        FROM reports
+        WHERE report_id = #{reportId}
+        LIMIT 1;
+    """)
+    Integer getOAId(@Param("reportId") Integer reportId);
 }

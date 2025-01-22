@@ -47,17 +47,17 @@ public class TeacherController {
 
     //OAList
     @GetMapping("/teacher/OAList")
-    public String showTeacherOAList(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page) {
+    public String showTeacherOAList(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "currentPage") Integer currentPage) {
         if(session.getAttribute("teacherSearchForm") != null) {
             form = (TeacherOASearchForm) session.getAttribute("teacherSearchForm");
         }
-        return service.getTeacherOAList(page, form, model, session);
+        return service.getTeacherOAList(currentPage, form, model, session);
     }
     //OAList検索
     @GetMapping(value = "/teacher/OAList", params = "search")
-    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model,@ModelAttribute("page") @RequestParam(defaultValue = "0", value = "page") Integer page){
+    public String showTeacherOAListSearch(TeacherOASearchForm form, Model model,@ModelAttribute("currentPage") @RequestParam(defaultValue = "0", value = "currentPage") Integer currentPage){
         session.setAttribute("teacherSearchForm", form);
-        return service.getTeacherOAList(page, form, model, session);
+        return service.getTeacherOAList(currentPage, form, model, session);
     }
     //OA詳細
     @GetMapping("/teacher/OAList/{OAId}")
@@ -71,6 +71,9 @@ public class TeacherController {
     public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
         service.updateCheck(OAId, teacherType, true);
         service.updateReportRequired(OAId, reportRequired != null);
+
+        Integer reportId = service.getReportId(OAId);
+        service.checkOAAndReportCondition(OAId, reportId);
         return "redirect:/jobportal/teacher/OAList";
     }
     //OA却下
@@ -194,6 +197,7 @@ public class TeacherController {
         return "teacher_OAList";
     }
 
+    //一括承認
     @PostMapping("/teacher/approvalMode")
     public String postTeacherApprovalMode(ApprovalForm approval, Model model){
         System.out.println(approval);
@@ -201,5 +205,57 @@ public class TeacherController {
             service.updateCheck(Integer.parseInt(k), approval.getTeacherType(), true);
         });
         return showTeacherApprovalMode(approval.getTeacherType(), model);
+    }
+
+    @GetMapping("/teacher/reportInfo/{reportId}")
+    public String showStudentReportInfo(@PathVariable("reportId") Integer reportId, Model model){
+        ReportInfoEntity mainInfo = service.getReportInfo(reportId);
+        model.addAttribute("mainInfo", mainInfo);
+        switch (mainInfo.reason()){
+            case jobInterview -> {
+                ReportInterviewEntity interviewEntity = service.getInterviewEntity(reportId);
+                model.addAttribute("interviewEntity", interviewEntity);
+            }
+            case briefing -> {
+                ReportBriefingEntity briefingEntity = service.getBriefingEntity(reportId);
+                model.addAttribute("briefingEntity", briefingEntity);
+            }
+            case test -> {
+                ReportTestEntity testEntity = service.getTestEntity(reportId);
+                model.addAttribute("testEntity", testEntity);
+            }
+            case informalCeremony -> {
+                ReportInformalCeremonyEntity informalCeremonyEntity = service.getInformalCeremonyEntity(reportId);
+                model.addAttribute("informalCeremonyEntity", informalCeremonyEntity);
+            }
+            case training -> {
+                ReportTrainingEntity trainingEntity = service.getTrainingEntity(reportId);
+                model.addAttribute("trainingEntity", trainingEntity);
+            }
+            case jobOther -> {
+                ReportOtherEntity otherEntity = service.getOtherEntity(reportId);
+                model.addAttribute("otherEntity", otherEntity);
+            }
+            case seminar -> {
+                List<ReportSeminarEntity> seminarEntities = service.getSeminarEntity(reportId);
+                model.addAttribute("seminarEntities", seminarEntities);
+            }
+        }
+        model.addAttribute("mode", "teacher");
+        return "reportInfo";
+    }
+
+    //report承認
+    @PutMapping(value="/teacher/report/{reportId}", params = "acceptance")
+    public String reportAcceptance(@PathVariable("reportId") Integer reportId) {
+        service.updateReportStatus(reportId, "acceptance");
+        return "redirect:/jobportal/teacher/OAList";
+    }
+    //report却下
+    @PutMapping(value = "/teacher/report/{reportId}", params = "rejection")
+    public String reportUnaccepted(HttpServletRequest request, @PathVariable("reportId") Integer reportId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
+        service.updateReportStatus(reportId, "rejection");
+        //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
+        return "redirect:/jobportal/teacher/OAList";
     }
 }

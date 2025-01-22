@@ -1,12 +1,8 @@
-window.addEventListener('load',()=>{
-    const andFlag = document.getElementById('andFlag');
-    const andFlagLabel = document.getElementById('andFlagLabel');
-    // if(andFlag.checked) andFlagLabel.innerText = "OR";
-    andFlag.addEventListener('click', ()=>{
-        andFlagLabel.innerText = andFlagLabel.innerText === "AND"?"OR":"AND";
-    });
-});
 
+function toggleANDText(){
+    const andFlagLabel = document.getElementById('andFlagLabel')
+    andFlagLabel.innerText = andFlagLabel.innerText === "AND"?"OR":"AND";
+}
 //学生データ(jsバージョン)
 // window.addEventListener('load',()=>{
 //     fetch('http://172.16.0.3/api/students/40104',{
