@@ -19,6 +19,7 @@ public class ReportForm {
     private Integer activityTime;
     private String isSelection;
     private String nextAction;
+    private String companyName;
 
     //説明会.
     @NotEmpty(message = "必須項目です", groups = ValidationGroup.briefingGroup.class)
@@ -27,8 +28,9 @@ public class ReportForm {
     private String briefingImpressions;
 
     //試験.
-    @Size(max = 64, message = "64文字以内で入力してください",groups = ValidationGroup.testGroup.class)
-    private String generalKnowledgeNumber;//一般常識問題数
+    @Max(value = 100, groups = ValidationGroup.testGroup.class)
+    @Min(value = 0, groups = ValidationGroup.testGroup.class)
+    private Integer generalKnowledgeNumber;//一般常識問題数
     @Size(max = 64, message = "64文字以内で入力してください",groups = ValidationGroup.testGroup.class)
     private String generalKnowledgeType;//一般常識問題種類
     @Max(value = 100, groups = ValidationGroup.testGroup.class)
@@ -119,16 +121,31 @@ public class ReportForm {
         this.reportId = mainInfo.reportId();
         this.reason = String.valueOf(mainInfo.reason());
         this.activityTime = mainInfo.activityTime();
+        this.companyName = mainInfo.companyName();
         this.isSelection = String.valueOf(mainInfo.companyDecision());
         this.nextAction = String.valueOf(mainInfo.nextAction());
 
         this.briefingContent = briefingEntity.briefingContent();
         this.briefingImpressions = briefingEntity.briefingImpressions();
     }
+    public ReportForm(ReportInfoEntity mainInfo, ReportInterviewEntity interviewEntity){
+        this.reportId = mainInfo.reportId();
+        this.reason = String.valueOf(mainInfo.reason());
+        this.activityTime = mainInfo.activityTime();
+        this.companyName = mainInfo.companyName();
+        this.isSelection = String.valueOf(mainInfo.companyDecision());
+        this.nextAction = String.valueOf(mainInfo.nextAction());
+
+        this.interviewerNumber = interviewEntity.interviewerNumber();
+        this.interviewType = interviewEntity.interviewType();
+        this.interviewContent = interviewEntity.interviewContent();
+        this.interviewImpressions = interviewEntity.interviewImpressions();
+    }
     public ReportForm(ReportInfoEntity mainInfo, ReportTestEntity testEntity){
         this.reportId = mainInfo.reportId();
         this.reason = String.valueOf(mainInfo.reason());
         this.activityTime = mainInfo.activityTime();
+        this.companyName = mainInfo.companyName();
         this.isSelection = String.valueOf(mainInfo.companyDecision());
         this.nextAction = String.valueOf(mainInfo.nextAction());
 
@@ -157,22 +174,11 @@ public class ReportForm {
         this.others = testEntity.others();
         this.testImpressions = testEntity.testImpressions();
     }
-    public ReportForm(ReportInfoEntity mainInfo, ReportInterviewEntity interviewEntity){
-        this.reportId = mainInfo.reportId();
-        this.reason = String.valueOf(mainInfo.reason());
-        this.activityTime = mainInfo.activityTime();
-        this.isSelection = String.valueOf(mainInfo.companyDecision());
-        this.nextAction = String.valueOf(mainInfo.nextAction());
-
-        this.interviewerNumber = interviewEntity.interviewerNumber();
-        this.interviewType = interviewEntity.interviewType();
-        this.interviewContent = interviewEntity.interviewContent();
-        this.interviewImpressions = interviewEntity.interviewImpressions();
-    }
     public ReportForm(ReportInfoEntity mainInfo, ReportInformalCeremonyEntity informalCeremonyEntity){
         this.reportId = mainInfo.reportId();
         this.reason = String.valueOf(mainInfo.reason());
         this.activityTime = mainInfo.activityTime();
+        this.companyName = mainInfo.companyName();
         this.isSelection = String.valueOf(mainInfo.companyDecision());
         this.nextAction = String.valueOf(mainInfo.nextAction());
 
@@ -182,6 +188,7 @@ public class ReportForm {
         this.reportId = mainInfo.reportId();
         this.reason = String.valueOf(mainInfo.reason());
         this.activityTime = mainInfo.activityTime();
+        this.companyName = mainInfo.companyName();
         this.isSelection = String.valueOf(mainInfo.companyDecision());
         this.nextAction = String.valueOf(mainInfo.nextAction());
 
@@ -191,6 +198,7 @@ public class ReportForm {
         this.reportId = mainInfo.reportId();
         this.reason = String.valueOf(mainInfo.reason());
         this.activityTime = mainInfo.activityTime();
+        this.companyName = mainInfo.companyName();
         this.isSelection = String.valueOf(mainInfo.companyDecision());
         this.nextAction = String.valueOf(mainInfo.nextAction());
 

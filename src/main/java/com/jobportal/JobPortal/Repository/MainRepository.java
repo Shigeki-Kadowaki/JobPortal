@@ -309,7 +309,7 @@ public interface MainRepository {
     """)
     OAMainInfoEntity selectMainInfo(@Param("OAId") Integer OAId);
     @Select("""
-        SELECT  
+        SELECT
             official_absence_date_histories.official_absence_date,
             official_absence_date_histories.period,
             lesson_name
@@ -810,7 +810,7 @@ public interface MainRepository {
         WHERE official_absence_id = #{oaId}
         LIMIT 1;
     """)
-    Integer getReportID(@Param("oaId") Integer oaId);
+    Integer selectReportID(@Param("oaId") Integer oaId);
 
     @Insert("""
         INSERT INTO report_interview_histories VALUES (
@@ -859,8 +859,9 @@ public interface MainRepository {
             #{form.SPIOthersNumber},
             #{form.personalityDiagnosisNumber},
             #{form.personalityDiagnosisType},
-            #{form.other},
-            #{form.testImpressions}
+            #{form.others},
+            #{form.testImpressions},
+            #{form.generalKnowledgeNumber}
         );
     """)
     void insertExamReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
@@ -926,6 +927,7 @@ public interface MainRepository {
             h.version,
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
             o.student_email,
+            company_name,
             activity_time,
             f.hope_for_employment,
             f.next_selection_details
@@ -979,6 +981,8 @@ public interface MainRepository {
             spi_others_number,
             personality_diagnosis_number,
             personality_diagnosis_type,
+            national_language_number,
+            national_language_type,
             math_number,
             math_type,
             english_number,
@@ -1093,7 +1097,6 @@ public interface MainRepository {
         INSERT INTO report_exam_histories VALUES (
             #{form.reportId},
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
-            #{form.generalKnowledgeNumber},
             #{form.generalKnowledgeType},
             #{form.jobQuestionNumber},
             #{form.jobQuestionType},
@@ -1116,7 +1119,8 @@ public interface MainRepository {
             #{form.expertiseNumber},
             #{form.expertiseType},
             #{form.others},
-            #{form.testImpressions}
+            #{form.testImpressions},
+            #{form.generalKnowledgeNumber}
         );
     """)
     void updateReportTest(@Param("form") ReportForm form);
@@ -1183,7 +1187,8 @@ public interface MainRepository {
             #{reportId},
             1,
             #{form.activityTime},
-            CURRENT_DATE
+            CURRENT_DATE,
+            #{form.companyName}
         );
     """)
     void insertReportHistories(@Param("reportId") Integer reportId,@Param("form") ReportForm form);
@@ -1210,6 +1215,7 @@ public interface MainRepository {
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
             o.student_email,
             activity_time,
+            company_name,
             f.hope_for_employment,
             f.next_selection_details
         FROM official_absences o
@@ -1346,5 +1352,103 @@ public interface MainRepository {
         WHERE report_id = #{reportId}
         LIMIT 1;
     """)
-    Integer getOAId(@Param("reportId") Integer reportId);
+    Integer selectOAId(@Param("reportId") Integer reportId);
+
+    @Select("""
+        SELECT student_id
+        FROM official_absences
+        WHERE official_absence_id = #{OAId};
+    """)
+    int selectStudentId(@Param("OAId") Integer OAId);
+
+    @Insert("""
+        <script>
+        INSERT INTO approved_leave_requests VALUES
+            <foreach item='date' collection='dateEntities' separator=','>
+                (#{OAId},
+                #{studentId},
+                #{date.officialAbsenceDate},
+                #{date.period},
+                false)
+            </foreach>
+        ;
+        </script>
+    """)
+    void insertApplovedLeaveRequests(@Param("OAId") Integer OAId,@Param("studentId") Integer studentId,@Param("dateEntities") List<OADateInfoEntity> dateEntities);
+
+    @Delete("""
+        DELETE report_interview_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportJobInterview(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_briefing_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportBriefing(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_exam_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportTest(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_informal_ceremony_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportInformalCeremony(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_training_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportTraining(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_other_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportJobOther(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_seminar_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportSeminar(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_job_future_selection WHERE report_id = #{reportId};
+    """)
+    void deleteJobFutureSelection(@Param("reportId") Integer reportId);
+    @Delete("""
+        DELETE report_histories WHERE report_id = #{reportId};
+    """)
+    void deleteReportHistories(@Param("reportId") Integer reportId);
+
+    @Select("""
+        <script>
+        SELECT
+            o.official_absence_id,
+            report_id,
+            o.student_id,
+            r.status,
+            r.reason,
+            h.submitted_date,
+            h.version,
+            (SELECT MAX(version) FROM report_histories),
+            o.student_email,
+            company_name,
+            activity_time,
+            f.hope_for_employment,
+            f.next_selection_details
+        FROM official_absences o
+        JOIN reports r
+        USING (official_absence_id)
+        JOIN report_histories h
+        USING (report_id)
+        LEFT OUTER JOIN report_job_future_selection f
+        USING (report_id, version)
+        WHERE (report_id, h.version) IN (
+            SELECT
+                report_id,
+                MAX(version)
+            FROM report_histories
+            GROUP BY report_id
+        )
+        <if test="companyName != '' and companyName != null">
+            AND company_name LIKE concat('%',#{companyName},'%')
+        </if>
+        GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.hope_for_employment, f.next_selection_details, company_name
+        ORDER BY report_id
+        </script>
+    """)
+    List<ReportInfoEntity> selectReportInfosByCompanyName(@Param("companyName") String companyName);
 }

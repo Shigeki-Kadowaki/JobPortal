@@ -244,28 +244,7 @@ public class StudentController {
     //破棄
     @DeleteMapping("/student/{studentId}/OAList/{OAId}")
     public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
-        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
-        switch (mainInfoEntity.reason()){
-            case jobSearch -> {
-                service.deleteJobSearch(OAId);
-            }
-            case seminar -> {
-                service.deleteSeminar(OAId);
-            }
-            case bereavement -> {
-                service.deleteBereavement(OAId);
-            }
-            case attendanceBan -> {
-                service.deleteAttendanceBan(OAId);
-            }
-            case other -> {
-                service.deleteOther(OAId);
-            }
-        }
-        service.deleteDate(OAId);
-        service.deleteSubmittedDate(OAId);
-        service.deleteReport(OAId);
-        service.deleteMain(OAId);
+        service.deleteOA(OAId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
@@ -627,5 +606,23 @@ public class StudentController {
         }
         model.addAttribute("mode", "read");
         return "reportInfo";
+    }
+
+    @DeleteMapping("/student/{studentId}/reportByVersion/{reportId}")
+    public String deleteReport(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId){
+        service.deleteReports(reportId);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    
+    @GetMapping("/student/{studentId}/reportLogs")
+    public String companyLogs(@PathVariable("studentId") Integer studentId, Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName){
+        model.addAttribute("companyName", companyName);
+        model.addAttribute("studentId", studentId);
+        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName);
+        logEntities = logEntities.stream()
+                        .peek(e->e.setStudentId(e.getStudentId() / 100))
+                        .toList();
+        model.addAttribute("logEntities", logEntities);
+        return "reportLogs";
     }
 }

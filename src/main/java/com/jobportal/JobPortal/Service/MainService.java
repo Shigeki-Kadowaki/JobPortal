@@ -235,7 +235,7 @@ public class MainService {
                         k.classroom(),
                         k.course(),
                         k.name(),
-                        existsReport(k.status()),
+                        existsReport(k.OAStatus()),
                         k.reason().getJapaneseName(),
                         existsReport(k.reportStatus()),
                         k.reportRequired(),
@@ -486,8 +486,40 @@ public class MainService {
         repository.deleteExceptionDate(id);
     }
 
-    public void deleteReport(Integer oaId) {
-        repository.deleteReport(oaId);
+    @Transactional
+    public void deleteReports(Integer reportId) {
+        ReportInfoEntity info = repository.selectReportInfo(reportId);
+        switch (info.reason()){
+            case jobInterview -> {
+                repository.deleteReportJobInterview(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case briefing -> {
+                repository.deleteReportBriefing(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case test -> {
+                repository.deleteReportTest(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case informalCeremony -> {
+                repository.deleteReportInformalCeremony(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case training -> {
+                repository.deleteReportTraining(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case jobOther -> {
+                repository.deleteReportJobOther(reportId);
+                repository.deleteJobFutureSelection(reportId);
+            }
+            case seminar -> {
+                repository.deleteReportSeminar(reportId);
+            }
+        }
+        repository.deleteReportHistories(reportId);
+        repository.deleteReport(reportId);
     }
 
     public Subject[][] getSubjectArr(ClassificationForm classification) {
@@ -829,17 +861,21 @@ public class MainService {
 
     public void updateReportStatus(Integer reportId, String status){
         repository.updateReportStatus(reportId, status);
-        Integer OAId = repository.getOAId(reportId);
+        Integer OAId = repository.selectOAId(reportId);
         checkOAAndReportCondition(OAId, reportId);
     }
     public void checkOAAndReportCondition(Integer OAId, Integer reportId){
-        if(repository.selectOAStatus(OAId).equals("acceptance") && (repository.selectReportStatus(reportId).equals("unnecessary") || repository.selectReportStatus(reportId).equals("acceptance"))){
-            System.out.println("公欠反映------------------------------");
+        OAStatus OAStatus = com.jobportal.JobPortal.Service.OAStatus.valueOf(repository.selectOAStatus(OAId));
+        com.jobportal.JobPortal.Service.OAStatus reportOAStatus = com.jobportal.JobPortal.Service.OAStatus.valueOf(repository.selectReportStatus(reportId));
+        if(OAStatus.equals(com.jobportal.JobPortal.Service.OAStatus.acceptance) && (reportOAStatus.equals(com.jobportal.JobPortal.Service.OAStatus.acceptance) || reportOAStatus.equals(com.jobportal.JobPortal.Service.OAStatus.unnecessary))){
+            Integer studentId = repository.selectStudentId(OAId);
+            List<OADateInfoEntity> dateEntities = repository.selectDateInfo(OAId);
+            repository.insertApplovedLeaveRequests(OAId, studentId, dateEntities);
         }
     }
     @Transactional
     public void postInterviewReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertReportHistories(reportId, form);
         repository.insertInterviewReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
@@ -848,7 +884,7 @@ public class MainService {
     }
     @Transactional
     public void postBriefingReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertReportHistories(reportId, form);
         repository.insertBriefingReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
@@ -857,7 +893,7 @@ public class MainService {
     }
     @Transactional
     public void postExamReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertReportHistories(reportId, form);
         repository.insertExamReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
@@ -866,7 +902,7 @@ public class MainService {
     }
     @Transactional
     public void postInformalCeremonyReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertReportHistories(reportId, form);
         repository.insertInformalCeremonyReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
@@ -875,7 +911,7 @@ public class MainService {
     }
     @Transactional
     public void postTrainingReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertTrainingReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
         repository.updateReportInfo(form, reportId);
@@ -883,7 +919,7 @@ public class MainService {
     }
     @Transactional
     public void postOtherReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertReportHistories(reportId, form);
         repository.insertOtherReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
@@ -892,7 +928,7 @@ public class MainService {
     }
     @Transactional
     public void postSeminarReport(ReportForm form, Integer oaId) {
-        Integer reportId = repository.getReportID(oaId);
+        Integer reportId = repository.selectReportID(oaId);
         repository.insertReportHistories(reportId, form);
         repository.insertSeminarReport(form, reportId);
         repository.updateReportStatus(reportId, "unaccepted");
@@ -1085,6 +1121,70 @@ public class MainService {
     }
 
     public Integer getReportId(Integer OAId) {
-        return repository.getReportID(OAId);
+        return repository.selectReportID(OAId);
+    }
+
+    @Transactional
+    public void deleteOA(Integer OAId) {
+        OAMainInfoEntity mainInfoEntity = findMainInfo(OAId);
+        switch (mainInfoEntity.reason()){
+            case jobSearch -> {
+                deleteJobSearch(OAId);
+            }
+            case seminar -> {
+                deleteSeminar(OAId);
+            }
+            case bereavement -> {
+                deleteBereavement(OAId);
+            }
+            case attendanceBan -> {
+                deleteAttendanceBan(OAId);
+            }
+            case other -> {
+                deleteOther(OAId);
+            }
+        }
+        deleteDate(OAId);
+        deleteSubmittedDate(OAId);
+        deleteReports(OAId);
+        deleteMain(OAId);
+    }
+
+    public List<ReportLogEntity> searchReportLogs(String companyName) {
+        List<ReportLogEntity> logEntities = new ArrayList<>();
+        List<ReportInfoEntity> infoEntities = repository.selectReportInfosByCompanyName(companyName);
+        for (ReportInfoEntity reportInfoEntity : infoEntities) {
+            switch (reportInfoEntity.reason()){
+                case jobInterview -> {
+                    ReportInterviewEntity interviewEntity = repository.selectReportInterview(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, interviewEntity));
+                }
+                case briefing -> {
+                    ReportBriefingEntity briefingEntity = repository.selectReportBriefing(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, briefingEntity));
+                }
+                case test -> {
+                    ReportTestEntity testEntity = repository.selectReportTest(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, testEntity));
+                }
+                case informalCeremony -> {
+                    ReportInformalCeremonyEntity informalCeremonyEntity = repository.selectReportInformalCeremony(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, informalCeremonyEntity));
+                }
+                case training -> {
+                    ReportTrainingEntity trainingEntity = repository.selectReportTraining(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, trainingEntity));
+                }
+                case jobOther -> {
+                    ReportOtherEntity otherEntity = repository.selectReportOther(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, otherEntity));
+                }
+                case seminar -> {
+                    List<ReportSeminarEntity> seminarEntities = repository.selectReportSeminar(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, seminarEntities));
+                }
+            }
+        }
+        return logEntities;
     }
 }

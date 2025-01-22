@@ -207,7 +207,7 @@ public class TeacherController {
         return showTeacherApprovalMode(approval.getTeacherType(), model);
     }
 
-    @GetMapping("/teacher/reportInfo/{reportId}")
+    @GetMapping("/teacher/report/{reportId}")
     public String showStudentReportInfo(@PathVariable("reportId") Integer reportId, Model model){
         ReportInfoEntity mainInfo = service.getReportInfo(reportId);
         model.addAttribute("mainInfo", mainInfo);

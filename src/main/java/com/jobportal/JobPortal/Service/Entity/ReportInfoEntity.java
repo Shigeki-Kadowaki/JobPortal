@@ -17,6 +17,7 @@ public record ReportInfoEntity(
         Integer version,
         Integer maxVersion,
         String studentEmail,
+        String companyName,
         Integer activityTime,
         CompanyDecision companyDecision,
         NextAction nextAction

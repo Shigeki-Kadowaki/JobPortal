@@ -167,7 +167,7 @@
                 </th:block>
                 <th:block th:if="${mode == 'list'}">
                     <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
-                    <a th:href="@{/jobportal/teacher/reportInfo/{reportId}(reportId=${value.reportId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
+                    <a th:href="@{/jobportal/teacher/report/{reportId}(reportId=${value.reportId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
                 </th:block>
                 <th:block th:if="${mode == 'approval'}">
                         <input type="checkbox" class="btn-check"  name="options-outlined" th:id="${value.officialAbsenceId()} + acceptance" th:name="approval[__${value.officialAbsenceId()}__]" value="true" autocomplete="off">
