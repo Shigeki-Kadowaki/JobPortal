@@ -1149,4 +1149,42 @@ public class MainService {
         deleteReports(OAId);
         deleteMain(OAId);
     }
+
+    public List<ReportLogEntity> searchReportLogs(String companyName) {
+        List<ReportLogEntity> logEntities = new ArrayList<>();
+        List<ReportInfoEntity> infoEntities = repository.selectReportInfosByCompanyName(companyName);
+        for (ReportInfoEntity reportInfoEntity : infoEntities) {
+            switch (reportInfoEntity.reason()){
+                case jobInterview -> {
+                    ReportInterviewEntity interviewEntity = repository.selectReportInterview(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, interviewEntity));
+                }
+                case briefing -> {
+                    ReportBriefingEntity briefingEntity = repository.selectReportBriefing(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, briefingEntity));
+                }
+                case test -> {
+                    ReportTestEntity testEntity = repository.selectReportTest(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, testEntity));
+                }
+                case informalCeremony -> {
+                    ReportInformalCeremonyEntity informalCeremonyEntity = repository.selectReportInformalCeremony(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, informalCeremonyEntity));
+                }
+                case training -> {
+                    ReportTrainingEntity trainingEntity = repository.selectReportTraining(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, trainingEntity));
+                }
+                case jobOther -> {
+                    ReportOtherEntity otherEntity = repository.selectReportOther(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, otherEntity));
+                }
+                case seminar -> {
+                    List<ReportSeminarEntity> seminarEntities = repository.selectReportSeminar(reportInfoEntity.reportId());
+                    logEntities.add(new ReportLogEntity(reportInfoEntity, seminarEntities));
+                }
+            }
+        }
+        return logEntities;
+    }
 }

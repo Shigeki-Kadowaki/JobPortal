@@ -20,6 +20,7 @@
             <div th:class="mt-3">
                 <th:block th:if="${reason != 'seminar'}">
                 <h1><label>訪問企業:</label><label th:text="${jobSearch.companyName}"></label></h1>
+                <input type="hidden" name="companyName" th:value="${jobSearch.companyName}">
                 <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
                     <span th:errors="${ReportForm.activityTime}"></span>
                     <label>

@@ -613,4 +613,16 @@ public class StudentController {
         service.deleteReports(reportId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
+    
+    @GetMapping("/student/{studentId}/reportLogs")
+    public String companyLogs(@PathVariable("studentId") Integer studentId, Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName){
+        model.addAttribute("companyName", companyName);
+        model.addAttribute("studentId", studentId);
+        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName);
+        logEntities = logEntities.stream()
+                        .peek(e->e.setStudentId(e.getStudentId() / 100))
+                        .toList();
+        model.addAttribute("logEntities", logEntities);
+        return "reportLogs";
+    }
 }

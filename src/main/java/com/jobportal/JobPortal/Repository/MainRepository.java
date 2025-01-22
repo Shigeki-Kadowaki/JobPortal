@@ -927,6 +927,7 @@ public interface MainRepository {
             h.version,
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
             o.student_email,
+            company_name,
             activity_time,
             f.hope_for_employment,
             f.next_selection_details
@@ -980,6 +981,8 @@ public interface MainRepository {
             spi_others_number,
             personality_diagnosis_number,
             personality_diagnosis_type,
+            national_language_number,
+            national_language_type,
             math_number,
             math_type,
             english_number,
@@ -1184,7 +1187,8 @@ public interface MainRepository {
             #{reportId},
             1,
             #{form.activityTime},
-            CURRENT_DATE
+            CURRENT_DATE,
+            #{form.companyName}
         );
     """)
     void insertReportHistories(@Param("reportId") Integer reportId,@Param("form") ReportForm form);
@@ -1211,6 +1215,7 @@ public interface MainRepository {
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
             o.student_email,
             activity_time,
+            company_name,
             f.hope_for_employment,
             f.next_selection_details
         FROM official_absences o
@@ -1378,33 +1383,72 @@ public interface MainRepository {
     @Delete("""
         DELETE report_briefing_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportBriefing(Integer oaId);
+    void deleteReportBriefing(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_exam_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportTest(Integer oaId);
+    void deleteReportTest(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_informal_ceremony_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportInformalCeremony(Integer oaId);
+    void deleteReportInformalCeremony(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_training_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportTraining(Integer oaId);
+    void deleteReportTraining(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_other_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportJobOther(Integer oaId);
+    void deleteReportJobOther(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_seminar_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportSeminar(Integer oaId);
+    void deleteReportSeminar(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_job_future_selection WHERE report_id = #{reportId};
     """)
-    void deleteJobFutureSelection(Integer oaId);
+    void deleteJobFutureSelection(@Param("reportId") Integer reportId);
     @Delete("""
         DELETE report_histories WHERE report_id = #{reportId};
     """)
-    void deleteReportHistories(Integer oaId);
+    void deleteReportHistories(@Param("reportId") Integer reportId);
+
+    @Select("""
+        <script>
+        SELECT
+            o.official_absence_id,
+            report_id,
+            o.student_id,
+            r.status,
+            r.reason,
+            h.submitted_date,
+            h.version,
+            (SELECT MAX(version) FROM report_histories),
+            o.student_email,
+            company_name,
+            activity_time,
+            f.hope_for_employment,
+            f.next_selection_details
+        FROM official_absences o
+        JOIN reports r
+        USING (official_absence_id)
+        JOIN report_histories h
+        USING (report_id)
+        LEFT OUTER JOIN report_job_future_selection f
+        USING (report_id, version)
+        WHERE (report_id, h.version) IN (
+            SELECT
+                report_id,
+                MAX(version)
+            FROM report_histories
+            GROUP BY report_id
+        )
+        <if test="companyName != '' and companyName != null">
+            AND company_name LIKE concat('%',#{companyName},'%')
+        </if>
+        GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.hope_for_employment, f.next_selection_details, company_name
+        ORDER BY report_id
+        </script>
+    """)
+    List<ReportInfoEntity> selectReportInfosByCompanyName(@Param("companyName") String companyName);
 }
