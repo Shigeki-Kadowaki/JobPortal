@@ -615,13 +615,23 @@ public class StudentController {
     }
     
     @GetMapping("/student/{studentId}/reportLogs")
-    public String companyLogs(@PathVariable("studentId") Integer studentId, Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName){
+    public String companyLogs(@PathVariable("studentId") Integer studentId, Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName, @RequestParam(value = "page", defaultValue = "1") Integer page){
         model.addAttribute("companyName", companyName);
         model.addAttribute("studentId", studentId);
-        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName);
+        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName, page);
         logEntities = logEntities.stream()
-                        .peek(e->e.setStudentId(e.getStudentId() / 100))
+                        .peek(e->e.setStudentId(e.getStudentId() / 1000))
                         .toList();
+        int pageSize = 10;
+        Integer count = service.countSearchReportLogs(companyName);
+        int maxSize = (int)Math.ceil((double) count / pageSize);
+        int displayPageCount = Math.min(maxSize, 5);
+        int start = Math.max(1, Math.min(page - (displayPageCount - 1) / 2, maxSize - displayPageCount + 1));
+        int end = Math.min(maxSize, start + displayPageCount - 1);
+        model.addAttribute("maxSize", maxSize);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("start", start);
+        model.addAttribute("end", end);
         model.addAttribute("logEntities", logEntities);
         return "reportLogs";
     }

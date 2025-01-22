@@ -1,6 +1,9 @@
 package com.jobportal.JobPortal.Service.Entity;
 
-import com.jobportal.JobPortal.Controller.Form.ReportSeminarForm;
+import com.jobportal.JobPortal.Service.CompanyDecision;
+import com.jobportal.JobPortal.Service.JobInterviewType;
+import com.jobportal.JobPortal.Service.NextAction;
+import com.jobportal.JobPortal.Service.ReportType;
 import lombok.Data;
 
 import java.util.List;
@@ -9,10 +12,10 @@ import java.util.List;
 public class ReportLogEntity {
     Integer reportId;
     Integer studentId;
-    String reason;
+    ReportType reason;
     Integer activityTime;
-    String isSelection;
-    String nextAction;
+    CompanyDecision isSelection;
+    NextAction nextAction;
     String companyName;
 
     //説明会.
@@ -47,7 +50,7 @@ public class ReportLogEntity {
 
     //面接
     Integer interviewerNumber;
-    String interviewType;
+    JobInterviewType interviewType;
     String interviewContent;
     String interviewImpressions;
 
@@ -58,7 +61,7 @@ public class ReportLogEntity {
     String informalCeremonyImpressions;
 
     //セミナー
-    List<ReportSeminarForm> seminarForms;
+    List<ReportSeminarEntity> seminarForms;
 
     //その他.
     String activityContent;
@@ -70,11 +73,11 @@ public class ReportLogEntity {
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportBriefingEntity briefingEntity) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
         this.companyName = reportInfoEntity.companyName();
-        this.isSelection = String.valueOf(reportInfoEntity.companyDecision());
-        this.nextAction = String.valueOf(reportInfoEntity.nextAction());
+        this.isSelection = reportInfoEntity.companyDecision();
+        this.nextAction = reportInfoEntity.nextAction();
 
         this.briefingContent = briefingEntity.briefingContent();
         this.briefingImpressions = briefingEntity.briefingImpressions();
@@ -83,11 +86,11 @@ public class ReportLogEntity {
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportInterviewEntity interviewEntity) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
         this.companyName = reportInfoEntity.companyName();
-        this.isSelection = String.valueOf(reportInfoEntity.companyDecision());
-        this.nextAction = String.valueOf(reportInfoEntity.nextAction());
+        this.isSelection = reportInfoEntity.companyDecision();
+        this.nextAction = reportInfoEntity.nextAction();
 
         this.interviewerNumber = interviewEntity.interviewerNumber();
         this.interviewType = interviewEntity.interviewType();
@@ -97,11 +100,11 @@ public class ReportLogEntity {
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportTestEntity testEntity) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
         this.companyName = reportInfoEntity.companyName();
-        this.isSelection = String.valueOf(reportInfoEntity.companyDecision());
-        this.nextAction = String.valueOf(reportInfoEntity.nextAction());
+        this.isSelection = reportInfoEntity.companyDecision();
+        this.nextAction = reportInfoEntity.nextAction();
 
         this.generalKnowledgeNumber = testEntity.generalKnowledgeNumber();
         this.generalKnowledgeType = testEntity.generalKnowledgeType();
@@ -131,33 +134,33 @@ public class ReportLogEntity {
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportInformalCeremonyEntity informalCeremonyEntity ) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
         this.companyName = reportInfoEntity.companyName();
-        this.isSelection = String.valueOf(reportInfoEntity.companyDecision());
-        this.nextAction = String.valueOf(reportInfoEntity.nextAction());
+        this.isSelection = reportInfoEntity.companyDecision();
+        this.nextAction = reportInfoEntity.nextAction();
 
         this.informalCeremonyImpressions = informalCeremonyEntity.informalCeremonyImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportTrainingEntity trainingEntity) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
         this.companyName = reportInfoEntity.companyName();
-        this.isSelection = String.valueOf(reportInfoEntity.companyDecision());
-        this.nextAction = String.valueOf(reportInfoEntity.nextAction());
+        this.isSelection = reportInfoEntity.companyDecision();
+        this.nextAction = reportInfoEntity.nextAction();
 
         this.trainingImpressions = trainingEntity.trainingImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportOtherEntity otherEntity) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
         this.companyName = reportInfoEntity.companyName();
-        this.isSelection = String.valueOf(reportInfoEntity.companyDecision());
-        this.nextAction = String.valueOf(reportInfoEntity.nextAction());
+        this.isSelection = reportInfoEntity.companyDecision();
+        this.nextAction = reportInfoEntity.nextAction();
 
         this.activityContent = otherEntity.activityContent();
         this.othersImpressions = otherEntity.othersImpressions();
@@ -165,9 +168,9 @@ public class ReportLogEntity {
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, List<ReportSeminarEntity> seminarEntities) {
         this.reportId = reportInfoEntity.reportId();
         this.studentId = reportInfoEntity.studentId();
-        this.reason = String.valueOf(reportInfoEntity.reason());
+        this.reason = reportInfoEntity.reason();
         this.activityTime = reportInfoEntity.activityTime();
-        this.seminarForms = seminarEntities.stream().map(ReportSeminarEntity::toSeminarForm).toList();
+        this.seminarForms = seminarEntities;
     }
 
     public ReportLogEntity() {
