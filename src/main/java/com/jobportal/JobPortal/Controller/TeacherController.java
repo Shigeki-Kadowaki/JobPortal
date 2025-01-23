@@ -68,12 +68,19 @@ public class TeacherController {
     }
     //OA承認
     @PutMapping(value="/teacher/{OAId}", params = "acceptance")
-    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false)String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
+    public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false, defaultValue = "unnecessary")String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
         service.updateCheck(OAId, teacherType, true);
-        service.updateReportRequired(OAId, reportRequired != null);
-
         Integer reportId = service.getReportId(OAId);
-        service.checkOAAndReportCondition(OAId, reportId);
+        if(teacherType.equals("career") && reportRequired.equals("unnecessary")) {
+            service.updateReportStatus(reportId, "unnecessary");
+            service.updateReportRequired(OAId, false);
+        } else if (reportRequired.equals("necessary")) {
+            service.updateReportRequired(OAId, true);
+            service.checkOAAndReportCondition(OAId, reportId);
+        } else {
+            service.checkOAAndReportCondition(OAId, reportId);
+        }
+        //service.updateReportStatus(reportId, reportRequired);
         return "redirect:/jobportal/teacher/OAList";
     }
     //OA却下
@@ -211,7 +218,9 @@ public class TeacherController {
     public String showStudentReportInfo(@PathVariable("reportId") Integer reportId, Model model){
         ReportInfoEntity mainInfo = service.getReportInfo(reportId);
         model.addAttribute("mainInfo", mainInfo);
-        switch (mainInfo.reason()){
+        System.out.println(mainInfo.getReportId());
+        System.out.println(mainInfo.getMaxVersion());
+        switch (mainInfo.getReason()){
             case jobInterview -> {
                 ReportInterviewEntity interviewEntity = service.getInterviewEntity(reportId);
                 model.addAttribute("interviewEntity", interviewEntity);

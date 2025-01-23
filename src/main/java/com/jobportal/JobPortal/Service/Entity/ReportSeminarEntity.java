@@ -1,7 +1,7 @@
 package com.jobportal.JobPortal.Service.Entity;
 
 import com.jobportal.JobPortal.Controller.Form.ReportSeminarForm;
-import com.jobportal.JobPortal.Service.CompanyDecision;
+import com.jobportal.JobPortal.Service.EmploymentIntention;
 import com.jobportal.JobPortal.Service.NextAction;
 
 public record ReportSeminarEntity(
@@ -10,7 +10,7 @@ public record ReportSeminarEntity(
         String manager,
         String industry,
         String seminarImpressions,
-        CompanyDecision seminarIsSelection,
+        EmploymentIntention seminarIsSelection,
         NextAction seminarNextAction
 ) {
     public ReportSeminarForm toSeminarForm(){

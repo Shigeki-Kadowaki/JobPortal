@@ -33,48 +33,67 @@
     <br>
     <div id="versionChangeButton" class="text-end"></div>
     <br>
-    <div>
-        ステータス : [[${mainInfo.status}]]<br>
-        提出日 : [[${mainInfo.submittedDate}]]<br>
-        公欠理由 : [[${mainInfo.reason}]]<br>
+    ステータス : [[${mainInfo.status}]]<br>
+    提出日 : [[${mainInfo.submittedDate}]]<br>
+    <div class="w-75 mx-auto mt-3">
+        <h1>公欠理由 : [[${mainInfo.reason}]]<br></h1>
         <th:block th:if="${mainInfo.reason} == '就活'" th:object="${jobSearchInfo}">
-            活動内容 : [[*{work.getJapaneseName()}]]<br>
-            会社名 : [[*{companyName}]]<br>
-            住所 : [[*{address}]]<br>
-            開始時間 : [[${#numbers.formatInteger(jobSearchInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(jobSearchInfo.visitStartMinute,2)}]]分<br>
+            <div class="ms-3">
+                <h3>活動内容 : [[*{work.getJapaneseName()}]]<br></h3>
+                <div class="ms-3">
+                    <h5>開始時間 : [[${#numbers.formatInteger(jobSearchInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(jobSearchInfo.visitStartMinute,2)}]]分<br>
+                        会社名 : [[*{companyName}]]<br>
+                            住所 : [[*{address}]]<br>
+                    </h5>
+                </div>
+            </div>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
-            セミナー・合説名 : [[*{seminarName}]]<br>
-            実施場所 : [[*{location}]]<br>
-            会場名 : [[*{venueName}]]<br>
-            開始時間 : [[${#numbers.formatInteger(seminarInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(seminarInfo.visitStartMinute,2)}]]分<br>
+            <div class="ms-3">
+                <h3>セミナー・合説名 : [[*{seminarName}]]<br></h3>
+                <div class="ms-3">
+                    <h5>開始時間 : [[${#numbers.formatInteger(seminarInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(seminarInfo.visitStartMinute,2)}]]分<br>
+                        実施場所 : [[*{location}]]<br>
+                        会場名 : [[*{venueName}]]<br>
+                    </h5>
+                </div>
+            </div>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
-            亡くなった方 : [[*{deceasedName}]]<br>
-            続柄 : [[*{relationship}]]<br>
+            <div class="ms-3">
+                <h5>亡くなった方 : [[*{deceasedName}]]<br>
+                    続柄 : [[*{relationship}]]<br>
+                </h5>
+            </div>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == '出席停止'" th:object="${attendanceBanInfo}">
-            理由 : [[*{banReason}]]<br>
+            <div class="ms-3">
+                <h5>理由 : [[*{banReason}]]<br></h5>
+            </div>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
         <th:block th:if="${mainInfo.reason} == 'その他'" th:object="${otherInfo}">
-            理由 : [[*{otherReason}]]<br>
+            <div class="ms-3">
+                <h5>理由 : [[*{otherReason}]]<br></h5>
+            </div>
             <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
         </th:block>
-    </div>
-    <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
-        <div>
-            [[${mapEntry.key}]]<br>
-            <div th:each="v : ${mapEntry.value}">
-                [[${v.period}]]限目:[[${v.lessonName}]]
+        <br>
+        <h2>公欠授業 : </h2>
+        <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
+            <div class="ms-3">
+                <h4>[[${mapEntry.key}]]<br></h4>
+                <div th:each="v : ${mapEntry.value}" class="ms-3">
+                    <h6>[[${v.period}]]限目:[[${v.lessonName}]]</h6>
+                </div>
             </div>
         </div>
     </div>
     <br><br><br>
-    <th:block th:if="${mainInfo.status != '受理'}">
+    <th:block th:if="${!(mainInfo.status == '受理' and (mainInfo.reportStatus == '受理' or mainInfo.reportStatus == '不要'))}">
         <th:block th:if="${mode == 'info'}">
             <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">破棄</button>

@@ -159,6 +159,13 @@ public interface MainRepository {
         LEFT JOIN DateList dl
             USING (official_absence_id)
         WHERE student_id = #{studentId}
+        AND (official_absence_id, version) IN (
+          SELECT
+              official_absence_id,
+              MAX(version)
+          FROM official_absence_date_histories
+          GROUP BY official_absence_id
+        )
         <if test='form.OAStatus != null and !form.OAStatus.isEmpty()'>
             AND o.status IN
                 <foreach item='status' collection='form.OAStatus' open='(' separator=',' close=')'>
@@ -277,6 +284,13 @@ public interface MainRepository {
             USING (official_absence_id)
         LEFT JOIN SeminarList s
             USING (official_absence_id)
+        WHERE (official_absence_id, version) IN (
+              SELECT
+                  official_absence_id,
+                  MAX(version)
+              FROM official_absence_date_histories
+              GROUP BY official_absence_id
+            )
         GROUP BY o.official_absence_id,r.report_id, student_id,course,student_name,o.status,o.reason,reportStatus,report_required,d.period, d.official_absence_date, min, max, j.visit_start_hour, j.visit_start_minute,s.visit_start_hour,s.visit_start_minute
         ORDER BY official_absence_id DESC, period;
     </script>
@@ -296,7 +310,7 @@ public interface MainRepository {
         	o.teacher_check,
         	career_check,
         	submitted_date_histories.version,
-        	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+        	(SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}) AS maxVersion,
     	    student_email
         FROM official_absences o
         LEFT OUTER JOIN reports r
@@ -402,7 +416,7 @@ public interface MainRepository {
             o.teacher_check,
             career_check,
             submitted_date_histories.version,
-            (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}),
+            (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{OAId}) AS maxVersion,
             student_email
         FROM official_absences o
         LEFT OUTER JOIN reports r
@@ -589,7 +603,7 @@ public interface MainRepository {
             #{entity.officialAbsenceId},
             #{entity.otherReason},           
             (SELECT MAX(version) FROM submitted_date_histories WHERE official_absence_id = #{entity.officialAbsenceId}), 
-            #{entity.remakrs}
+            #{entity.remarks}
         );
     """)
     void updateOther(@Param("entity") OtherEntity other);
@@ -870,7 +884,7 @@ public interface MainRepository {
         INSERT INTO report_interview_histories VALUES (
             #{reportId},
             1,
-            #{form.interviewNumber},
+            #{form.interviewerNumber},
             #{form.interviewType},
             #{form.interviewContent},
             #{form.interviewImpressions}
@@ -882,7 +896,7 @@ public interface MainRepository {
         INSERT INTO report_training_histories VALUES (
             #{reportId},
             1,
-            #{form.Impressions}
+            #{form.trainingImpressions}
         );
     """)
     void insertTrainingReport(@Param("form") ReportForm form,@Param("reportId") Integer reportId);
@@ -892,7 +906,7 @@ public interface MainRepository {
             #{reportId},
             1,
             #{form.activityContent},
-            #{form.othersImpressions}
+            #{form.otherImpressions}
         );
     """)
     void insertOtherReport(@Param("form") ReportForm form, @Param("reportId") Integer reportId);
@@ -908,7 +922,7 @@ public interface MainRepository {
             #{seminarForm.manager},
             #{seminarForm.industry},
             #{seminarForm.seminarImpressions},
-            #{seminarForm.seminarIsSelection},
+            #{seminarForm.seminarEmploymentIntention},
             #{seminarForm.seminarNextAction})
         </foreach>
         ;
@@ -925,18 +939,18 @@ public interface MainRepository {
             r.reason,
             h.submitted_date,
             h.version,
-            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}) AS maxVersion,
             o.student_email,
             company_name,
             activity_time,
-            f.hope_for_employment,
-            f.next_selection_details
+            f.employment_intention,
+            f.next_action
         FROM official_absences o
         JOIN reports r
         USING (official_absence_id)
-        JOIN report_histories h
+        LEFT JOIN report_histories h
         USING (report_id)
-        LEFT OUTER JOIN report_job_future_selection f
+        LEFT JOIN report_job_future_selection f
         USING (report_id)
         WHERE report_id = #{reportId}
         ORDER BY h.version DESC, f.version DESC
@@ -1044,8 +1058,8 @@ public interface MainRepository {
             manager,
             industry,
             impressions,
-            hope_for_employment,
-            next_selection_details
+            employment_intention,
+            next_action
         FROM report_seminar_histories
         WHERE report_id = #{reportId} 
         AND version = (SELECT MAX(version) FROM report_seminar_histories WHERE report_id = #{reportId});
@@ -1065,7 +1079,7 @@ public interface MainRepository {
         INSERT INTO report_job_future_selection VALUES (
             #{reportId},
             1,
-            #{form.isSelection},
+            #{form.employmentIntention},
             #{form.nextAction}
         );
     """)
@@ -1164,7 +1178,7 @@ public interface MainRepository {
             #{seminarForm.manager},
             #{seminarForm.industry},
             #{seminarForm.impressions},
-            #{seminarForm.seminarIsSelection},
+            #{seminarForm.seminarEmploymentIntention},
             #{seminarForm.seminarNextAction})
         </foreach>
         ;
@@ -1176,7 +1190,7 @@ public interface MainRepository {
         INSERT INTO report_job_future_selection VALUES (
             #{form.reportId},
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}),
-            #{form.isSelection},
+            #{form.employmentIntention},
             #{form.nextAction}
         );
     """)
@@ -1212,12 +1226,12 @@ public interface MainRepository {
             r.reason,
             h.submitted_date,
             h.version,
-            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}),
+            (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}) AS maxVersion,
             o.student_email,
             activity_time,
             company_name,
-            f.hope_for_employment,
-            f.next_selection_details
+            f.employment_intention,
+            f.next_action
         FROM official_absences o
         JOIN reports r
         USING (official_absence_id)
@@ -1325,8 +1339,8 @@ public interface MainRepository {
             manager,
             industry,
             impressions,
-            hope_for_employment,
-            next_selection_details
+            employment_intention,
+            next_action
         FROM report_seminar_histories
         WHERE report_id = #{reportId} 
         AND version = #{version};
@@ -1377,39 +1391,39 @@ public interface MainRepository {
     void insertApplovedLeaveRequests(@Param("OAId") Integer OAId,@Param("studentId") Integer studentId,@Param("dateEntities") List<OADateInfoEntity> dateEntities);
 
     @Delete("""
-        DELETE report_interview_histories WHERE report_id = #{reportId};
+        DELETE FROM report_interview_histories WHERE report_id = #{reportId};
     """)
     void deleteReportJobInterview(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_briefing_histories WHERE report_id = #{reportId};
+        DELETE FROM report_briefing_histories WHERE report_id = #{reportId};
     """)
     void deleteReportBriefing(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_exam_histories WHERE report_id = #{reportId};
+        DELETE FROM report_exam_histories WHERE report_id = #{reportId};
     """)
     void deleteReportTest(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_informal_ceremony_histories WHERE report_id = #{reportId};
+        DELETE FROM report_informal_ceremony_histories WHERE report_id = #{reportId};
     """)
     void deleteReportInformalCeremony(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_training_histories WHERE report_id = #{reportId};
+        DELETE FROM report_training_histories WHERE report_id = #{reportId};
     """)
     void deleteReportTraining(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_other_histories WHERE report_id = #{reportId};
+        DELETE FROM report_other_histories WHERE report_id = #{reportId};
     """)
     void deleteReportJobOther(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_seminar_histories WHERE report_id = #{reportId};
+        DELETE FROM report_seminar_histories WHERE report_id = #{reportId};
     """)
     void deleteReportSeminar(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_job_future_selection WHERE report_id = #{reportId};
+        DELETE FROM report_job_future_selection WHERE report_id = #{reportId};
     """)
     void deleteJobFutureSelection(@Param("reportId") Integer reportId);
     @Delete("""
-        DELETE report_histories WHERE report_id = #{reportId};
+        DELETE FROM report_histories WHERE report_id = #{reportId};
     """)
     void deleteReportHistories(@Param("reportId") Integer reportId);
 
@@ -1423,12 +1437,12 @@ public interface MainRepository {
             r.reason,
             h.submitted_date,
             h.version,
-            (SELECT MAX(version) FROM report_histories),
+            (SELECT MAX(version) FROM report_histories) AS maxVersion,
             o.student_email,
             h.company_name,
             activity_time,
-            f.hope_for_employment,
-            f.next_selection_details
+            f.employment_intention,
+            f.next_action
         FROM official_absences o
         JOIN reports r
         USING (official_absence_id)
@@ -1449,7 +1463,7 @@ public interface MainRepository {
             AND h.company_name LIKE concat('%',#{companyName},'%')
             OR s.company_name LIKE concat('%',#{companyName},'%')
         </if>
-        GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.hope_for_employment, f.next_selection_details, h.company_name
+        GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.employment_intention, f.next_action, h.company_name
         ORDER BY report_id;
         </script>
     """)
@@ -1483,4 +1497,9 @@ public interface MainRepository {
         </script>
     """)
     Integer countReportInfosByCompanyName(@Param("companyName") String companyName);
+
+    @Delete("""
+        DELETE FROM reports WHERE official_absence_id = #{OAId};
+    """)
+    void deleteReportMain(@Param("OAId") Integer OAId);
 }
