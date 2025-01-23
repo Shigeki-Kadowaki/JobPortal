@@ -37,10 +37,10 @@
                             <option value="all" th:selected="*{classroom == 'all'}">全て</option>
                             <option value="A" th:selected="*{classroom == 'A'}">A</option>
                             <option value="B" th:selected="*{classroom == 'B'}">B</option>
-                            <option value="N" th:selected="*{classroom == 'N'}">N</option>
-                            <option value="N" th:selected="*{classroom == 'N'}">N</option>
-                            <option value="N" th:selected="*{classroom == 'N'}">N</option>
-                            <option value="N" th:selected="*{classroom == 'N'}">N</option>
+                            <option value="J" th:selected="*{classroom == 'J'}">J</option>
+                            <option value="M" th:selected="*{classroom == 'M'}">M</option>
+                            <option value="F" th:selected="*{classroom == 'F'}">F</option>
+                            <option value="G" th:selected="*{classroom == 'G'}">G</option>
                         </select>
                     </div>
                     <div class="form-group col-md-auto ps-4">
@@ -167,7 +167,7 @@
                 </th:block>
                 <th:block th:if="${mode == 'list'}">
                     <a th:href="@{/jobportal/teacher/OAList/{oaId}(oaId=${value.officialAbsenceId})}" type="button" class="btn infobtn btn-primary bg-primary text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>詳細表示</h5></a>
-                    <a th:href="@{/jobportal/teacher/report/{reportId}(reportId=${value.reportId})}" th:classappend="|${value.reportStatus == '未受理'||value.reportStatus == '受理'?'btn-primary':'btn-secondary'} ${value.reportStatus == '未受理'||value.reportStatus == '受理'?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
+                    <a th:href="@{/jobportal/teacher/report/{reportId}(reportId=${value.reportId})}" th:classappend="|${!(value.reportStatus == '未提出'||value.reportStatus == '不要')?'btn-primary':'btn-secondary'} ${!(value.reportStatus == '未提出'||value.reportStatus == '不要')?'':'disabled'}|" type="button" class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center"><h5>報告書詳細</h5></a>
                 </th:block>
                 <th:block th:if="${mode == 'approval'}">
                         <input type="checkbox" class="btn-check"  name="options-outlined" th:id="${value.officialAbsenceId()} + acceptance" th:name="approval[__${value.officialAbsenceId()}__]" value="true" autocomplete="off">

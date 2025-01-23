@@ -23,40 +23,59 @@
     メール : [[${mainInfo.studentEmail}]]<br>
     ステータス : [[${mainInfo.status}]]<br>
     提出日 : [[${mainInfo.submittedDate}]]<br>
-    公欠理由 : [[${mainInfo.reason}]]<br>
+    <h1>公欠理由 : [[${mainInfo.reason}]]<br></h1>
     <th:block th:if="${mainInfo.reason} == '就活'" th:object="${jobSearchInfo}">
-      活動内容 : [[*{work.getJapaneseName()}]]<br>
-      会社名 : [[*{companyName}]]<br>
-      住所 : [[*{address}]]<br>
-      開始時間 : [[${#numbers.formatInteger(jobSearchInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(jobSearchInfo.visitStartMinute,2)}]]分<br>
+      <div class="ms-3">
+        <h3>活動内容 : [[*{work.getJapaneseName()}]]<br></h3>
+        <div class="ms-3">
+          <h5>開始時間 : [[${#numbers.formatInteger(jobSearchInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(jobSearchInfo.visitStartMinute,2)}]]分<br>
+            会社名 : [[*{companyName}]]<br>
+            住所 : [[*{address}]]<br>
+          </h5>
+        </div>
+      </div>
       <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == 'セミナー・合説'" th:object="${seminarInfo}">
-      セミナー・合説名 : [[*{seminarName}]]<br>
-      実施場所 : [[*{location}]]<br>
-      会場名 : [[*{venueName}]]<br>
-      開始時間 : [[*{visitStartHour}]]時[[*{visitStartMinute}]]分<br>
+      <div class="ms-3">
+        <h3>セミナー・合説名 : [[*{seminarName}]]<br></h3>
+        <div class="ms-3">
+          <h5>開始時間 : [[${#numbers.formatInteger(seminarInfo.visitStartHour,2)}]]時[[${#numbers.formatInteger(seminarInfo.visitStartMinute,2)}]]分<br>
+            実施場所 : [[*{location}]]<br>
+            会場名 : [[*{venueName}]]<br>
+          </h5>
+        </div>
+      </div>
       <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == '忌引'" th:object="${bereavementInfo}">
-      亡くなった方 : [[*{deceasedName}]]<br>
-      続柄 : [[*{relationship}]]<br>
+      <div class="ms-3">
+        <h5>亡くなった方 : [[*{deceasedName}]]<br>
+          続柄 : [[*{relationship}]]<br>
+        </h5>
+      </div>
       <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == '出席停止'" th:object="${attendanceBanInfo}">
-      理由 : [[*{banReason}]]<br>
+      <div class="ms-3">
+        <h5>理由 : [[*{banReason}]]<br></h5>
+      </div>
       <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
     </th:block>
     <th:block th:if="${mainInfo.reason} == 'その他'" th:object="${otherInfo}">
-      理由 : [[*{otherReason}]]<br>
+      <div class="ms-3">
+        <h5>理由 : [[*{otherReason}]]<br></h5>
+      </div>
       <div th:if="*{!#strings.isEmpty(remarks)}">備考 : [[*{remarks}]]<br></div>
     </th:block>
   </div>
+  <br>
+  <h2>公欠授業 : </h2>
   <div th:each="mapEntry, stat : ${lessonInfo}" th:object="${mapEntry}">
-    <div>
-      [[${mapEntry.key}]]<br>
-      <div th:each="v : ${mapEntry.value}">
-        [[${v.period}]]限目:[[${v.lessonName}]]
+    <div class="ms-3">
+      <h4>[[${mapEntry.key}]]<br></h4>
+      <div th:each="v : ${mapEntry.value}" class="ms-3">
+        <h6>[[${v.period}]]限目:[[${v.lessonName}]]</h6>
       </div>
     </div>
   </div>
@@ -65,7 +84,10 @@
     <th:block th:if="${mode eq 'info'}">
       <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectionModal">却下</button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptanceModal">承認</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherAcceptanceModal">担任承認</button>
+        <th:block th:if="${mainInfo.reportRequired}">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#careerAcceptanceModal">キャリア承認</button>
+        </th:block>
       </div>
     </th:block>
   </th:block>
@@ -96,20 +118,46 @@
       </div>
     </div>
   </div>
-
-  <div class="modal fade" id="acceptanceModal" tabindex="-1" aria-labelledby="acceptanceModalLabel" aria-hidden="true">
+  <div class="modal fade" id="teacherAcceptanceModal" tabindex="-1" aria-labelledby="teacherAcceptanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!--          modalヘッダー-->
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="teacherAcceptanceModalLabel">承認しますか？</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!--            modalボディー-->
+        <form th:action="@{/jobportal/teacher/{OAId}(OAId=${mainInfo.officialAbsenceId})}" th:method="put">
+          <input type="hidden" name="careerCheckRequired" th:value="${mainInfo.careerCheckRequired}">
+          <div class="modal-body modalContainer">
+            <h5 class="form-check">
+              <input class="form-check-input" type="radio" name="teacherType" value="teacher" id="teacher" checked>
+              <label class="form-check-label" for="teacher">
+                担任
+              </label>
+            </h5>
+          </div>
+          <!--            modalフッター-->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" name="acceptance">承認</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="careerAcceptanceModal" tabindex="-1" aria-labelledby="careerAcceptanceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
 <!--          modalヘッダー-->
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="acceptanceModalLabel">承認しますか？</h1>
+          <h1 class="modal-title fs-5" id="careerAcceptanceModalLabel">承認しますか？</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 <!--            modalボディー-->
         <form th:action="@{/jobportal/teacher/{OAId}(OAId=${mainInfo.officialAbsenceId})}" th:method="put">
           <input type="hidden" name="careerCheckRequired" th:value="${mainInfo.careerCheckRequired}">
           <div class="modal-body modalContainer">
-            <th:block th:if="${mainInfo.careerCheckRequired}">
               <h5 class="form-check">
                 <input class="form-check-input" type="checkbox" value="necessary" name="reportRequired" id="reportRequired" th:checked="${mainInfo.reportRequired}">
                 <label class="form-check-label" for="reportRequired">
@@ -117,21 +165,12 @@
                 </label>
               </h5>
               <span class="vr mx-3" style="height: 50px;width: 2px;color: black"></span>
-            </th:block>
-            <h5 class="form-check">
-              <input class="form-check-input" type="radio" name="teacherType" value="teacher" id="teacher" checked>
-              <label class="form-check-label" for="teacher">
-                担任
-              </label>
-            </h5>
-            <th:block th:if="${mainInfo.careerCheckRequired}">
             <h5 class="form-check ms-3">
-              <input class="form-check-input" type="radio" name="teacherType" value="career" id="career">
+              <input class="form-check-input" type="radio" name="teacherType" value="career" id="career" checked>
               <label class="form-check-label" for="career">
                 キャリア
               </label>
             </h5>
-            </th:block>
           </div>
 <!--            modalフッター-->
           <div class="modal-footer">

@@ -1,6 +1,6 @@
 package com.jobportal.JobPortal.Service;
 
-public enum CompanyDecision {
+public enum EmploymentIntention {
     doNot("しない"),
     underConsideration("検討中"),
     takingExam("受験する"),
@@ -8,7 +8,7 @@ public enum CompanyDecision {
 
     private final String japanese;
 
-    CompanyDecision(String japanese) {
+    EmploymentIntention(String japanese) {
         this.japanese = japanese;
     }
 

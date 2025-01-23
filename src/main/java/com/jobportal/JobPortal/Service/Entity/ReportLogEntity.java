@@ -1,6 +1,6 @@
 package com.jobportal.JobPortal.Service.Entity;
 
-import com.jobportal.JobPortal.Service.CompanyDecision;
+import com.jobportal.JobPortal.Service.EmploymentIntention;
 import com.jobportal.JobPortal.Service.JobInterviewType;
 import com.jobportal.JobPortal.Service.NextAction;
 import com.jobportal.JobPortal.Service.ReportType;
@@ -14,7 +14,7 @@ public class ReportLogEntity {
     Integer studentId;
     ReportType reason;
     Integer activityTime;
-    CompanyDecision isSelection;
+    EmploymentIntention isSelection;
     NextAction nextAction;
     String companyName;
 
@@ -71,26 +71,26 @@ public class ReportLogEntity {
         return studentId / 100;
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportBriefingEntity briefingEntity) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
-        this.companyName = reportInfoEntity.companyName();
-        this.isSelection = reportInfoEntity.companyDecision();
-        this.nextAction = reportInfoEntity.nextAction();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
+        this.companyName = reportInfoEntity.getCompanyName();
+        this.isSelection = reportInfoEntity.getEmploymentIntention();
+        this.nextAction = reportInfoEntity.getNextAction();
 
         this.briefingContent = briefingEntity.briefingContent();
         this.briefingImpressions = briefingEntity.briefingImpressions();
 
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportInterviewEntity interviewEntity) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
-        this.companyName = reportInfoEntity.companyName();
-        this.isSelection = reportInfoEntity.companyDecision();
-        this.nextAction = reportInfoEntity.nextAction();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
+        this.companyName = reportInfoEntity.getCompanyName();
+        this.isSelection = reportInfoEntity.getEmploymentIntention();
+        this.nextAction = reportInfoEntity.getNextAction();
 
         this.interviewerNumber = interviewEntity.interviewerNumber();
         this.interviewType = interviewEntity.interviewType();
@@ -98,13 +98,13 @@ public class ReportLogEntity {
         this.interviewImpressions = interviewEntity.interviewImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportTestEntity testEntity) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
-        this.companyName = reportInfoEntity.companyName();
-        this.isSelection = reportInfoEntity.companyDecision();
-        this.nextAction = reportInfoEntity.nextAction();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
+        this.companyName = reportInfoEntity.getCompanyName();
+        this.isSelection = reportInfoEntity.getEmploymentIntention();
+        this.nextAction = reportInfoEntity.getNextAction();
 
         this.generalKnowledgeNumber = testEntity.generalKnowledgeNumber();
         this.generalKnowledgeType = testEntity.generalKnowledgeType();
@@ -132,44 +132,44 @@ public class ReportLogEntity {
         this.testImpressions = testEntity.testImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportInformalCeremonyEntity informalCeremonyEntity ) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
-        this.companyName = reportInfoEntity.companyName();
-        this.isSelection = reportInfoEntity.companyDecision();
-        this.nextAction = reportInfoEntity.nextAction();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
+        this.companyName = reportInfoEntity.getCompanyName();
+        this.isSelection = reportInfoEntity.getEmploymentIntention();
+        this.nextAction = reportInfoEntity.getNextAction();
 
         this.informalCeremonyImpressions = informalCeremonyEntity.informalCeremonyImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportTrainingEntity trainingEntity) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
-        this.companyName = reportInfoEntity.companyName();
-        this.isSelection = reportInfoEntity.companyDecision();
-        this.nextAction = reportInfoEntity.nextAction();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
+        this.companyName = reportInfoEntity.getCompanyName();
+        this.isSelection = reportInfoEntity.getEmploymentIntention();
+        this.nextAction = reportInfoEntity.getNextAction();
 
         this.trainingImpressions = trainingEntity.trainingImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, ReportOtherEntity otherEntity) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
-        this.companyName = reportInfoEntity.companyName();
-        this.isSelection = reportInfoEntity.companyDecision();
-        this.nextAction = reportInfoEntity.nextAction();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
+        this.companyName = reportInfoEntity.getCompanyName();
+        this.isSelection = reportInfoEntity.getEmploymentIntention();
+        this.nextAction = reportInfoEntity.getNextAction();
 
         this.activityContent = otherEntity.activityContent();
-        this.othersImpressions = otherEntity.othersImpressions();
+        this.othersImpressions = otherEntity.otherImpressions();
     }
     public ReportLogEntity(ReportInfoEntity reportInfoEntity, List<ReportSeminarEntity> seminarEntities) {
-        this.reportId = reportInfoEntity.reportId();
-        this.studentId = reportInfoEntity.studentId();
-        this.reason = reportInfoEntity.reason();
-        this.activityTime = reportInfoEntity.activityTime();
+        this.reportId = reportInfoEntity.getReportId();
+        this.studentId = reportInfoEntity.getStudentId();
+        this.reason = reportInfoEntity.getReason();
+        this.activityTime = reportInfoEntity.getActivityTime();
         this.seminarForms = seminarEntities;
     }
 

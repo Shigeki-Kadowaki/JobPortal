@@ -17,7 +17,7 @@ public class ReportSeminarForm {
     @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
     private String seminarImpressions;
     @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
-    private String seminarIsSelection;
+    private String seminarEmploymentIntention;
     @NotBlank(message = "必須項目です", groups = ValidationGroup.reportSeminarGroup.class)
     private String seminarNextAction;
 
@@ -26,7 +26,7 @@ public class ReportSeminarForm {
         this.manager = manager;
         this.industry = industry;
         this.seminarImpressions = seminarImpressions;
-        this.seminarIsSelection = seminarIsSelection;
+        this.seminarEmploymentIntention = seminarIsSelection;
         this.seminarNextAction = seminarNextAction;
     }
 }
