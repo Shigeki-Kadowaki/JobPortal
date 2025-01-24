@@ -11,15 +11,15 @@
 <body>
     <section layout:fragment="content">
         <a type="button" th:href="@{/jobportal/student/{studentId}/OAList(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
-        [[${mode}]]
+        <span th:errors="${ReportForm.activityTime}"></span>
         <form th:action="${mode == 'create'} ?
             @{/jobportal/student/{studentId}/reportCreationForm/{oaId} (studentId=${studentId},oaId=${oaId})} :
             @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
         th:method="post" th:object="${ReportForm}">
-            [[${reason}]]
             <div th:class="mt-3">
                 <th:block th:if="${reason != 'seminar'}">
                 <h1><label>訪問企業:</label><label th:text="${jobSearch.companyName}"></label></h1>
+                <input type="hidden" name="companyName" th:value="${jobSearch.companyName}">
                 <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
                     <span th:errors="${ReportForm.activityTime}"></span>
                     <label>
@@ -146,17 +146,17 @@
                         <input type="hidden" name="reason" value="jobOther">
                         <h1><label>その他：</label><input type="text" placeholder="活動内容" name="activityContent" th:value="${ReportForm.activityContent}"></h1>
                         <h3><label>感想</label></h3>
-                        <textarea rows="3" name="otherImpressions" placeholder="感想">[[${ReportForm.othersImpressions}]]</textarea>
+                        <textarea rows="3" name="otherImpressions" placeholder="感想">[[${ReportForm.otherImpressions}]]</textarea>
                         <div class="text-end">
                                     <button type="submit" class="btn btn-primary" name="jobOther">その他</button>
                             </div>
                     </span>
                     </th:block>
-                    <div id="isSelection">
-                        <input type="radio" name="isSelection" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'doNot' or ReportForm.isSelection == null}"> しない
-                        <input type="radio" name="isSelection" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'underConsideration'}"> 検討中
-                        <input type="radio" name="isSelection" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.isSelection == 'takingExam'}"> 受験する
-                        <input type="radio" name="isSelection" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'hasOffer'}"> 内定済み
+                    <div id="employmentIntention">
+                        <input type="radio" name="employmentIntention" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'doNot' or ReportForm.employmentIntention == null}"> しない
+                        <input type="radio" name="employmentIntention" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'underConsideration'}"> 検討中
+                        <input type="radio" name="employmentIntention" id="takingExam" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.employmentIntention == 'takingExam'}"> 受験する
+                        <input type="radio" name="employmentIntention" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'hasOffer'}"> 内定済み
                     </div>
                     <div id="nextAction" style="display:none">
                         <input type="radio" name="nextAction" id="firstCheck" value="mailingDocuments" th:checked="${ReportForm.nextAction == 'mailingDocuments' or ReportForm.nextAction == null}"> 書類郵送
@@ -177,12 +177,14 @@
                     </label>分<br>
                     <button type="button" class="btn btn-primary" onclick="addElement()">企業を追加</button>
                     <div id="visitedCompany"></div>
+                    <br>
                     <div class="text-end">
                         <button type="submit" class="btn btn-primary" name="reportSeminar">セミナー</button>
                     </div>
                 </th:block>
             </div>
         </form>
+        <br><br><br><br><br>
     </section>
 </body>
 </html>

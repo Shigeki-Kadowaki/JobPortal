@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,6 +204,7 @@ public class StudentController {
             case other -> {
                 OtherEntity other = service.findOtherInfo(OAId);
                 OAMainForm form = service.toOtherForm(mainInfoDTO, OAPeriods, other);
+                System.out.println("otherReason : " + form.getOtherReason());
                 model.addAttribute("oAMainForm", form);
             }
         }
@@ -217,55 +218,34 @@ public class StudentController {
     }
     //就活再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "jobSearch")
-    public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.repostOA(bindingResult, OAId, form);
+    public String postJobForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId, @Validated(jobSearchFormGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        return service.repostOA(bindingResult, OAId, form, model);
     }
     //セミナー再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "seminar")
-    public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.repostOA(bindingResult, OAId, form);
+    public String postSeminarForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(seminarGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        return service.repostOA(bindingResult, OAId, form, model);
     }
     //忌引再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "bereavement")
-    public String postBereavementForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.repostOA(bindingResult, OAId, form);
+    public String postBereavementForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(bereavementGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        return service.repostOA(bindingResult, OAId, form, model);
     }
     //出席停止再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "attendanceBan")
-    public String postBanForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.repostOA(bindingResult, OAId, form);
+    public String postBanForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(attendanceBanGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        return service.repostOA(bindingResult, OAId, form, model);
     }
     //その他再提出
     @PostMapping(value = "/student/{studentId}/OAList/{OAId}", params = "other")
-    public String postOtherForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult){
-        return service.repostOA(bindingResult, OAId, form);
+    public String postOtherForm(@ModelAttribute("studentId") @PathVariable("studentId") Integer studentId,@PathVariable("OAId") Integer OAId,  @Validated(otherGroup.class) @ModelAttribute("oAMainForm") OAMainForm form, BindingResult bindingResult, Model model){
+        return service.repostOA(bindingResult, OAId, form, model);
     }
 
     //破棄
     @DeleteMapping("/student/{studentId}/OAList/{OAId}")
     public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
-        OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
-        switch (mainInfoEntity.reason()){
-            case jobSearch -> {
-                service.deleteJobSearch(OAId);
-            }
-            case seminar -> {
-                service.deleteSeminar(OAId);
-            }
-            case bereavement -> {
-                service.deleteBereavement(OAId);
-            }
-            case attendanceBan -> {
-                service.deleteAttendanceBan(OAId);
-            }
-            case other -> {
-                service.deleteOther(OAId);
-            }
-        }
-        service.deleteDate(OAId);
-        service.deleteSubmittedDate(OAId);
-        service.deleteReport(OAId);
-        service.deleteMain(OAId);
+        service.deleteOA(OAId);
         return "redirect:/jobportal/student/{studentId}/OAList";
     }
 
@@ -305,21 +285,7 @@ public class StudentController {
                                   BindingResult bindingResult,
                                   Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-        model.addAttribute("jobSearch",jobSearch);
-        System.out.println(jobSearch.work());
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        if(bindingResult.hasErrors()){
-            System.out.println("error");
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
-        service.postInterviewReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
 
     @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="briefing")
@@ -329,19 +295,7 @@ public class StudentController {
                                         BindingResult bindingResult,
                                         Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-        model.addAttribute("jobSearch",jobSearch);
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        if(bindingResult.hasErrors()){
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
-        service.postBriefingReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
 
     @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="test")
@@ -351,20 +305,7 @@ public class StudentController {
                                         BindingResult bindingResult,
                                         Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-        System.out.println(jobSearch.companyName());
-        model.addAttribute("jobSearch",jobSearch);
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        if(bindingResult.hasErrors()){
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
-        service.postExamReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
 
 
@@ -375,19 +316,7 @@ public class StudentController {
                                         BindingResult bindingResult,
                                         Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-        model.addAttribute("jobSearch",jobSearch);
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        if(bindingResult.hasErrors()){
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
-        service.postInformalCeremonyReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
     @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="training")
     public String trainingReport(@PathVariable("studentId") Integer studentId,
@@ -396,19 +325,7 @@ public class StudentController {
                                         BindingResult bindingResult,
                                         Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-        model.addAttribute("jobSearch",jobSearch);
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        if(bindingResult.hasErrors()){
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
-        service.postTrainingReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
     @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="jobOther")
     public String otherReport(@PathVariable("studentId") Integer studentId,
@@ -417,19 +334,7 @@ public class StudentController {
                               BindingResult bindingResult,
                               Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        JobSearchEntity jobSearch = service.findJobSearchInfo(OAId);
-        model.addAttribute("jobSearch",jobSearch);
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        if(bindingResult.hasErrors()){
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        if(!form.getIsSelection().equals("takingExam")) form.setNextAction(null);
-        service.postOtherReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
 
     @PostMapping(value="/student/{studentId}/reportCreationForm/{oaId}", params="reportSeminar")
@@ -439,34 +344,17 @@ public class StudentController {
                                         BindingResult bindingResult,
                                         Model model)
     {
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
-        model.addAttribute("OADate",dateInfoEntities);
-        model.addAttribute("ReportForm",form);
-        model.addAttribute("reason", form.getReason());
-        System.out.println(form.getSeminarForms().get(0).getSeminarIsSelection());
-        if(bindingResult.hasErrors()){
-            bindingResult.getAllErrors().forEach(error -> {
-                System.out.println("エラーコード: " + Arrays.toString(error.getCodes()));
-                System.out.println("デフォルトメッセージ: " + error.getDefaultMessage());
-            });
-            model.addAttribute("mode","create");
-            return "reportForm";
-        }
-        form.getSeminarForms().stream()
-                .filter(f -> !"takingExam".equals(f.getSeminarIsSelection()))
-                .forEach(f -> f.setSeminarNextAction(null));
-        service.postSeminarReport(form, OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return service.postReport(bindingResult, OAId, form, model);
     }
 
     @PostMapping("/student/{studentId}/report/{reportId}/reportEditForm")
     public String showReportEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, Model model){
         ReportInfoEntity mainInfo = service.getReportInfo(reportId);
         model.addAttribute("mainInfo", mainInfo);
-        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(mainInfo.officialAbsenceId());
+        List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(mainInfo.getOfficialAbsenceId());
         model.addAttribute("OADate",dateInfoEntities);
         ReportForm form = new ReportForm();
-        switch (mainInfo.reason()){
+        switch (mainInfo.getReason()){
             case jobInterview -> {
                 ReportInterviewEntity interviewEntity = service.getInterviewEntity(reportId);
                 form = service.toReportForm(mainInfo, interviewEntity);
@@ -496,11 +384,11 @@ public class StudentController {
                 form = service.toReportForm(mainInfo, seminarEntities);
             }
         }
-        if(!mainInfo.reason().toString().equals("seminar")){
-            JobSearchEntity jobSearch = service.findJobSearchInfo(mainInfo.officialAbsenceId());
+        if(!mainInfo.getReason().toString().equals("seminar")){
+            JobSearchEntity jobSearch = service.findJobSearchInfo(mainInfo.getOfficialAbsenceId());
             model.addAttribute("jobSearch",jobSearch);
         }
-        model.addAttribute("reason", mainInfo.reason().toString());
+        model.addAttribute("reason", mainInfo.getReason().toString());
         model.addAttribute("ReportForm", form);
         model.addAttribute("mode", "edit");
         return "reportForm";
@@ -509,8 +397,9 @@ public class StudentController {
     @GetMapping("/student/{studentId}/report/{reportId}")
     public String showStudentReportInfo(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, Model model){
         ReportInfoEntity mainInfo = service.getReportInfo(reportId);
+        mainInfo.setSubmittedDate(MainService.dateFormat(LocalDate.parse(mainInfo.getSubmittedDate())));
         model.addAttribute("mainInfo", mainInfo);
-        switch (mainInfo.reason()){
+        switch (mainInfo.getReason()){
             case jobInterview -> {
                 ReportInterviewEntity interviewEntity = service.getInterviewEntity(reportId);
                 model.addAttribute("interviewEntity", interviewEntity);
@@ -595,7 +484,7 @@ public class StudentController {
     public String showStudentReportInfoByVersion(@ModelAttribute @PathVariable("studentId") Integer studentId,@ModelAttribute  @PathVariable("reportId") Integer reportId,@RequestParam("version") Integer version, Model model){
         ReportInfoEntity mainInfo = service.getReportInfoByVersion(reportId, version);
         model.addAttribute("mainInfo", mainInfo);
-        switch (mainInfo.reason()){
+        switch (mainInfo.getReason()){
             case jobInterview -> {
                 ReportInterviewEntity interviewEntity = service.getInterviewEntityByVersion(reportId, version);
                 model.addAttribute("interviewEntity", interviewEntity);
@@ -627,5 +516,33 @@ public class StudentController {
         }
         model.addAttribute("mode", "read");
         return "reportInfo";
+    }
+
+    @DeleteMapping("/student/{studentId}/report/{reportId}")
+    public String deleteReport(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId){
+        service.deleteReports(reportId);
+        return "redirect:/jobportal/student/{studentId}/OAList";
+    }
+    
+    @GetMapping("/student/{studentId}/reportLogs")
+    public String companyLogs(@PathVariable("studentId") Integer studentId, Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName, @RequestParam(value = "page", defaultValue = "1") Integer page){
+        model.addAttribute("companyName", companyName);
+        model.addAttribute("studentId", studentId);
+        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName, page);
+        logEntities = logEntities.stream()
+                        .peek(e->e.setStudentId(e.getStudentId() / 1000))
+                        .toList();
+        int pageSize = 10;
+        Integer count = service.countSearchReportLogs(companyName);
+        int maxSize = (int)Math.ceil((double) count / pageSize);
+        int displayPageCount = Math.min(maxSize, 5);
+        int start = Math.max(1, Math.min(page - (displayPageCount - 1) / 2, maxSize - displayPageCount + 1));
+        int end = Math.min(maxSize, start + displayPageCount - 1);
+        model.addAttribute("maxSize", maxSize);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("start", start);
+        model.addAttribute("end", end);
+        model.addAttribute("logEntities", logEntities);
+        return "reportLogs";
     }
 }

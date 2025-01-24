@@ -2,7 +2,7 @@ package com.jobportal.JobPortal.Service.Entity;
 
 public record ReportTestEntity(
         Integer reportId,
-        String generalKnowledgeNumber,
+        Integer generalKnowledgeNumber,
         String generalKnowledgeType,
         Integer jobQuestionNumber,
         String jobQuestionType,

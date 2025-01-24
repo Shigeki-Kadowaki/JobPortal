@@ -1,6 +1,7 @@
 
 window.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('firstCheck').checked = true;
+    if(document.getElementById('takingExam').checked === true) visibleNextAction();
 });
 
 let cnt = 0;
@@ -28,10 +29,10 @@ function addElement() {
         <input type='text' name="seminarForms[${cnt}].seminarImpressions" th:value="\${ReportForm.seminarForms[${cnt}].seminarImpressions}">
         <p>今後の受験はどうしますか？</p>
         <div id='isSelection${cnt}'>
-            <input type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='doNot' checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'doNot'}" onclick='hiddenNextAction(${cnt})'> しない
-            <input type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='underConsideration' th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'underConsideration'}" onclick='hiddenNextAction(${cnt})'> 検討中
-            <input type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='takingExam' th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'takingExam'}" onclick='visibleNextAction(${cnt})'> 受験する
-            <input type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='hasOffer' th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'hasOffer'}" onclick='hiddenNextAction(${cnt})'> 内定済み
+            <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='doNot' checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'doNot'}" onclick='hiddenNextAction(${cnt})'> しない
+            <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='underConsideration' th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'underConsideration'}" onclick='hiddenNextAction(${cnt})'> 検討中
+            <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='takingExam' th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'takingExam'}" onclick='visibleNextAction(${cnt})'> 受験する
+            <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='hasOffer' th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'hasOffer'}" onclick='hiddenNextAction(${cnt})'> 内定済み
         </div>
        <div id='nextAction${cnt}' style='display:none'>
             <input type='radio' name="seminarForms[${cnt}].seminarNextAction" value="mailingDocuments" checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'mailingDocuments'}"> 書類郵送
@@ -69,7 +70,7 @@ function visibleNextAction(count = ""){
 // function isSelectionsChoice(){
 //     if(cnt !== 0){
 //     for (let i = 1; i <= cnt; i++){
-//             let isSelection = document.getElementsByName(String('seminarIsSelection' + i));
+//             let isSelection = document.getElementsByName(String('seminarEmploymentIntention' + i));
 //                 if(isSelection[2].checked === true){
 //                     document.getElementById(String('nextAction' + i)).style.display='';
 //                 }else{

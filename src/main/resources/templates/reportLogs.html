@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>報告書閲覧</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <a th:href="@{/jobportal/student/{studentId}(studentId=${studentId})}" class="btn btn-primary">戻る</a><br>
+    <form th:action="@{/jobportal/student/{studentId}/reportLogs(studentId=${studentId})}" method="get" class="mt-3">
+        <div class="input-group mb-3">
+            <button type="submit" class="input-group-text btn btn-primary" id="basic-addon1"><i class="bi bi-search"></i> 検索</button>
+            <input type="text" class="form-control" placeholder="会社名を入力" aria-label="companyName" name="companyName" th:value="${companyName}" aria-describedby="basic-addon1">
+        </div>
+    </form>
+    <th:block th:if="${maxSize == 0}" class="ms-5">
+        <h2>検索結果が見つかりませんでした</h2><br>
+        <h5 class="ms-5">ヒント : カタカナ ↔ 英語
+            <div class="ms-5">(company　↔　カンパニー)</div>
+            <div class="ms-5">(ABC ↔ エービーシー)</div>
+        </h5>
+    </th:block>
+    <th:block th:if="${maxSize != 0}">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination pagination-lg d-flex justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" th:classappend="${currentPage == 1}?'disabled':''" th:href="@{/jobportal/student/{studentId}/reportLogs(studentId=${studentId}, currentPage=${currentPage - 1})}">prev</a>
+                </li>
+                <th:block th:each="i : ${#numbers.sequence(start, end)}">
+                    <li class="page-item">
+                        <a class="page-link" th:classappend="${i == currentPage}?'active':''" th:href="@{/jobportal/student/{studentId}/reportLogs(studentId=${studentId}, currentPage=${i})}">[[${i}]]</a>
+                    </li>
+                </th:block>
+                <li class="page-item">
+                    <a class="page-link" th:classappend="${currentPage == maxSize}?'disabled':''" th:href="@{/jobportal/student/{studentId}/reportLogs(studentId=${studentId}, currentPage=${currentPage + 1})}">next</a>
+                </li>
+            </ul>
+        </nav>
+    </th:block>
+    <div th:each="entity, stat : ${logEntities}" class="accordion w-75 mx-auto" id="reportLogAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${stat.index}" aria-expanded="false" aria-controls="collapseThree">
+                    <i class="bi bi-person me-1"></i> 第 [[${entity.studentId}]] 期生
+                    <th:block th:if="${entity.reason.toString() != 'seminar'}"><div class="ms-5"><i class="bi bi-building me-1"></i> [[${entity.companyName}]]</div></th:block>
+                    <div class="ms-5">[[${entity.reason.getJapaneseName()}]]</div>
+                </button>
+            </h2>
+            <div th:id="collapse + ${stat.index}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <th:block th:switch="${entity.reason.toString()}">
+                        <span th:case="jobInterview">
+                            面接官人数 : [[${entity.interviewerNumber}]] 人<br>
+                            タイプ : [[${entity.interviewType.getJapaneseName()}]]<br>
+                            内容 : [[${entity.interviewContent}]]<br>
+                            感想 : [[${entity.interviewImpressions}]]<br>
+                        </span>
+                        <span th:case="briefing">
+                            内容 : [[${entity.briefingContent}]]<br>
+                            感想 : [[${entity.briefingImpressions}]]<br>
+                        </span>
+                        <span th:case="test">
+                            [[${entity.generalKnowledgeNumber}]]<br>
+                            [[${entity.generalKnowledgeType}]]<br>
+                            [[${entity.jobQuestionNumber}]]<br>
+                            [[${entity.jobQuestionType}]]<br>
+                            [[${entity.SPILanguageSystemNumber}]]<br>
+                            [[${entity.SPINonLanguageSystemNumber}]]<br>
+                            [[${entity.SPIOthersNumber}]]<br>
+                            [[${entity.personalityDiagnosisNumber}]]<br>
+                            [[${entity.personalityDiagnosisType}]]<br>
+                            [[${entity.nationalLanguageNumber}]]<br>
+                            [[${entity.nationalLanguageType}]]<br>
+                            [[${entity.mathNumber}]]<br>
+                            [[${entity.mathType}]]<br>
+                            [[${entity.englishNumber}]]<br>
+                            [[${entity.englishType}]]<br>
+                            [[${entity.currentAffairsNumber}]]<br>
+                            [[${entity.currentAffairsType}]]<br>
+                            [[${entity.writingTimer}]]<br>
+                            [[${entity.writingNumberOfCharacters}]]<br>
+                            [[${entity.writingTheme}]]<br>
+                            [[${entity.expertiseNumber}]]<br>
+                            [[${entity.expertiseType}]]<br>
+                            [[${entity.others}]]<br>
+                            [[${entity.testImpressions}]]<br>
+                        </span>
+                        <span th:case="informalCeremony">
+                            感想 : [[${entity.informalCeremonyImpressions}]]<br>
+                        </span>
+                        <span th:case="training">
+                             感想 : [[${entity.trainingImpressions}]]<br>
+                        </span>
+                        <span th:case="jobOther">
+                            [[${entity.activityContent}]]<br>
+                            [[${entity.othersImpressions}]]<br>
+                        </span>
+                        <span th:case="seminar">
+                            <div th:each="seminar, stat : ${entity.getSeminarForms()}">
+                                <div class="card">
+                                    <div class="card-header">
+                                        訪問企業 [[${stat.count}]]
+                                    </div>
+                                    <div class="card-body">
+                                        会社名 : [[${seminar.companyName}]]<br>
+                                        担当者名 : [[${seminar.manager}]]<br>
+                                        業種 : [[${seminar.industry}]]<br>
+                                        感想 : [[${seminar.seminarImpressions}]]<br>
+<!--                                        今後の受験 : [[${seminar.seminarEmploymentIntention.getJapaneseName()}]]<br>-->
+<!--                                        <th:block th:if="${seminar.seminarNextAction != null}">-->
+<!--                                            [[${seminar.seminarNextAction.getJapaneseName()}]]<br>-->
+<!--                                        </th:block>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

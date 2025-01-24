@@ -29,7 +29,7 @@ public class OAMainForm {
         private boolean reportRequired;
 //就活部分
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
-        @Pattern(regexp = "jobInterview|briefing|test|training|informalDecisionCeremony|jobOther", groups = jobSearchFormGroup.class)
+        @Pattern(regexp = "jobInterview|briefing|test|training|informalCeremony|jobOther", groups = jobSearchFormGroup.class)
         private String work;
         @NotBlank(message = "必須項目です", groups = jobSearchFormGroup.class)
         private String companyName;
@@ -233,7 +233,7 @@ public class OAMainForm {
                 this.banReason = banReason;
                 this.banRemarks = banRemarks;
         }
-        public OAMainForm(OtherEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String otherRemarks, String otherReason){
+        public OAMainForm(OtherEntity entity, String reasonForAbsence, Map<String, List<String>> lessonInfoEntities, boolean reportRequired, String otherReason, String otherRemarks){
                 this.reasonForAbsence = reasonForAbsence;
                 this.OAPeriods = lessonInfoEntities;
                 this.reportRequired = reportRequired;

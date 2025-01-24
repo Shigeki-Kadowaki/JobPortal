@@ -67,35 +67,66 @@
             </th:block>
         </div>
         <div class="jobSearch">
-            <div class="form-group mt-3">
-                <h3>活動内容</h3>
-                <span th:errors="*{work}"></span>
-                <h5 class="ms-3"><label class="form-check-label" for="jobInterview">
-                    <input checked class="form-check-input" id="jobInterview" name="work" type="radio" value="jobInterview" th:checked="*{work == 'jobInterview'}">
-                    面接
-                </label>
-                <label class="form-check-label" for="briefing">
-                    <input checked class="form-check-input" id="briefing" name="work" type="radio" value="briefing" th:checked="*{work == 'briefing'}">
-                    説明会
-                </label>
-                <label class="form-check-label" for="test">
-                    <input class="form-check-input" id="test" name="work" type="radio" value="test" th:checked="*{work == 'test'}">
-                    試験
-                </label>
-                <label class="form-check-label" for="informalDecisionCeremony">
-                    <input class="form-check-input" id="informalDecisionCeremony" name="work" type="radio" value="informalDecisionCeremony" th:checked="*{work == 'informalDecisionCeremony'}">
-                    内定式
-                </label>
-                    <label class="form-check-label" for="training">
-                    <input class="form-check-input" id="training" name="work" type="radio" value="training" th:checked="*{work == 'training'}">
-                    研修
-                </label>
-                <label class="form-check-label" for="jobOther">
-                    <input class="form-check-input" id="jobOther" name="work" type="radio" value="jobOther" th:checked="*{work == 'jobOther'}">
-                    その他
-                </label>
-                </h5>
-            </div>
+            <th:block th:if="${mode == 'create'}">
+                <div class="form-group mt-3">
+                    <h3>活動内容</h3>
+                    <span th:errors="*{work}"></span>
+                    <h5 class="ms-3"><label class="form-check-label" for="jobInterview">
+                        <input checked class="form-check-input" id="jobInterview" name="work" type="radio" value="jobInterview" th:checked="*{work == 'jobInterview'}">
+                        面接
+                    </label>
+                    <label class="form-check-label" for="briefing">
+                        <input checked class="form-check-input" id="briefing" name="work" type="radio" value="briefing" th:checked="*{work == 'briefing'}">
+                        説明会
+                    </label>
+                    <label class="form-check-label" for="test">
+                        <input class="form-check-input" id="test" name="work" type="radio" value="test" th:checked="*{work == 'test'}">
+                        試験
+                    </label>
+                    <label class="form-check-label" for="informalCeremony">
+                        <input class="form-check-input" id="informalCeremony" name="work" type="radio" value="informalCeremony" th:checked="*{work == 'informalCeremony'}">
+                        内定式
+                    </label>
+                        <label class="form-check-label" for="training">
+                        <input class="form-check-input" id="training" name="work" type="radio" value="training" th:checked="*{work == 'training'}">
+                        研修
+                    </label>
+                    <label class="form-check-label" for="jobOther">
+                        <input class="form-check-input" id="jobOther" name="work" type="radio" value="jobOther" th:checked="*{work == 'jobOther'}">
+                        その他
+                    </label>
+                    </h5>
+                </div>
+            </th:block>
+            <th:block th:if="${mode == 'edit'}">
+                <br>
+                <th:block th:switch="*{work}">
+                    <span th:case="'jobInterview'">
+                        <h5><span class="primary p-2">面接</span></h5>
+                        <input type="hidden" name="work" value="jobInterview">
+                    </span>
+                    <span th:case="'briefing'">
+                        <h5><span class="primary p-2">説明会</span></h5>
+                        <input type="hidden" name="work" value="briefing">
+                    </span>
+                    <span th:case="'test'">
+                        <h5><span class="primary p-2">試験</span></h5>
+                        <input type="hidden" name="work" value="test">
+                    </span>
+                    <span th:case="'informalCeremony'">
+                        <h5><span class="primary p-2">内定式</span></h5>
+                        <input type="hidden" name="work" value="informalCeremony">
+                    </span>
+                    <span th:case="'training'">
+                        <h5><span class="primary p-2">研修</span></h5>
+                        <input type="hidden" name="work" value="training">
+                    </span>
+                    <span th:case="'jobOther'">
+                        <h5><span class="primary p-2">その他</span></h5>
+                        <input type="hidden" name="work" value="other">
+                    </span>
+                </th:block>
+            </th:block>
             <div class="form-group mt-3">
                 <h3><label class="form-label" for="companyName">訪問先(企業名)</label></h3>
                 <span th:errors="*{companyName}"></span>

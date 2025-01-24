@@ -107,7 +107,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.getElementsByClassName('other')[1].style.display='none';
     document.getElementsByClassName(prevSelected)[1].style.display='block';
 
-
     for (let exceptionDate of exceptionDates){
         exceptionMap.set(exceptionDate.exceptionDate, exceptionDate.weekdayNumber);
     }

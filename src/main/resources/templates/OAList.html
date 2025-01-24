@@ -79,14 +79,14 @@
       <a th:href="${value.reportStatus == '未提出'} ?
                 @{/jobportal/student/{studentId}/reportCreationForm/{oaId}(studentId=${value.studentId}, oaId=${value.officialAbsenceId})} :
                 @{/jobportal/student/{studentId}/report/{reportId}(studentId=${value.studentId}, reportId=${value.reportId})}"
-         th:classappend="|${(value.reportStatus == '未提出') ? 'btn-success' : 'btn-primary'} ${(value.reportSubmittedFlag and value.reportRequired) ? '' : 'disabled'}|"
+         th:classappend="|${(value.reportStatus == '未提出') ? 'btn-success' : 'btn-primary'} ${!(value.reportStatus == '未提出'||value.reportStatus == '不要')?'btn-primary':'btn-secondary'} ${(value.reportSubmittedFlag and value.reportRequired) ? '' : 'disabled'}|"
          type="button"
          class="btn reportbtn text-light border border-dark border-3 border-opacity-25 p-0 col-1 d-flex align-items-center justify-content-center">
-        <h5 th:text="${value.reportStatus == '未提出'} ? '報告書提出' : '報告書詳細'" class="m-auto"></h5>
+        <h5 th:text="${value.reportStatus == '未提出' || value.reportStatus == '却下'} ? '報告書提出' : '報告書詳細'" class="m-auto"></h5>
       </a>
     </ul>
   </div>
-
+  <br><br><br><br><br>
 
 
 
