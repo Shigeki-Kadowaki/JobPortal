@@ -19,27 +19,43 @@ function addElement() {
     let companyBody = document.createElement('div');
     companyBody.className = 'card-body';
     companyBody.innerHTML = `
-        <p>企業名</p>
-        <input type='text' name="seminarForms[${cnt}].companyName" th:value="\${ReportForm.seminarForms[${cnt}].companyName}">
-        <p>担当者名</p>
-        <input type='text' name="seminarForms[${cnt}].manager" th:value="\${ReportForm.seminarForms[${cnt}].manager}">
-        <p>業種</p>
-        <input type='text' name="seminarForms[${cnt}].industry" th:value="\${ReportForm.seminarForms[${cnt}].industry}">
-        <p>感想</p>
-        <input type='text' name="seminarForms[${cnt}].seminarImpressions" th:value="\${ReportForm.seminarForms[${cnt}].seminarImpressions}">
-        <p>今後の受験はどうしますか？</p>
+        <div class="form-group">
+            <p>企業名</p>
+            <input class="form-control" type='text' name="seminarForms[${cnt}].companyName" th:value="\${ReportForm.seminarForms[${cnt}].companyName}">
+        </div>
+        <div class="form-group">
+            <p>担当者名</p>
+            <input class="form-control" type='text' name="seminarForms[${cnt}].manager" th:value="\${ReportForm.seminarForms[${cnt}].manager}">
+        </div>
+        <div class="form-group">
+            <p>業種</p>
+            <input class="form-control" type='text' name="seminarForms[${cnt}].industry" th:value="\${ReportForm.seminarForms[${cnt}].industry}">
+        </div>
+        <div class="form-group">
+            <p>感想</p>
+            <input class="form-control" type='text' name="seminarForms[${cnt}].seminarImpressions" th:value="\${ReportForm.seminarForms[${cnt}].seminarImpressions}">
+        </div>
+        <p class="mt-3">今後の受験はどうしますか？</p>
         <div id='isSelection${cnt}'>
             <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='doNot' checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'doNot'}" onclick='hiddenNextAction(${cnt})'> しない
             <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='underConsideration' th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'underConsideration'}" onclick='hiddenNextAction(${cnt})'> 検討中
             <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='takingExam' th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'takingExam'}" onclick='visibleNextAction(${cnt})'> 受験する
             <input type='radio' name="seminarForms[${cnt}].seminarEmploymentIntention" value='hasOffer' th:checked="\${ReportForm.seminarForms[${cnt}].seminarEmploymentIntention == 'hasOffer'}" onclick='hiddenNextAction(${cnt})'> 内定済み
+            <div class="form-group mt-3">
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='doNot' checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'doNot'}" onclick='hiddenNextAction(${cnt})'> しない
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='underConsideration' th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'underConsideration'}" onclick='hiddenNextAction(${cnt})'> 検討中
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='takingExam' th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'takingExam'}" onclick='visibleNextAction(${cnt})'> 受験する
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarIsSelection" value='hasOffer' th:checked="\${ReportForm.seminarForms[${cnt}].seminarIsSelection == 'hasOffer'}" onclick='hiddenNextAction(${cnt})'> 内定済み
+            </div>
         </div>
        <div id='nextAction${cnt}' style='display:none'>
-            <input type='radio' name="seminarForms[${cnt}].seminarNextAction" value="mailingDocuments" checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'mailingDocuments'}"> 書類郵送
-            <input type='radio' name="seminarForms[${cnt}].seminarNextAction" value="attendingBriefing" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'attendingBriefing'}"> 説明会参加
-            <input type='radio' name="seminarForms[${cnt}].seminarNextAction" value="jobInterview" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'jobInterview'}"> 面接
-            <input type='radio' name="seminarForms[${cnt}].seminarNextAction" value="exam" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'exam'}"> 学科試験
-            <input type='radio' name="seminarForms[${cnt}].seminarNextAction" value="aptitudeTest" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'aptitudeTest'}"> 適性検査
+            <div class="form-group mt-3">
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarNextAction" value="mailingDocuments" checked th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'mailingDocuments'}"> 書類郵送
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarNextAction" value="attendingBriefing" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'attendingBriefing'}"> 説明会参加
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarNextAction" value="jobInterview" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'jobInterview'}"> 面接
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarNextAction" value="exam" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'exam'}"> 学科試験
+                <input class="form-check-input" type='radio' name="seminarForms[${cnt}].seminarNextAction" value="aptitudeTest" th:checked="\${ReportForm.seminarForms[${cnt}].seminarNextAction == 'aptitudeTest'}"> 適性検査
+            </div>
        </div>
     `;
     company.appendChild(companyHeader);
