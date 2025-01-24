@@ -10,7 +10,7 @@ public record ReportSeminarEntity(
         String manager,
         String industry,
         String seminarImpressions,
-        EmploymentIntention seminarIsSelection,
+        EmploymentIntention seminarEmploymentIntention,
         NextAction seminarNextAction
 ) {
     public ReportSeminarForm toSeminarForm(){
@@ -19,7 +19,7 @@ public record ReportSeminarEntity(
             manager,
             industry,
             seminarImpressions,
-            String.valueOf(seminarIsSelection),
+            String.valueOf(seminarEmploymentIntention),
             String.valueOf(seminarNextAction)
         );
     }
