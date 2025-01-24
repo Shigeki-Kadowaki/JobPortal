@@ -29,7 +29,7 @@ public class TeacherController {
     @Autowired
     public HttpSession session;
 
-    public final String sendAddress = "40104kk@saisen.ac.jp";
+    public final String sendAddress = "SaisenJobPortal@gmail.com";
     final Map<String, String> colors = new HashMap<>(){
         {
             put("受理", "list-group-item-success");
@@ -267,4 +267,6 @@ public class TeacherController {
         //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
         return "redirect:/jobportal/teacher/OAList";
     }
+
+
 }

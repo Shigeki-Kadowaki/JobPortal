@@ -67,30 +67,78 @@
                             感想 : [[${entity.briefingImpressions}]]<br>
                         </span>
                         <span th:case="test">
-                            [[${entity.generalKnowledgeNumber}]]<br>
-                            [[${entity.generalKnowledgeType}]]<br>
-                            [[${entity.jobQuestionNumber}]]<br>
-                            [[${entity.jobQuestionType}]]<br>
-                            [[${entity.SPILanguageSystemNumber}]]<br>
-                            [[${entity.SPINonLanguageSystemNumber}]]<br>
-                            [[${entity.SPIOthersNumber}]]<br>
-                            [[${entity.personalityDiagnosisNumber}]]<br>
-                            [[${entity.personalityDiagnosisType}]]<br>
-                            [[${entity.nationalLanguageNumber}]]<br>
-                            [[${entity.nationalLanguageType}]]<br>
-                            [[${entity.mathNumber}]]<br>
-                            [[${entity.mathType}]]<br>
-                            [[${entity.englishNumber}]]<br>
-                            [[${entity.englishType}]]<br>
-                            [[${entity.currentAffairsNumber}]]<br>
-                            [[${entity.currentAffairsType}]]<br>
-                            [[${entity.writingTimer}]]<br>
-                            [[${entity.writingNumberOfCharacters}]]<br>
-                            [[${entity.writingTheme}]]<br>
-                            [[${entity.expertiseNumber}]]<br>
-                            [[${entity.expertiseType}]]<br>
-                            [[${entity.others}]]<br>
-                            [[${entity.testImpressions}]]<br>
+                            <th:block th:if="${not #strings.isEmpty(entity.generalKnowledgeNumber)}">
+                                一般常識問題数 : [[${entity.generalKnowledgeNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.generalKnowledgeType)}">
+                                一般常識問題種類 : [[${entity.generalKnowledgeType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.jobQuestionNumber)}">
+                                職業問題数 : [[${entity.jobQuestionNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.jobQuestionType)}">
+                                職業問題種類 : [[${entity.jobQuestionType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.SPILanguageSystemNumber)}">
+                                SPI言語系問題数 : [[${entity.SPILanguageSystemNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.SPINonLanguageSystemNumber)}">
+                                SPI非言語系問題数 : [[${entity.SPINonLanguageSystemNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.SPIOthersNumber)}">
+                                SPIその他問題数 : [[${entity.SPIOthersNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.personalityDiagnosisNumber)}">
+                                性格診断項目数 : [[${entity.personalityDiagnosisNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.personalityDiagnosisType)}">
+                                性格診断種類 : [[${entity.personalityDiagnosisType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.nationalLanguageNumber)}">
+                                国語問題数 : [[${entity.nationalLanguageNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.nationalLanguageType)}">
+                                国語問題種類 : [[${entity.nationalLanguageType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.mathNumber)}">
+                                数学問題数 : [[${entity.mathNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.mathType)}">
+                                数学問題種類 : [[${entity.mathType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.englishNumber)}">
+                                英語問題数 : [[${entity.englishNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.englishType)}">
+                                英語問題種類 : [[${entity.englishType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.currentAffairsNumber)}">
+                                時事問題数 : [[${entity.currentAffairsNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.currentAffairsType)}">
+                                時事問題種類 : [[${entity.currentAffairsType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.writingTimer)}">
+                                作文試験時間 : [[${entity.writingTimer}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.writingNumberOfCharacters)}">
+                                作文文字数 : [[${entity.writingNumberOfCharacters}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.writingTheme)}">
+                                作文テーマ : [[${entity.writingTheme}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.expertiseNumber)}">
+                                専門知識問題数 : [[${entity.expertiseNumber}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.expertiseType)}">
+                                専門知識種類 : [[${entity.expertiseType}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.others)}">
+                                その他 : [[${entity.others}]]<br>
+                            </th:block>
+                            <th:block th:if="${not #strings.isEmpty(entity.testImpressions)}">
+                                感想 : [[${entity.testImpressions}]]<br>
+                            </th:block>
                         </span>
                         <span th:case="informalCeremony">
                             感想 : [[${entity.informalCeremonyImpressions}]]<br>
@@ -99,8 +147,8 @@
                              感想 : [[${entity.trainingImpressions}]]<br>
                         </span>
                         <span th:case="jobOther">
-                            [[${entity.activityContent}]]<br>
-                            [[${entity.othersImpressions}]]<br>
+                            内容 : [[${entity.activityContent}]]<br>
+                            感想 : [[${entity.othersImpressions}]]<br>
                         </span>
                         <span th:case="seminar">
                             <div th:each="seminar, stat : ${entity.getSeminarForms()}">
@@ -113,10 +161,6 @@
                                         担当者名 : [[${seminar.manager}]]<br>
                                         業種 : [[${seminar.industry}]]<br>
                                         感想 : [[${seminar.seminarImpressions}]]<br>
-<!--                                        今後の受験 : [[${seminar.seminarEmploymentIntention.getJapaneseName()}]]<br>-->
-<!--                                        <th:block th:if="${seminar.seminarNextAction != null}">-->
-<!--                                            [[${seminar.seminarNextAction.getJapaneseName()}]]<br>-->
-<!--                                        </th:block>-->
                                     </div>
                                 </div>
                             </div>

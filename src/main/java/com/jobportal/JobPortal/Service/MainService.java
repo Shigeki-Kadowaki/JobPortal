@@ -1,5 +1,7 @@
 package com.jobportal.JobPortal.Service;
 
+import com.jobportal.JobPortal.Controller.API.OASubject;
+import com.jobportal.JobPortal.Controller.API.OASubjectDTO;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Controller.Student;
@@ -1201,5 +1203,14 @@ public class MainService {
 
     public Integer countSearchReportLogs(String companyName) {
         return repository.countReportInfosByCompanyName(companyName);
+    }
+
+    public OASubject getOASubject() {
+        return repository.selectOASubject();
+    }
+
+    public void putOASubject(OASubject subject) {
+
+        repository.updateOASubject(new OASubjectDTO(subject.studentId(), subject.officialAbsenceDate(), subject.period()));
     }
 }
