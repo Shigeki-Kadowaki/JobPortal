@@ -53,7 +53,7 @@ public class StudentInterceptor implements HandlerInterceptor {
             response.sendRedirect("/jobportal/");
             return false;
         }
-        request.setAttribute("student",student);
+        request.setAttribute("student", student);
         return true;
     }
 
