@@ -93,6 +93,7 @@
         <div class="text-center my-3">
             <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=teacher}">担任承認モード</a>
             <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
+            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/reportApproval}">キャリア報告書承認モード</a>
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination pagination-lg d-flex justify-content-center">
@@ -183,7 +184,6 @@
         <th:block th:if="${mode == 'approval' && mainList == null}">
             <h3 class="text-center">全て承認済みです</h3>
         </th:block>
-    </form>
     <br><br><br><br><br>
 </section>
 </body>
