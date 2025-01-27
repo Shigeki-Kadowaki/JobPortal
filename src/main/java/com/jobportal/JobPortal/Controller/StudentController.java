@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,15 +35,6 @@ public class StudentController {
     private final MainService service;
     @Autowired
     public final HttpSession session;
-    public final Map<String, String> colors = new HashMap<>(){
-        {
-            put("受理", "list-group-item-success");
-            put("未受理", "list-group-item-warning");
-            put("却下", "list-group-item-danger");
-            put("未提出", "list-group-item-dark");
-            put("不要", "list-group-item-light");
-        }
-    };
 //    public final Subject[][] subjects = {
 //        {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
 //        {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
@@ -62,9 +52,9 @@ public class StudentController {
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-            //student.setGno(40104);
+            student.setGno(40104);
             //ssoから取得用
-            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
+            //student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
                 return "redirect:/student/" + student.getGno();
             }
