@@ -71,6 +71,11 @@ public class TeacherController {
     public String OAAccepted(@PathVariable("OAId") Integer OAId, @RequestParam(value = "reportRequired", required = false, defaultValue = "unnecessary")String reportRequired, @RequestParam("teacherType") String teacherType, @RequestParam("careerCheckRequired") boolean careerCheckRequired) {
         service.updateCheck(OAId, teacherType, true);
         Integer reportId = service.getReportId(OAId);
+        /*
+        * キャリアチェックで報告書不要が選択された場合、報告書のステータスを「不要」に、公欠届の報告書必要フラグを「false」にする
+        *
+        * それぞれ、公欠届と報告書のステータスをチェックする。
+        * */
         if(teacherType.equals("career") && reportRequired.equals("unnecessary")) {
             service.updateReportStatus(reportId, "unnecessary");
             service.updateReportRequired(OAId, false);
@@ -80,7 +85,6 @@ public class TeacherController {
         } else {
             service.checkOAAndReportCondition(OAId, reportId);
         }
-        //service.updateReportStatus(reportId, reportRequired);
         return "redirect:/jobportal/teacher/OAList";
     }
     //OA却下
@@ -134,7 +138,7 @@ public class TeacherController {
         return "redirect:/jobportal/teacher";
     }
 
-    //例外時間割
+    //例外時間割ページ表示
     @GetMapping("/teacher/exceptionDate")
     public String exceptionDate(@ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, Model model) {
         List<ExceptionDateEntity> exceptionDateList = service.getExceptionDates();
@@ -150,24 +154,20 @@ public class TeacherController {
     public String postExceptionDate(@Validated @ModelAttribute("exceptionDate") ExceptionDateForm exceptionDate, BindingResult bindingResult, Model model) {
         model.addAttribute("exceptionDate", exceptionDate);
         if(bindingResult.hasErrors()){
-            System.out.println("error");
             return "exceptionDate";
         }
         service.createExceptionDate(exceptionDate.toLocalDate());
-        System.out.println("success");
         return "redirect:/jobportal/teacher/exceptionDate";
     }
 
     //例外日削除
     @DeleteMapping ("/teacher/exceptionDate")
     public String deleteExceptionDate(@RequestParam("id") Integer id) {
-        System.out.println(id);
-        System.out.println("delete");
         service.deleteExceptionDate(id);
         return "redirect:/jobportal/teacher/exceptionDate";
     }
 
-    //学生検索
+    //学生検索ページ
     @GetMapping("/teacher/studentSearch")
     public String showStudentSearch(@ModelAttribute("studentId") @RequestParam(value = "studentId", required = false) Integer studentId, Model model) {
         model.addAttribute("studentId", studentId);
@@ -185,13 +185,16 @@ public class TeacherController {
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         return service.getOAInfo(mainInfoEntity, dateInfoEntities, OAId, model, "teacher_", "search");
     }
-
+    //公欠届一括承認モード
     @GetMapping("/teacher/approvalMode")
     public String showTeacherApprovalMode(@RequestParam("teacherType") String teacherType, Model model) {
         TeacherOASearchForm form;
+        //送られてきた先生タイプによって別々の検索Formを作る。
         if(teacherType.equals("teacher")){
+            //公欠届ステータスが「未受理」で、担任チェックが「未承認」のもの
             form = new TeacherOASearchForm(0, "all", List.of("unaccepted"), "false", null, true, List.of("unaccepted"), null);
         }else{
+            //公欠届ステータスが「未受理」で、キャリアチェックが「未承認」のもの
             form = new TeacherOASearchForm(0, "all", List.of("unaccepted"), null, "false", true, List.of("unaccepted"), null);
         }
         List<OAListEntity> listEntity = service.teacherFindAllOAs(form, 1, 100);
@@ -204,16 +207,15 @@ public class TeacherController {
         return "teacher_OAList";
     }
 
-    //一括承認
+    //一括承認ポスト
     @PostMapping("/teacher/approvalMode")
     public String postTeacherApprovalMode(ApprovalForm approval, Model model){
-        System.out.println(approval);
         approval.getApproval().forEach((k,v)->{
             service.updateCheck(Integer.parseInt(k), approval.getTeacherType(), true);
         });
         return showTeacherApprovalMode(approval.getTeacherType(), model);
     }
-
+    //報告書詳細ページ
     @GetMapping("/teacher/report/{reportId}")
     public String showStudentReportInfo(@PathVariable("reportId") Integer reportId, Model model){
         ReportInfoEntity mainInfo = service.getReportInfo(reportId);

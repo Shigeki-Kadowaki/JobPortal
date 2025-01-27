@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public record OASubjectDTO(
         Integer studentId,
-                           LocalDate officialAbsenceDate,
-        Integer period) {
+        LocalDate officialAbsenceDate,
+        Integer period
+) {
 }
