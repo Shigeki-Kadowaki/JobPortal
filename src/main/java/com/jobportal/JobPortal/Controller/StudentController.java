@@ -29,7 +29,6 @@ import static com.jobportal.JobPortal.Service.ReportType.seminar;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/jobportal")
 public class StudentController {
 
     private final MailController mailController;
@@ -46,13 +45,13 @@ public class StudentController {
             put("不要", "list-group-item-light");
         }
     };
-    public final Subject[][] subjects = {
-        {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
-        {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
-        {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
-        {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
-        {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
-    };
+//    public final Subject[][] subjects = {
+//        {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
+//        {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
+//        {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
+//        {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
+//        {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
+//    };
 
     @GetMapping("/dockerTest")
     public String dockerTest(Model model) {
@@ -63,13 +62,13 @@ public class StudentController {
     public String showFormAgain(RedirectAttributes r, HttpServletResponse response, HttpServletRequest request, @ModelAttribute("student") Student student, Model model) throws IOException {
             Map<String, String> person = service.getPersonInfo(response, request);
             //localでテスト用
-            student.setGno(40104);
+            //student.setGno(40104);
             //ssoから取得用
-//            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
+            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
-                return "redirect:/jobportal/student/" + student.getGno();
+                return "redirect:/student/" + student.getGno();
             }
-            else return "redirect:/jobportal/teacher/";
+            else return "redirect:/teacher/";
     }
 
     /*
@@ -112,7 +111,7 @@ public class StudentController {
         }else {
             service.insertDesired(studentId, business, occupation);
         }
-        return "redirect:/jobportal/student/{studentId}";
+        return "redirect:/student/{studentId}";
     }
 
     /*
@@ -129,7 +128,7 @@ public class StudentController {
         model.addAttribute("mode", "create");
         Student student = (Student) request.getAttribute("student");
         //学校で使う用
-        //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
+        Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
@@ -145,7 +144,7 @@ public class StudentController {
      * 時間割と例外授業に関する処理はshowForm↑と同じ。
      * */
     @GetMapping("/student/{studentId}/OAList/{OAId}/OAEditForm")
-    public String showEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
+    public String showEditForm(HttpServletRequest request, @PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         Map<String, List<String>> OAPeriods = service.toOAPeriods(dateInfoEntities);
@@ -182,6 +181,8 @@ public class StudentController {
         model.addAttribute("OAId", mainInfoDTO.officialAbsenceId());
         model.addAttribute("mode", "edit");
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
+        Student student = (Student) request.getAttribute("student");
+        Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
         model.addAttribute("OAPeriods", OAPeriods);
@@ -287,7 +288,7 @@ public class StudentController {
     @DeleteMapping("/student/{studentId}/OAList/{OAId}")
     public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
         service.deleteOA(OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
 
     /*
@@ -589,7 +590,7 @@ public class StudentController {
     @DeleteMapping("/student/{studentId}/report/{reportId}")
     public String deleteReport(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId){
         service.deleteReports(reportId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 報告書一覧ページ(会社検索)

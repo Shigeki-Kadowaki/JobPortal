@@ -47,13 +47,13 @@ public class MainService {
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     final Integer pageSize = 10;
-    public final Subject[][] subjects = {
-            {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
-            {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
-            {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
-            {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
-            {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
-    };
+//    public final Subject[][] subjects = {
+//            {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
+//            {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
+//            {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
+//            {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
+//            {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
+//    };
 
     public final Map<String, String> colors = new HashMap<>(){
         {
@@ -560,8 +560,8 @@ public class MainService {
     public String semesterBetween(LocalDate today) {
         int month = today.getMonthValue();
         //4月から9月の間
-        if( 4 <= month && month <= 9) return "second";
-        return "first";
+        if( 4 <= month && month <= 9) return "first";
+        return "second";
     }
 
     public List<TimeTableEntity> getTimeTable(ClassificationForm classification) {
@@ -657,6 +657,7 @@ public class MainService {
         classification.setClassroom(student.getClassroom());
         classification.setCourse(student.getCourse());
         classification.setSemester(semester);
+        classification.setYear(student.getGno() / 1000);
 
         return classification;
     }
@@ -715,7 +716,7 @@ public class MainService {
         model.addAttribute("mode", "create");
         List<ExceptionDateEntity> exceptionDates = getExceptionDates();
         //学校で使う用
-        //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
+        Subject[][] subjects = getSubjectArr(setClassification(student));
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
         if(bindingResult.hasErrors()){
@@ -751,7 +752,7 @@ public class MainService {
                 createOther(otherEntity);
             }
         }
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 公欠届List取得メソッド
@@ -888,7 +889,7 @@ public class MainService {
             }
         }
         updateOAStatus(OAId, "unaccepted");
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 先生側からの公欠届List取得メソッド
@@ -978,7 +979,7 @@ public class MainService {
                 repository.insertSeminarReport(form, reportId);
             }
         }
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 報告書ステータス変更メソッド
@@ -1159,7 +1160,7 @@ public class MainService {
             }
         }
         updateReportStatus(reportId, "unaccepted");
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
 
     private void updateReportHistories(Integer reportId, ReportForm form) {

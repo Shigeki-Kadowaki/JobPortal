@@ -2,11 +2,11 @@
 <html lang="ja"
       layout:decorate="~{layout/layout}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
   <meta charset="UTF-8">
   <title>授業分類</title>
-  <script th:src="@{/classificationSelect.js}"></script>
+  <script th:src="@{/jobportal/js/classificationSelect.js}"></script>
 </head>
 <body>
 <section layout:fragment="content">
@@ -15,6 +15,9 @@
   </script>
   <form th:action="@{/jobportal/teacher/classification}" th:method="post" th:object="${classification}">
     <div class="w-50 mx-auto">
+      <span th:errors="*{year}"></span>
+      <h3>何期生</h3>
+      <input class="form-control" type="number" placeholder="何期生" name="year" th:value="*{year}">
       <h3>学年</h3>
       <span th:errors="*{grade}"></span>
       <select class="form-select" id="grade" name="grade" aria-label="Default select example">

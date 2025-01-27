@@ -18,17 +18,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(StudentInterceptor())
-                .addPathPatterns("/**/student/**")
+                .addPathPatterns("/student/**")
                 .excludePathPatterns(
                         "/index",
-                        "/*.css",
-                        "/*.js"
+                        "/style/**",
+                        "/static/**",
+                        "**/style.css",
+                        "**.js"
                         );
         registry.addInterceptor(TeacherInterceptor())
-                .addPathPatterns("/**/teacher/**")
+                .addPathPatterns("/teacher/**")
                 .excludePathPatterns(
-                        "/*.css",
-                        "/*.js"
+                        "/style/**",
+                        "/static/**",
+                        "**/style.css",
+                        "**.js"
                 );
     }
 }

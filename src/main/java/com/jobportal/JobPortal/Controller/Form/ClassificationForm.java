@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 public class ClassificationForm {
     @NotNull(message = "入力してください")
+    Integer year;
+    @NotNull(message = "入力してください")
     Integer grade;
     @NotEmpty(message = "入力してください")
     String classroom;

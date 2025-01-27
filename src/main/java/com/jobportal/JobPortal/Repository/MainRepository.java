@@ -669,7 +669,7 @@ public interface MainRepository {
     <script>
         INSERT INTO time_tables VALUES
             <foreach item='date' collection='timeTableList' separator=','>
-                (#{timeTableInfo.grade}, #{timeTableInfo.classroom}, #{timeTableInfo.course}, #{timeTableInfo.semester}, #{date.weekdayNumber}, #{date.period}, #{date.subjectId})
+                (#{timeTableInfo.grade}, #{timeTableInfo.classroom}, #{timeTableInfo.course}, #{timeTableInfo.semester}, #{date.weekdayNumber}, #{date.period}, #{date.subjectId}, #{timeTableInfo.year})
             </foreach>
         ;
     </script>
@@ -680,10 +680,11 @@ public interface MainRepository {
             SELECT
                 weekday_number,
                 period,
-                subject_id
+                subject_id,
+                year
             FROM time_tables
             WHERE
-                grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester};
+                grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester} AND year = #{classification.year};
     """)
     List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
 

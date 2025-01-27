@@ -4,18 +4,16 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <script th:src="@{/reportForm.js}"></script>
+    <script th:src="@{/jobportal/js/reportForm.js}"></script>
     <meta charset="UTF-8">
-    <title>createReport</title>
+    <title th:text="${mode == 'create' ? '報告書作成' : '報告書再提出'}"></title>
 </head>
 <body>
     <section layout:fragment="content">
-        [[${mode}]]
         <form th:action="${mode == 'create'} ?
             @{/jobportal/student/{studentId}/reportCreationForm/{oaId} (studentId=${studentId},oaId=${oaId})} :
             @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
         th:method="post" th:object="${ReportForm}">
-            [[${reason}]]
             <div th:class="mt-3">
                 <th:block th:if="${reason != 'seminar'}">
                 <h1><label>訪問企業:</label><label th:text="${jobSearch.companyName}"></label></h1>
@@ -347,23 +345,23 @@
 
                     </span>
                     </th:block>
-                    <div id="isSelection">
+                    <div id="employmentIntention">
                         <div class="form-group mt-3">
                             <h5 class="ms-3">
                                 <label class="form-check-label" for="selectDoNot">
-                                    <input class="form-check-input" type="radio" id="selectDoNot" name="isSelection" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'doNot' or ReportForm.isSelection == null}">
+                                    <input class="form-check-input" type="radio" id="selectDoNot" name="employmentIntention" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'doNot' or ReportForm.employmentIntention == null}">
                                     しない
                                 </label>
                                 <label class="form-check-label" for="selectUnderConsideration">
-                                    <input class="form-check-input" type="radio" id="selectUnderConsideration" name="isSelection" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'underConsideration'}">
+                                    <input class="form-check-input" type="radio" id="selectUnderConsideration" name="employmentIntention" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'underConsideration'}">
                                     検討中
                                 </label>
                                 <label class="form-check-label" for="selectTakingExam">
-                                    <input class="form-check-input" type="radio" id="selectTakingExam" name="isSelection" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.isSelection == 'takingExam'}">
+                                    <input class="form-check-input" type="radio" id="selectTakingExam" name="employmentIntention" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.employmentIntention == 'takingExam'}">
                                     受験する
                                 </label>
                                 <label class="form-check-label" for="selectHasOffer">
-                                    <input class="form-check-input" type="radio" id="selectHasOffer" name="isSelection" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'hasOffer'}">
+                                    <input class="form-check-input" type="radio" id="selectHasOffer" name="employmentIntention" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'hasOffer'}">
                                     内定済み
                                 </label>
                             </h5>
@@ -429,9 +427,9 @@
             </div>
 
             <div class="d-flex justify-content-between">
-                <a type="button" th:href="${mode == 'create'} ?
+                <a th:href="${mode == 'create'} ?
                 @{/jobportal/student/{studentId}/OAList (studentId=${studentId})} :
-                @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
+                @{/jobportal/student/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
                    class="btn btn-primary">中止</a>
                 <div class="briefing">
                     <div class="text-end">

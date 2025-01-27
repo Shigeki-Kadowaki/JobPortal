@@ -11,6 +11,7 @@ import java.util.Map;
 @Data
 @RequiredArgsConstructor
 public class TimeTableInfoForm {
+    Integer year;
     Integer grade;
     String classroom;
     String course;
@@ -23,7 +24,7 @@ public class TimeTableInfoForm {
             int period = 1;
             for(var subjectId : subjectIds) {
                 if(subjectId != null) {
-                    list.add(new TimeTableEntity(weekdayNumber, period, subjectId));
+                    list.add(new TimeTableEntity(weekdayNumber, period, subjectId, year));
                 }
                 period++;
             }

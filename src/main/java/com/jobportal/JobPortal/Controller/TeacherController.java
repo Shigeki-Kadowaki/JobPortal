@@ -21,7 +21,6 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/jobportal")
 public class TeacherController {
     private final MailController mailController;
     @Autowired
@@ -85,14 +84,14 @@ public class TeacherController {
         } else {
             service.checkOAAndReportCondition(OAId, reportId);
         }
-        return "redirect:/jobportal/teacher/OAList";
+        return "redirect:/teacher/OAList";
     }
     //OA却下
     @PutMapping(value = "/teacher/{OAId}", params = "rejection")
     public String OAUnaccepted(HttpServletRequest request, @PathVariable("OAId") Integer OAId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
         service.updateOAStatus(OAId,"rejection");
         //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
-        return "redirect:/jobportal/teacher/OAList";
+        return "redirect:/teacher/OAList";
     }
 
     //授業区分入力フォーム表示
@@ -135,7 +134,7 @@ public class TeacherController {
 //            throw new RuntimeException(e);
 //        }
 
-        return "redirect:/jobportal/teacher";
+        return "redirect:/teacher";
     }
 
     //例外時間割ページ表示
@@ -157,14 +156,14 @@ public class TeacherController {
             return "exceptionDate";
         }
         service.createExceptionDate(exceptionDate.toLocalDate());
-        return "redirect:/jobportal/teacher/exceptionDate";
+        return "redirect:/teacher/exceptionDate";
     }
 
     //例外日削除
     @DeleteMapping ("/teacher/exceptionDate")
     public String deleteExceptionDate(@RequestParam("id") Integer id) {
         service.deleteExceptionDate(id);
-        return "redirect:/jobportal/teacher/exceptionDate";
+        return "redirect:/teacher/exceptionDate";
     }
 
     //学生検索ページ
@@ -260,14 +259,14 @@ public class TeacherController {
     @PutMapping(value="/teacher/report/{reportId}", params = "acceptance")
     public String reportAcceptance(@PathVariable("reportId") Integer reportId) {
         service.updateReportStatus(reportId, "acceptance");
-        return "redirect:/jobportal/teacher/OAList";
+        return "redirect:/teacher/OAList";
     }
     //report却下
     @PutMapping(value = "/teacher/report/{reportId}", params = "rejection")
     public String reportUnaccepted(HttpServletRequest request, @PathVariable("reportId") Integer reportId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
         service.updateReportStatus(reportId, "rejection");
         //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
-        return "redirect:/jobportal/teacher/OAList";
+        return "redirect:/teacher/OAList";
     }
 
 
