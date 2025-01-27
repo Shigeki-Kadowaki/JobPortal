@@ -26,18 +26,6 @@ public record OAListEntity (
         Integer seminarVisitStartHour,
         Integer seminarVisitStartMinute
 ){
-
-//    public OAListDTO toListDTO() {
-//        return new OAListDTO(
-//                officialAbsenceId,
-//                studentId,
-//                status.getJapaneseName(),
-//                reason.getJapaneseName(),
-//                existsReport(reportStatus),
-//                MainService.dateFormat(startDate),
-//                MainService.dateFormat(endDate)
-//        );
-//    }
     public String existsReport(OAStatus status) {
         if(status == null){
             return "未提出";
@@ -45,11 +33,4 @@ public record OAListEntity (
             return status.getJapaneseName();
         }
     }
-//    public String getStatus(OAStatus status) {
-//        Map<OAStatus,String> map = new HashMap<>();
-//        map.put(acceptance,"受理");
-//        map.put(unaccepted,"未受理");
-//        map.put(rejection,"却下");
-//        return map.get(status);
-//    }
 }

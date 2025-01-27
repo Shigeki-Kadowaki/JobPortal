@@ -1,5 +1,7 @@
 package com.jobportal.JobPortal.Repository;
 
+import com.jobportal.JobPortal.Controller.API.OASubject;
+import com.jobportal.JobPortal.Controller.API.OASubjectDTO;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
 import com.jobportal.JobPortal.Service.Entity.*;
@@ -1212,7 +1214,8 @@ public interface MainRepository {
             #{reportId},
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{reportId}) + 1,
             #{form.activityTime},
-            CURRENT_DATE
+            CURRENT_DATE,
+            #{form.companyName}
         );
     """)
     void updateReportHistories(@Param("reportId") Integer reportId,@Param("form") ReportForm form);
@@ -1502,4 +1505,24 @@ public interface MainRepository {
         DELETE FROM reports WHERE official_absence_id = #{OAId};
     """)
     void deleteReportMain(@Param("OAId") Integer OAId);
+
+    @Select("""
+        SELECT
+            student_id,
+            official_absence_date,
+            period
+        FROM approved_leave_requests
+        WHERE reflected_flag = false
+        LIMIT 1;
+    """)
+    OASubject selectOASubject();
+
+    @Update("""
+        UPDATE approved_leave_requests
+        SET reflected_flag = true
+        WHERE student_id = #{subject.studentId}
+        AND official_absence_date = #{subject.officialAbsenceDate}
+        AND period = #{subject.period};
+    """)
+    void updateOASubject(@Param("subject") OASubjectDTO subject);
 }
