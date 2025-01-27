@@ -6,6 +6,7 @@
 <head>
     <script th:src="@{/reportForm.js}"></script>
     <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/style.css}">
     <title>createReport</title>
 </head>
 <body>
@@ -60,10 +61,8 @@
                                         [[${ReportForm.briefingImpressions}]]
                                     </textarea>
                                 </div>
-                                <div class="mt-auto">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary" name="briefing">説明会</button>
-                                    </div>
+                                <div class="fixed_btn">
+                                    <button type="submit" class="btn btn-primary" name="briefing">説明会</button>
                                 </div>
                             </div>
                         </span>
@@ -249,8 +248,9 @@
                                         [[${ReportForm.testImpressions}]]</textarea>
                                     </div>
                                 </div>
-<!--                            </div>-->
-<!--                            <div class="prev">-->
+                            <div class="fixed_btn">
+                                <button type="submit" class="btn btn-primary" name="test" >試験</button>
+                            </div>
                         </span>
                         <span th:case="jobInterview">
                             <input type="hidden" name="reason" value="jobInterview">
@@ -311,7 +311,7 @@
                                         <h3><label class="form-label">感想</label></h3>
                                         <textarea class="form-control" name="interviewImpressions" placeholder="感想">[[${ReportForm.interviewImpressions}]]</textarea>
                                     </div>
-                                    <div class="text-end">
+                                    <div class="fixed_btn">
                                         <button type="submit" class="btn btn-primary" name="jobInterview">面接</button>
                                     </div>
                                 </div>
@@ -322,6 +322,9 @@
                                 <h3><label class="form-label" for="informalCeremony">感想</label></h3>
                                 <textarea class="form-control" id="informalCeremony" name="informalCeremonyImpressions" placeholder="感想">[[${ReportForm.informalCeremonyImpressions}]]</textarea>
                             </div>
+                            <div class="fixed_btn">
+                                <button type="submit" class="btn btn-primary" name="informalCeremony">内定式</button>
+                            </div>
                         </span>
                         <span th:case="training">
                             <input type="hidden" name="reason" value="training">
@@ -329,7 +332,9 @@
                                 <h3><label>感想</label></h3>
                                 <textarea class="form-control" name="trainingImpressions" placeholder="感想">[[${ReportForm.trainingImpressions}]]</textarea>
                             </div>
-
+                            <div class="fixed_btn">
+                                <button type="submit" class="btn btn-primary" name="training">研修</button>
+                            </div>
                         </span>
                     <span th:case="jobOther">
                         <input type="hidden" name="reason" value="jobOther">
@@ -341,29 +346,30 @@
                             <h3>
                                 <label class="form-label mt-3">感想</label>
                             </h3>
-                        <textarea class="form-control" name="otherImpressions" placeholder="感想">[[${ReportForm.othersImpressions}]]</textarea>
-
+                            <textarea class="form-control" name="otherImpressions" placeholder="感想">[[${ReportForm.othersImpressions}]]</textarea>
                         </div>
-
+                        <div class="fixed_btn">
+                            <button type="submit" class="btn btn-primary" name="jobOther">その他</button>
+                        </div>
                     </span>
                     </th:block>
                     <div id="isSelection">
                         <div class="form-group mt-3">
                             <h5 class="ms-3">
                                 <label class="form-check-label" for="selectDoNot">
-                                    <input class="form-check-input" type="radio" id="selectDoNot" name="isSelection" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'doNot' or ReportForm.isSelection == null}">
+                                    <input class="form-check-input" type="radio" id="selectDoNot" name="employmentIntention" value="doNot" checked onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'doNot' or ReportForm.employmentIntention == null}">
                                     しない
                                 </label>
                                 <label class="form-check-label" for="selectUnderConsideration">
-                                    <input class="form-check-input" type="radio" id="selectUnderConsideration" name="isSelection" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'underConsideration'}">
+                                    <input class="form-check-input" type="radio" id="selectUnderConsideration" name="employmentIntention" value="underConsideration" onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'underConsideration'}">
                                     検討中
                                 </label>
                                 <label class="form-check-label" for="selectTakingExam">
-                                    <input class="form-check-input" type="radio" id="selectTakingExam" name="isSelection" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.isSelection == 'takingExam'}">
+                                    <input class="form-check-input" type="radio" id="selectTakingExam" name="employmentIntention" value="takingExam" onclick="visibleNextAction()" th:checked="${ReportForm.employmentIntention == 'takingExam'}">
                                     受験する
                                 </label>
                                 <label class="form-check-label" for="selectHasOffer">
-                                    <input class="form-check-input" type="radio" id="selectHasOffer" name="isSelection" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.isSelection == 'hasOffer'}">
+                                    <input class="form-check-input" type="radio" id="selectHasOffer" name="employmentIntention" value="hasOffer" onclick="hiddenNextAction()" th:checked="${ReportForm.employmentIntention == 'hasOffer'}">
                                     内定済み
                                 </label>
                             </h5>
@@ -425,6 +431,7 @@
                     <button type="button" class="btn btn-primary mt-2" onclick="addElement()">企業を追加</button>
                     <div class="mt-3" id="visitedCompany">
                     </div>
+                    <button type="submit" class="btn btn-primary position-fixed" name="reportSeminar" style="position: absolute;right: 120px;bottom: 87px;">セミナー</button>
                 </th:block>
             </div>
 
@@ -432,37 +439,7 @@
                 <a type="button" th:href="${mode == 'create'} ?
                 @{/jobportal/student/{studentId}/OAList (studentId=${studentId})} :
                 @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
-                   class="btn btn-primary">中止</a>
-                <div class="briefing">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary" name="briefing">説明会</button>
-                    </div>
-                </div>
-                <div class="test">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary" name="test">試験</button>
-                    </div>
-                </div>
-                <div class="informalCeremony">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary" name="informalCeremony">内定式</button>
-                    </div>
-                </div>
-                <div class="training">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary" name="training">研修</button>
-                    </div>
-                </div>
-                <div class="jobOther">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary" name="jobOther">その他</button>
-                    </div>
-                </div>
-                <div class="seminar">
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary" name="reportSeminar">セミナー</button>
-                    </div>
-                </div>
+                   class="btn btn-danger">中止</a>
             </div>
         </form>
     </section>

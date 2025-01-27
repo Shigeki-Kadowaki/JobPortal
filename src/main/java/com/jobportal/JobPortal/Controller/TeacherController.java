@@ -203,6 +203,7 @@ public class TeacherController {
             model.addAttribute("mainList", listDTO);
         }
         model.addAttribute("teacherType", teacherType);
+
         model.addAttribute("mode", "approval");
         return "teacher_OAList";
     }
@@ -270,5 +271,12 @@ public class TeacherController {
         return "redirect:/jobportal/teacher/OAList";
     }
 
-
+    @GetMapping("/teacher/reportApproval")
+    public String companyLogs(Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName, @RequestParam(value = "page", defaultValue = "1") Integer page){
+        model.addAttribute("companyName", companyName);
+        model.addAttribute("mode", "reportApproval");
+        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName, page);
+        model.addAttribute("logEntities", logEntities);
+        return "reportLogs";
+    }
 }
