@@ -1463,14 +1463,15 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            AND h.company_name LIKE concat('%',#{companyName},'%')
-            OR s.company_name LIKE concat('%',#{companyName},'%')
+            (AND h.company_name LIKE concat('%',#{companyName},'%')
+            OR s.company_name LIKE concat('%',#{companyName},'%'))
         </if>
+        AND r.status = #{status}
         GROUP BY o.official_absence_id, o.student_id, report_id, student_id, r.status, r.reason, h.submitted_date, h.version,o.student_email, activity_time,f.employment_intention, f.next_action, h.company_name
         ORDER BY report_id;
         </script>
     """)
-    List<ReportInfoEntity> selectReportInfosByCompanyName(@Param("companyName") String companyName, @Param("page") Integer page, @Param("maxPage") Integer maxPage);
+    List<ReportInfoEntity> selectReportInfosByCompanyName(@Param("companyName") String companyName, @Param("page") Integer page, @Param("maxPage") Integer maxPage,@Param("status") String status);
 
     @Select("""
         <script>
@@ -1493,13 +1494,14 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            AND h.company_name LIKE concat('%',#{companyName},'%')
-            OR s.company_name LIKE concat('%',#{companyName},'%')
+            (AND h.company_name LIKE concat('%',#{companyName},'%')
+            OR s.company_name LIKE concat('%',#{companyName},'%'))
         </if>
+        AND r.status = #{status}
         ;
         </script>
     """)
-    Integer countReportInfosByCompanyName(@Param("companyName") String companyName);
+    Integer countReportInfosByCompanyName(@Param("companyName") String companyName,@Param("status") String status);
 
     @Delete("""
         DELETE FROM reports WHERE official_absence_id = #{OAId};
