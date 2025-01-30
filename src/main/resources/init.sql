@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.6
--- Dumped by pg_dump version 16.6
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -48,6 +48,21 @@ ALTER TYPE public.status OWNER TO postgres;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: approved_leave_requests; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.approved_leave_requests (
+    official_absence_id integer NOT NULL,
+    student_id integer,
+    official_absence_date date,
+    period integer,
+    reflected_flag boolean
+);
+
+
+ALTER TABLE public.approved_leave_requests OWNER TO postgres;
 
 --
 -- Name: attendance_ban_histories; Type: TABLE; Schema: public; Owner: postgres
@@ -143,7 +158,7 @@ ALTER TABLE public.exception_dates OWNER TO postgres;
 
 CREATE TABLE public.job_search_histories (
     official_absence_id integer,
-    work character varying(20),
+    work character varying(40),
     company_name character varying(60),
     address character varying(150),
     version integer,
@@ -244,13 +259,168 @@ CREATE TABLE public.other_histories (
 ALTER TABLE public.other_histories OWNER TO postgres;
 
 --
+-- Name: report_briefing_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_briefing_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    briefing_content text,
+    impressions text
+);
+
+
+ALTER TABLE public.report_briefing_histories OWNER TO postgres;
+
+--
+-- Name: report_exam_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_exam_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    general_knowledge_type character varying(64),
+    national_language_number integer,
+    national_language_type character varying(64),
+    math_number integer,
+    math_type character varying(64),
+    english_number integer,
+    english_type character varying(64),
+    current_affairs_number integer,
+    current_affairs_type character varying(64),
+    writing_timer integer,
+    writing_number_of_characters integer,
+    writing_theme character varying(64),
+    expertise_number integer,
+    expertise_type character varying(64),
+    job_question_number integer,
+    job_question_type character varying(64),
+    spi_language_system_number integer,
+    spi_non_language_system_number integer,
+    spi_others_number integer,
+    personality_diagnosis_number integer,
+    personality_diagnosis_type character varying(64),
+    others text,
+    impressions text,
+    general_knowledge_number integer
+);
+
+
+ALTER TABLE public.report_exam_histories OWNER TO postgres;
+
+--
+-- Name: report_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    activity_time integer,
+    submitted_date date,
+    company_name character varying(64)
+);
+
+
+ALTER TABLE public.report_histories OWNER TO postgres;
+
+--
+-- Name: report_informal_ceremony_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_informal_ceremony_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    impressions text
+);
+
+
+ALTER TABLE public.report_informal_ceremony_histories OWNER TO postgres;
+
+--
+-- Name: report_interview_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_interview_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    interviewer_number integer,
+    interview_type character varying(32),
+    interview_content text,
+    impressions text
+);
+
+
+ALTER TABLE public.report_interview_histories OWNER TO postgres;
+
+--
+-- Name: report_job_future_selection; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_job_future_selection (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    employment_intention character varying(32),
+    next_action character varying(32)
+);
+
+
+ALTER TABLE public.report_job_future_selection OWNER TO postgres;
+
+--
+-- Name: report_other_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_other_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    activity_content character varying(32),
+    impressions text
+);
+
+
+ALTER TABLE public.report_other_histories OWNER TO postgres;
+
+--
+-- Name: report_seminar_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_seminar_histories (
+    report_id integer NOT NULL,
+    company_id integer NOT NULL,
+    version integer NOT NULL,
+    company_name character varying(32),
+    manager character varying(32),
+    industry character varying(32),
+    impressions text,
+    employment_intention character varying(32),
+    next_action character varying(32)
+);
+
+
+ALTER TABLE public.report_seminar_histories OWNER TO postgres;
+
+--
+-- Name: report_training_histories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.report_training_histories (
+    report_id integer NOT NULL,
+    version integer NOT NULL,
+    impressions text
+);
+
+
+ALTER TABLE public.report_training_histories OWNER TO postgres;
+
+--
 -- Name: reports; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.reports (
-    official_absence_id integer,
+    official_absence_id integer NOT NULL,
     report_id integer NOT NULL,
-    status character varying(20) DEFAULT 'unsubmitted'::character varying
+    status character varying(32),
+    reason character varying(32)
 );
 
 
@@ -338,7 +508,8 @@ CREATE TABLE public.time_tables (
     semester character varying(10),
     weekday_number integer,
     period integer,
-    subject_id integer
+    subject_id integer,
+    year integer
 );
 
 
@@ -366,6 +537,14 @@ ALTER TABLE ONLY public.reports ALTER COLUMN report_id SET DEFAULT nextval('publ
 
 
 --
+-- Data for Name: approved_leave_requests; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.approved_leave_requests (official_absence_id, student_id, official_absence_date, period, reflected_flag) FROM stdin;
+\.
+
+
+--
 -- Data for Name: attendance_ban_histories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -378,7 +557,6 @@ COPY public.attendance_ban_histories (official_absence_id, ban_reason, version, 
 --
 
 COPY public.bereavement_histories (official_absence_id, deceased_name, relationship, version, remarks) FROM stdin;
-363	あ	a	1	
 \.
 
 
@@ -387,30 +565,30 @@ COPY public.bereavement_histories (official_absence_id, deceased_name, relations
 --
 
 COPY public.classifications (id, course) FROM stdin;
-1	SE・プログラマ
-2	WEBプログラマ
-3	IT専門資格取得
-4	サイバーセキュリティ
-5	AIエンジニア
-6	中級プログラマ
-7	初級パソコン
-8	ゲームプログラマ
-9	イラストレータ
-10	3Dグラフィック
-11	ゲームデザイナー
-12	グラフィックデザイン
-13	WEBデザイン
-14	オフィス一般事務
-15	ビジネスパソコン
-16	販売ビジネス
-17	ホテル・ブライダル
-18	医療事務
-19	電子カルテ
-20	医療マネージメント
-21	医療パソコン
-22	小児クラーク
-23	病棟クラーク
-24	調剤薬局
+26	SE・プログラマ
+27	WEBプログラマ
+28	IT専門資格取得
+29	サイバーセキュリティ
+30	AIエンジニア
+31	中級プログラマ
+32	初級パソコン
+33	ゲームプログラマ
+34	イラストレータ
+35	3Dグラフィック
+36	ゲームデザイナー
+37	グラフィックデザイン
+38	WEBデザイン
+39	オフィス一般事務
+40	ビジネスパソコン
+41	販売ビジネス
+42	ホテル・ブライダル
+43	医療事務
+44	電子カルテ
+45	医療マネージメント
+46	医療パソコン
+47	小児クラーク
+48	病棟クラーク
+49	調剤薬局
 \.
 
 
@@ -419,7 +597,6 @@ COPY public.classifications (id, course) FROM stdin;
 --
 
 COPY public.desired_occupations (student_id, business, occupation) FROM stdin;
-40104	未選択	未選択
 \.
 
 
@@ -428,8 +605,6 @@ COPY public.desired_occupations (student_id, business, occupation) FROM stdin;
 --
 
 COPY public.exception_dates (exception_day, weekday_number) FROM stdin;
-2024-12-09	3
-2024-12-18	5
 \.
 
 
@@ -438,11 +613,6 @@ COPY public.exception_dates (exception_day, weekday_number) FROM stdin;
 --
 
 COPY public.job_search_histories (official_absence_id, work, company_name, address, version, remarks, visit_start_hour, visit_start_minute) FROM stdin;
-361	briefing	a	a	1		1	1
-362	test	a	a	1		2	2
-365	jobInterview	a	a	1	あ	1	1
-365	jobInterview	a	a	2	あ	1	1
-365	jobInterview	a	a	3	あ	1	1
 \.
 
 
@@ -451,9 +621,6 @@ COPY public.job_search_histories (official_absence_id, work, company_name, addre
 --
 
 COPY public.lessons (lesson_id, lesson_name, period, day_of_week) FROM stdin;
-1	国語	1	月
-2	数学	2	月
-3	理科	3	月
 \.
 
 
@@ -462,29 +629,6 @@ COPY public.lessons (lesson_id, lesson_name, period, day_of_week) FROM stdin;
 --
 
 COPY public.official_absence_date_histories (official_absence_id, period, official_absence_date, version, lesson_name) FROM stdin;
-361	1	2025-01-01	1	システム開発Ⅱ
-361	2	2025-01-01	1	システム開発Ⅱ
-362	1	2025-01-02	1	システム開発Ⅱ実習
-362	2	2025-01-02	1	システム開発Ⅱ実習
-363	1	2025-01-03	1	システム開発Ⅰ実習
-363	2	2025-01-03	1	システム開発Ⅰ実習
-364	1	2025-01-06	1	情報システム演習
-364	2	2025-01-06	1	情報システム演習
-364	3	2025-01-06	1	資格対策
-364	4	2025-01-06	1	資格対策
-364	5	2025-01-06	1	プレゼンテーション
-365	1	2025-01-13	1	情報システム演習
-365	2	2025-01-13	1	情報システム演習
-365	3	2025-01-13	1	資格対策
-365	5	2025-01-13	1	プレゼンテーション
-365	1	2025-01-13	2	情報システム演習
-365	2	2025-01-13	2	情報システム演習
-365	3	2025-01-13	2	資格対策
-365	5	2025-01-13	2	プレゼンテーション
-365	1	2025-01-22	2	システム開発Ⅱ
-365	2	2025-01-22	2	システム開発Ⅱ
-365	1	2025-01-22	3	システム開発Ⅱ
-365	2	2025-01-22	3	システム開発Ⅱ
 \.
 
 
@@ -493,11 +637,6 @@ COPY public.official_absence_date_histories (official_absence_id, period, offici
 --
 
 COPY public.official_absences (official_absence_id, student_id, report_required, status, reason, teacher_check, career_check, career_check_required, classroom, grade, course, student_name, student_email) FROM stdin;
-363	40104	f	unaccepted	bereavement	f	\N	f	A	2	SE・プログラマ	YourSurName YourGivenName	40104kk@saisen.ac.jp
-364	40104	t	unaccepted	seminar	f	f	t	A	2	SE・プログラマ	YourSurName YourGivenName	40104kk@saisen.ac.jp
-365	40104	t	unaccepted	jobSearch	f	f	t	A	2	SE・プログラマ	YourSurName YourGivenName	40104kk@saisen.ac.jp
-361	40104	t	unaccepted	jobSearch	f	f	t	A	2	SE・プログラマ	YourSurName YourGivenName	40104kk@saisen.ac.jp
-362	40104	t	unaccepted	jobSearch	f	f	t	A	2	SE・プログラマ	YourSurName YourGivenName	40104kk@saisen.ac.jp
 \.
 
 
@@ -510,15 +649,82 @@ COPY public.other_histories (official_absence_id, other_reason, version, remarks
 
 
 --
+-- Data for Name: report_briefing_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_briefing_histories (report_id, version, briefing_content, impressions) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_exam_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_exam_histories (report_id, version, general_knowledge_type, national_language_number, national_language_type, math_number, math_type, english_number, english_type, current_affairs_number, current_affairs_type, writing_timer, writing_number_of_characters, writing_theme, expertise_number, expertise_type, job_question_number, job_question_type, spi_language_system_number, spi_non_language_system_number, spi_others_number, personality_diagnosis_number, personality_diagnosis_type, others, impressions, general_knowledge_number) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_histories (report_id, version, activity_time, submitted_date, company_name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_informal_ceremony_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_informal_ceremony_histories (report_id, version, impressions) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_interview_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_interview_histories (report_id, version, interviewer_number, interview_type, interview_content, impressions) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_job_future_selection; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_job_future_selection (report_id, version, employment_intention, next_action) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_other_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_other_histories (report_id, version, activity_content, impressions) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_seminar_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_seminar_histories (report_id, company_id, version, company_name, manager, industry, impressions, employment_intention, next_action) FROM stdin;
+\.
+
+
+--
+-- Data for Name: report_training_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.report_training_histories (report_id, version, impressions) FROM stdin;
+\.
+
+
+--
 -- Data for Name: reports; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.reports (official_absence_id, report_id, status) FROM stdin;
-361	98	unsubmitted
-362	99	unsubmitted
-363	100	unnecessary
-364	101	unsubmitted
-365	102	unsubmitted
+COPY public.reports (official_absence_id, report_id, status, reason) FROM stdin;
 \.
 
 
@@ -527,7 +733,6 @@ COPY public.reports (official_absence_id, report_id, status) FROM stdin;
 --
 
 COPY public.seminar_histories (official_absence_id, seminar_name, location, venue_name, version, remarks, visit_start_hour, visit_start_minute) FROM stdin;
-364	あ	あ	あ	1		4	4
 \.
 
 
@@ -536,7 +741,6 @@ COPY public.seminar_histories (official_absence_id, seminar_name, location, venu
 --
 
 COPY public.students (student_id, grade, class, course_id, number, name, hope_occupation, hope_industry) FROM stdin;
-40104	2	A	1	2	木谷 恒希	情報	SE・PG
 \.
 
 
@@ -545,13 +749,6 @@ COPY public.students (student_id, grade, class, course_id, number, name, hope_oc
 --
 
 COPY public.submitted_date_histories (official_absence_id, version, submitted_date) FROM stdin;
-361	1	2025-01-04
-362	1	2025-01-04
-363	1	2025-01-04
-364	1	2025-01-04
-365	1	2025-01-09
-365	2	2025-01-09
-365	3	2025-01-09
 \.
 
 
@@ -559,7 +756,7 @@ COPY public.submitted_date_histories (official_absence_id, version, submitted_da
 -- Data for Name: time_tables; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.time_tables (grade, classroom, course, semester, weekday_number, period, subject_id) FROM stdin;
+COPY public.time_tables (grade, classroom, course, semester, weekday_number, period, subject_id, year) FROM stdin;
 \.
 
 
@@ -567,21 +764,21 @@ COPY public.time_tables (grade, classroom, course, semester, weekday_number, per
 -- Name: classifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.classifications_id_seq', 24, true);
+SELECT pg_catalog.setval('public.classifications_id_seq', 49, true);
 
 
 --
 -- Name: official_absences_official_absence_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.official_absences_official_absence_id_seq', 365, true);
+SELECT pg_catalog.setval('public.official_absences_official_absence_id_seq', 30, true);
 
 
 --
 -- Name: reports_report_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.reports_report_id_seq', 102, true);
+SELECT pg_catalog.setval('public.reports_report_id_seq', 30, true);
 
 
 --
@@ -614,6 +811,78 @@ ALTER TABLE ONLY public.lessons
 
 ALTER TABLE ONLY public.official_absences
     ADD CONSTRAINT official_absences_pkey PRIMARY KEY (official_absence_id);
+
+
+--
+-- Name: report_briefing_histories report_briefing_session_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_briefing_histories
+    ADD CONSTRAINT report_briefing_session_histories_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_exam_histories report_exam_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_exam_histories
+    ADD CONSTRAINT report_exam_histories_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_histories report_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_histories
+    ADD CONSTRAINT report_histories_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_informal_ceremony_histories report_informal_ceremony_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_informal_ceremony_histories
+    ADD CONSTRAINT report_informal_ceremony_histories_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_interview_histories report_interview_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_interview_histories
+    ADD CONSTRAINT report_interview_histories_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_job_future_selection report_job_future_selection_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_job_future_selection
+    ADD CONSTRAINT report_job_future_selection_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_other_histories report_other_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_other_histories
+    ADD CONSTRAINT report_other_histories_pkey PRIMARY KEY (report_id, version);
+
+
+--
+-- Name: report_seminar_histories report_seminar_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_seminar_histories
+    ADD CONSTRAINT report_seminar_histories_pkey PRIMARY KEY (report_id, company_id, version);
+
+
+--
+-- Name: report_training_histories report_training_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_training_histories
+    ADD CONSTRAINT report_training_histories_pkey PRIMARY KEY (report_id, version);
 
 
 --
@@ -678,6 +947,78 @@ ALTER TABLE ONLY public.official_absence_date_histories
 
 ALTER TABLE ONLY public.other_histories
     ADD CONSTRAINT other_histories_official_absence_id_version_fkey FOREIGN KEY (official_absence_id, version) REFERENCES public.submitted_date_histories(official_absence_id, version);
+
+
+--
+-- Name: report_briefing_histories report_briefing_session_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_briefing_histories
+    ADD CONSTRAINT report_briefing_session_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_exam_histories report_exam_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_exam_histories
+    ADD CONSTRAINT report_exam_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_histories report_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_histories
+    ADD CONSTRAINT report_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_informal_ceremony_histories report_informal_ceremony_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_informal_ceremony_histories
+    ADD CONSTRAINT report_informal_ceremony_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_interview_histories report_interview_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_interview_histories
+    ADD CONSTRAINT report_interview_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_job_future_selection report_job_future_selection_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_job_future_selection
+    ADD CONSTRAINT report_job_future_selection_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_other_histories report_other_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_other_histories
+    ADD CONSTRAINT report_other_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_seminar_histories report_seminar_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_seminar_histories
+    ADD CONSTRAINT report_seminar_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
+
+
+--
+-- Name: report_training_histories report_training_histories_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.report_training_histories
+    ADD CONSTRAINT report_training_histories_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(report_id);
 
 
 --
