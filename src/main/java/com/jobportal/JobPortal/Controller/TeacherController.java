@@ -272,11 +272,23 @@ public class TeacherController {
     }
 
     @GetMapping("/teacher/reportApproval")
-    public String companyLogs(Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName, @RequestParam(value = "page", defaultValue = "1") Integer page){
-        model.addAttribute("companyName", companyName);
+    public String reportApprovalMode(Model model){
         model.addAttribute("mode", "reportApproval");
-        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName, page);
+        List<ReportLogEntity> logEntities = service.searchReportLogs("", 1,"unaccepted");
+        model.addAttribute("logEntities", logEntities);
+        model.addAttribute("approvalForm", new ReportApprovalForm());
+        return "reportLogs";
+    }
+
+    @PostMapping(value = "/teacher/reportApproval")
+    public String postReportApproval(@ModelAttribute("approvalForm") ReportApprovalForm approvalForm, Model model){
+        approvalForm.getReportApproval().forEach((k)->{
+            service.updateReportStatus(k,"acceptance");
+        });
+        model.addAttribute("mode", "reportApproval");
+        List<ReportLogEntity> logEntities = service.searchReportLogs("", 1,"unaccepted");
         model.addAttribute("logEntities", logEntities);
         return "reportLogs";
     }
+
 }
