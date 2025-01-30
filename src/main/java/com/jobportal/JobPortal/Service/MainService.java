@@ -1259,9 +1259,9 @@ public class MainService {
     * htmlでリスト表示するために、全ての報告書を一つのクラスにまとめる。
     * そのために、まず共通データを取得、報告書の内容によって特有データ取得、２つのデータを合体する。
     * */
-    public List<ReportLogEntity> searchReportLogs(String companyName, Integer page) {
+    public List<ReportLogEntity> searchReportLogs(String companyName, Integer page,String status) {
         List<ReportLogEntity> logEntities = new ArrayList<>();
-        List<ReportInfoEntity> infoEntities = repository.selectReportInfosByCompanyName(companyName, page, pageSize);
+        List<ReportInfoEntity> infoEntities = repository.selectReportInfosByCompanyName(companyName, page, pageSize, status);
         for (ReportInfoEntity reportInfoEntity : infoEntities) {
             switch (reportInfoEntity.getReason()){
                 case jobInterview -> {
@@ -1301,8 +1301,8 @@ public class MainService {
     *
     * ページングのために使う。
     * */
-    public Integer countSearchReportLogs(String companyName) {
-        return repository.countReportInfosByCompanyName(companyName);
+    public Integer countSearchReportLogs(String companyName, String status) {
+        return repository.countReportInfosByCompanyName(companyName,status);
     }
     /*
     * 受理済みの公欠の公欠日を返す。

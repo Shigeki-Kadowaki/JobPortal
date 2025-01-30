@@ -593,7 +593,7 @@ public class StudentController {
     public String companyLogs(@PathVariable("studentId") Integer studentId, Model model, @RequestParam(value = "companyName",defaultValue = "") String companyName, @RequestParam(value = "page", defaultValue = "1") Integer page){
         model.addAttribute("companyName", companyName);
         model.addAttribute("studentId", studentId);
-        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName, page);
+        List<ReportLogEntity> logEntities = service.searchReportLogs(companyName, page,"acceptance");
         logEntities = logEntities.stream()
                         .peek(e->e.setStudentId(e.getStudentId() / 1000))
                         .toList();
@@ -601,7 +601,7 @@ public class StudentController {
         //以下ページング処理
         //1ページに表示する件数
         int pageSize = 25;
-        Integer count = service.countSearchReportLogs(companyName);
+        Integer count = service.countSearchReportLogs(companyName,"acceptance");
         //最大ページ数
         int maxSize = (int)Math.ceil((double) count / pageSize);
         //画面に表示するページ数。1~5。
