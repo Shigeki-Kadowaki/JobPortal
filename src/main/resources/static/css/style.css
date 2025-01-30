@@ -33,3 +33,7 @@ hr {
     bottom: 40px;
     right: 50px;
 }
+
+.approvalCheckBox{
+    color: red;
+}
