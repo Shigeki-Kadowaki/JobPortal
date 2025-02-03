@@ -49,7 +49,7 @@
         </th:block>
     </th:block>
     <form th:action="@{/jobportal/teacher/reportApproval}" method="post" th:object="${reportApprovalForm}" class="mt-3">
-        <div th:each="entity, stat : ${logEntities}" class="accordion mx-auto" id="reportLogAccordion">
+        <div th:each="entity, stat : ${logEntities}" class="accordion w-75 mx-auto" id="reportLogAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <th:block th:if="${mode == 'reportApproval'}">
@@ -103,7 +103,7 @@
                         </button>
                     </th:block>
                 </h2>
-            <div th:id="collapse + ${stat.index}" class="accordion-collapse collapse" data-bs-parent="#reportLogAccordion">
+            <div th:id="collapse + ${stat.index}" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     <th:block th:switch="${entity.reason.toString()}">
                         <span th:case="jobInterview">

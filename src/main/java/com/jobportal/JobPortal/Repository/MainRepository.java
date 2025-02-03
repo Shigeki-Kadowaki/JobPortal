@@ -827,7 +827,7 @@ public interface MainRepository {
         WHERE official_absence_id = #{oaId}
         LIMIT 1;
     """)
-    Integer selectReportID(@Param("oaId") Integer oaId);
+    Integer selectReportId(@Param("oaId") Integer oaId);
 
     @Insert("""
         INSERT INTO report_interview_histories VALUES (
@@ -1464,7 +1464,7 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            (AND h.company_name LIKE concat('%',#{companyName},'%')
+            AND ( h.company_name LIKE concat('%',#{companyName},'%')
             OR s.company_name LIKE concat('%',#{companyName},'%'))
         </if>
         AND r.status = #{status}
@@ -1495,7 +1495,7 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            (AND h.company_name LIKE concat('%',#{companyName},'%')
+            AND (h.company_name LIKE concat('%',#{companyName},'%')
             OR s.company_name LIKE concat('%',#{companyName},'%'))
         </if>
         AND r.status = #{status}

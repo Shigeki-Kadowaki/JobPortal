@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,13 +23,14 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class TeacherController {
-    private final MailController mailController;
     @Autowired
     public MainService service;
     @Autowired
     public HttpSession session;
 
-    public final String sendAddress = "SaisenJobPortal@gmail.com";
+    @Value("${spring.mail.username}")
+    public String sendAddress;
+
     final Map<String, String> colors = new HashMap<>(){
         {
             put("受理", "list-group-item-success");
@@ -89,8 +91,7 @@ public class TeacherController {
     //OA却下
     @PutMapping(value = "/teacher/{OAId}", params = "rejection")
     public String OAUnaccepted(HttpServletRequest request, @PathVariable("OAId") Integer OAId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
-        service.updateOAStatus(OAId,"rejection");
-        //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
+        service.rejectedOA(OAId, sendAddress, studentEmail, reasonForRejection);
         return "redirect:/teacher/OAList";
     }
 
@@ -191,10 +192,10 @@ public class TeacherController {
         //送られてきた先生タイプによって別々の検索Formを作る。
         if(teacherType.equals("teacher")){
             //公欠届ステータスが「未受理」で、担任チェックが「未承認」のもの
-            form = new TeacherOASearchForm(0, "all", List.of("unaccepted"), "false", null, true, List.of("unaccepted"), null);
+            form = new TeacherOASearchForm(0, "all", List.of("unaccepted", "rejection"), "false", null, true, null, null);
         }else{
             //公欠届ステータスが「未受理」で、キャリアチェックが「未承認」のもの
-            form = new TeacherOASearchForm(0, "all", List.of("unaccepted"), null, "false", true, List.of("unaccepted"), null);
+            form = new TeacherOASearchForm(0, "all", List.of("unaccepted", "rejection"), null, "false", true, null, null);
         }
         List<OAListEntity> listEntity = service.teacherFindAllOAs(form, 1, 100);
         if(!listEntity.isEmpty()) {
@@ -265,8 +266,7 @@ public class TeacherController {
     //report却下
     @PutMapping(value = "/teacher/report/{reportId}", params = "rejection")
     public String reportUnaccepted(HttpServletRequest request, @PathVariable("reportId") Integer reportId, @RequestParam(value = "reasonForRejection", required = false)String reasonForRejection, @RequestParam("studentEmail") String studentEmail) {
-        service.updateReportStatus(reportId, "rejection");
-        //mailController.sendMail(sendAddress, studentEmail, reasonForRejection);
+        service.rejectedReport(reportId, sendAddress, studentEmail, reasonForRejection);
         return "redirect:/teacher/OAList";
     }
 

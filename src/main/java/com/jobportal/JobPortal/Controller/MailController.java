@@ -14,15 +14,13 @@ public class MailController {
     MailSender mailSender;
 
 
-    public void sendMail(String from, String to, String text) {
+    public void sendMail(String from, String to, String text, String type) {;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setFrom(from);
-        message.setSubject("公欠届が却下されました");
-        message.setText("却下理由 : " + text + "\n\n" + "このメールは送信専用です。\n先生に伝えたい旨がある場合、再提出の備考欄に記入してください。");
+        message.setSubject(type.equalsIgnoreCase("OA") ? "公欠届が却下されました" : "報告書が却下されました");
+        message.setText("却下理由 : " + text + "\n\nこのメールは送信専用です。\n先生に伝えたい旨がある場合、再提出の備考欄に記入してください。");
 
-        // メール送信を実施する。
         mailSender.send(message);
-        System.out.println("send mail");
     }
 }

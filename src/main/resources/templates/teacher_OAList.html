@@ -92,8 +92,13 @@
     <th:block th:if="${maxSize != 0 and mode == 'list'}">
         <div class="text-center my-3">
             <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=teacher}">担任承認モード</a>
-            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
-            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/reportApproval}">キャリア報告書承認モード</a>
+            <span class="border-end border-2 border-dark border-opacity-75 pe-4">
+                <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
+            </span>
+            <span class="ps-4">
+                <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/reportApproval}">報告書承認モード</a>
+            </span>
+
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination pagination-lg d-flex justify-content-center">

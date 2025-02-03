@@ -14,7 +14,6 @@ public class TeacherInterceptor implements HandlerInterceptor {
     MainService service;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("teacherPreHandle");
         Map<String, String> map = service.getPersonInfo(response, request);
         String group = map.get("group");
         //生徒だと先生ページにはアクセスできない

@@ -4,6 +4,7 @@ import com.jobportal.JobPortal.Controller.API.OASubject;
 import com.jobportal.JobPortal.Controller.API.OASubjectDTO;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
+import com.jobportal.JobPortal.Controller.MailController;
 import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Controller.Subject;
 import com.jobportal.JobPortal.Repository.MainRepository;
@@ -44,6 +45,8 @@ public class MainService {
 
     @Autowired
     private final MainRepository repository;
+    @Autowired
+    private final MailController mailController;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     final Integer pageSize = 10;
@@ -236,6 +239,9 @@ public class MainService {
     
     public void updateOAStatus(Integer OAId, String status) {
         repository.updateOAStatus(OAId, status);
+
+        Integer reportId = repository.selectReportId(OAId);
+        checkOAAndReportCondition(OAId, reportId);
     }
     
     public void updateReportRequired(Integer OAId, boolean flag) {
@@ -943,7 +949,7 @@ public class MainService {
             return "reportForm";
         }
         //バインディングエラーが起きなかったときの処理。
-        Integer reportId = repository.selectReportID(OAId);
+        Integer reportId = repository.selectReportId(OAId);
         repository.insertReportHistories(reportId, form);
         repository.updateReportStatus(reportId, "unaccepted");
         repository.updateReportInfo(form, reportId);
@@ -1216,7 +1222,7 @@ public class MainService {
         return repository.selectReportSeminarByVersion(reportId, version);
     }
     public Integer getReportId(Integer OAId) {
-        return repository.selectReportID(OAId);
+        return repository.selectReportId(OAId);
     }
     /*
     * 公欠削除メソッド
@@ -1315,5 +1321,16 @@ public class MainService {
     * */
     public void putOASubject(OASubject subject) {
         repository.updateOASubject(new OASubjectDTO(subject.studentId(), LocalDate.parse(subject.officialAbsenceDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), subject.period()));
+    }
+
+    @Transactional
+    public void rejectedOA(Integer OAId, String sendAddress, String studentEmail, String reasonForRejection) {
+        mailController.sendMail(sendAddress, studentEmail, reasonForRejection, "OA");
+        updateOAStatus(OAId,"rejection");
+    }
+    @Transactional
+    public void rejectedReport(Integer reportId, String sendAddress, String studentEmail, String reasonForRejection) {
+        mailController.sendMail(sendAddress, studentEmail, reasonForRejection, "report");
+        updateReportStatus(reportId, "rejection");
     }
 }
