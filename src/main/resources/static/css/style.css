@@ -33,3 +33,9 @@ hr {
     bottom: 40px;
     right: 50px;
 }
+
+.approvalCheckBox{
+    height: 52px;
+    width: 155px;
+    border-radius: 0 5px 5px 0;
+}

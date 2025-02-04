@@ -669,7 +669,7 @@ public interface MainRepository {
     <script>
         INSERT INTO time_tables VALUES
             <foreach item='date' collection='timeTableList' separator=','>
-                (#{timeTableInfo.grade}, #{timeTableInfo.classroom}, #{timeTableInfo.course}, #{timeTableInfo.semester}, #{date.weekdayNumber}, #{date.period}, #{date.subjectId})
+                (#{timeTableInfo.grade}, #{timeTableInfo.classroom}, #{timeTableInfo.course}, #{timeTableInfo.semester}, #{date.weekdayNumber}, #{date.period}, #{date.subjectId}, #{timeTableInfo.year})
             </foreach>
         ;
     </script>
@@ -680,10 +680,11 @@ public interface MainRepository {
             SELECT
                 weekday_number,
                 period,
-                subject_id
+                subject_id,
+                year
             FROM time_tables
             WHERE
-                grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester};
+                grade = #{classification.grade} AND classroom = #{classification.classroom} AND course = #{classification.course} AND semester = #{classification.semester} AND year = #{classification.year};
     """)
     List<TimeTableEntity> selectTimeTable(@Param("classification")ClassificationForm classification);
 
@@ -826,7 +827,7 @@ public interface MainRepository {
         WHERE official_absence_id = #{oaId}
         LIMIT 1;
     """)
-    Integer selectReportID(@Param("oaId") Integer oaId);
+    Integer selectReportId(@Param("oaId") Integer oaId);
 
     @Insert("""
         INSERT INTO report_interview_histories VALUES (
@@ -1114,13 +1115,6 @@ public interface MainRepository {
             #{form.reportId},
             (SELECT MAX(version) FROM report_histories WHERE report_id = #{form.reportId}), 
             #{form.generalKnowledgeType},
-            #{form.jobQuestionNumber},
-            #{form.jobQuestionType},
-            #{form.SPILanguageSystemNumber},
-            #{form.SPINonLanguageSystemNumber},
-            #{form.SPIOthersNumber},
-            #{form.personalityDiagnosisNumber},
-            #{form.personalityDiagnosisType},
             #{form.nationalLanguageNumber},
             #{form.nationalLanguageType},
             #{form.mathNumber},
@@ -1134,6 +1128,13 @@ public interface MainRepository {
             #{form.writingTheme},
             #{form.expertiseNumber},
             #{form.expertiseType},
+            #{form.jobQuestionNumber},
+            #{form.jobQuestionType},
+            #{form.SPILanguageSystemNumber},
+            #{form.SPINonLanguageSystemNumber},
+            #{form.SPIOthersNumber},
+            #{form.personalityDiagnosisNumber},
+            #{form.personalityDiagnosisType},
             #{form.others},
             #{form.testImpressions},
             #{form.generalKnowledgeNumber}
@@ -1463,7 +1464,7 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            (AND h.company_name LIKE concat('%',#{companyName},'%')
+            AND ( h.company_name LIKE concat('%',#{companyName},'%')
             OR s.company_name LIKE concat('%',#{companyName},'%'))
         </if>
         AND r.status = #{status}
@@ -1494,7 +1495,7 @@ public interface MainRepository {
             GROUP BY report_id
         )
         <if test="companyName != '' and companyName != null">
-            (AND h.company_name LIKE concat('%',#{companyName},'%')
+            AND (h.company_name LIKE concat('%',#{companyName},'%')
             OR s.company_name LIKE concat('%',#{companyName},'%'))
         </if>
         AND r.status = #{status}

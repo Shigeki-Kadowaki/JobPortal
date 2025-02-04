@@ -4,6 +4,7 @@ import com.jobportal.JobPortal.Controller.API.OASubject;
 import com.jobportal.JobPortal.Controller.API.OASubjectDTO;
 import com.jobportal.JobPortal.Controller.DesiredOccupation;
 import com.jobportal.JobPortal.Controller.Form.*;
+import com.jobportal.JobPortal.Controller.MailController;
 import com.jobportal.JobPortal.Controller.Student;
 import com.jobportal.JobPortal.Controller.Subject;
 import com.jobportal.JobPortal.Repository.MainRepository;
@@ -44,16 +45,18 @@ public class MainService {
 
     @Autowired
     private final MainRepository repository;
+    @Autowired
+    private final MailController mailController;
     private final RestTemplateAutoConfiguration restTemplateAutoConfiguration;
 
     final Integer pageSize = 10;
-    public final Subject[][] subjects = {
-            {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
-            {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
-            {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
-            {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
-            {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
-    };
+//    public final Subject[][] subjects = {
+//            {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
+//            {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
+//            {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
+//            {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
+//            {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
+//    };
 
     public final Map<String, String> colors = new HashMap<>(){
         {
@@ -236,6 +239,9 @@ public class MainService {
     
     public void updateOAStatus(Integer OAId, String status) {
         repository.updateOAStatus(OAId, status);
+
+        Integer reportId = repository.selectReportId(OAId);
+        checkOAAndReportCondition(OAId, reportId);
     }
     
     public void updateReportRequired(Integer OAId, boolean flag) {
@@ -560,8 +566,8 @@ public class MainService {
     public String semesterBetween(LocalDate today) {
         int month = today.getMonthValue();
         //4月から9月の間
-        if( 4 <= month && month <= 9) return "second";
-        return "first";
+        if( 4 <= month && month <= 9) return "first";
+        return "second";
     }
 
     public List<TimeTableEntity> getTimeTable(ClassificationForm classification) {
@@ -657,6 +663,7 @@ public class MainService {
         classification.setClassroom(student.getClassroom());
         classification.setCourse(student.getCourse());
         classification.setSemester(semester);
+        classification.setYear(student.getGno() / 1000);
 
         return classification;
     }
@@ -715,7 +722,7 @@ public class MainService {
         model.addAttribute("mode", "create");
         List<ExceptionDateEntity> exceptionDates = getExceptionDates();
         //学校で使う用
-        //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
+        Subject[][] subjects = getSubjectArr(setClassification(student));
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
         if(bindingResult.hasErrors()){
@@ -751,7 +758,7 @@ public class MainService {
                 createOther(otherEntity);
             }
         }
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 公欠届List取得メソッド
@@ -888,7 +895,7 @@ public class MainService {
             }
         }
         updateOAStatus(OAId, "unaccepted");
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 先生側からの公欠届List取得メソッド
@@ -942,7 +949,7 @@ public class MainService {
             return "reportForm";
         }
         //バインディングエラーが起きなかったときの処理。
-        Integer reportId = repository.selectReportID(OAId);
+        Integer reportId = repository.selectReportId(OAId);
         repository.insertReportHistories(reportId, form);
         repository.updateReportStatus(reportId, "unaccepted");
         repository.updateReportInfo(form, reportId);
@@ -959,6 +966,7 @@ public class MainService {
                 repository.insertBriefingReport(form, reportId);
             }
             case test -> {
+                System.out.println(form.getExpertiseType());
                 repository.insertExamReport(form, reportId);
             }
             case informalCeremony -> {
@@ -978,7 +986,7 @@ public class MainService {
                 repository.insertSeminarReport(form, reportId);
             }
         }
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 報告書ステータス変更メソッド
@@ -987,8 +995,11 @@ public class MainService {
     * */
     public void updateReportStatus(Integer reportId, String status){
         repository.updateReportStatus(reportId, status);
-        Integer OAId = repository.selectOAId(reportId);
+        Integer OAId = getOAId(reportId);
         checkOAAndReportCondition(OAId, reportId);
+    }
+    public Integer getOAId(Integer reportId){
+        return repository.selectOAId(reportId);
     }
     /*
     * 公欠届と報告書のステータスをチェックするメソッド
@@ -1123,7 +1134,14 @@ public class MainService {
     * セミナーはセミナーテーブルに就職希望が含まれている。
     * */
     @Transactional
-    public String repostReport(Integer reportId, ReportForm form, BindingResult bindingResult) {
+    public String repostReport(Integer reportId, ReportForm form, BindingResult bindingResult, Model model) {
+        Integer OAId = getOAId(reportId);
+        List<OADateInfoEntity> dateInfoEntities = findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
         if(bindingResult.hasErrors()){
             return "reportForm";
         }
@@ -1159,7 +1177,7 @@ public class MainService {
             }
         }
         updateReportStatus(reportId, "unaccepted");
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
 
     private void updateReportHistories(Integer reportId, ReportForm form) {
@@ -1215,7 +1233,7 @@ public class MainService {
         return repository.selectReportSeminarByVersion(reportId, version);
     }
     public Integer getReportId(Integer OAId) {
-        return repository.selectReportID(OAId);
+        return repository.selectReportId(OAId);
     }
     /*
     * 公欠削除メソッド
@@ -1314,5 +1332,16 @@ public class MainService {
     * */
     public void putOASubject(OASubject subject) {
         repository.updateOASubject(new OASubjectDTO(subject.studentId(), LocalDate.parse(subject.officialAbsenceDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")), subject.period()));
+    }
+
+    @Transactional
+    public void rejectedOA(Integer OAId, String sendAddress, String studentEmail, String reasonForRejection) {
+        mailController.sendMail(sendAddress, studentEmail, reasonForRejection, "OA");
+        updateOAStatus(OAId,"rejection");
+    }
+    @Transactional
+    public void rejectedReport(Integer reportId, String sendAddress, String studentEmail, String reasonForRejection) {
+        mailController.sendMail(sendAddress, studentEmail, reasonForRejection, "report");
+        updateReportStatus(reportId, "rejection");
     }
 }

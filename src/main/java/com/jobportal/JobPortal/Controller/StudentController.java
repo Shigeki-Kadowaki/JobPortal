@@ -21,15 +21,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jobportal.JobPortal.Service.OAStatus.acceptance;
 import static com.jobportal.JobPortal.Service.ReportType.seminar;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/jobportal")
 public class StudentController {
 
     private final MailController mailController;
@@ -37,22 +36,13 @@ public class StudentController {
     private final MainService service;
     @Autowired
     public final HttpSession session;
-    public final Map<String, String> colors = new HashMap<>(){
-        {
-            put("受理", "list-group-item-success");
-            put("未受理", "list-group-item-warning");
-            put("却下", "list-group-item-danger");
-            put("未提出", "list-group-item-dark");
-            put("不要", "list-group-item-light");
-        }
-    };
-    public final Subject[][] subjects = {
-        {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
-        {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
-        {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
-        {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
-        {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
-    };
+//    public final Subject[][] subjects = {
+//        {new Subject(1,"情報システム演習"),new Subject(2,"情報システム演習"),new Subject(3,"資格対策"),new Subject(4,"資格対策"),new Subject(5,"プレゼンテーション")},
+//        {new Subject(6,"システム開発Ⅰ"),new Subject(7,"システム開発Ⅰ"),new Subject(8,"IT応用")},
+//        {new Subject(9,"システム開発Ⅱ"),new Subject(10,"システム開発Ⅱ")},
+//        {new Subject(13,"システム開発Ⅱ実習"),new Subject(14,"システム開発Ⅱ実習")},
+//        {new Subject(17,"システム開発Ⅰ実習"),new Subject(18,"システム開発Ⅰ実習")}
+//    };
 
     @GetMapping("/dockerTest")
     public String dockerTest(Model model) {
@@ -65,11 +55,11 @@ public class StudentController {
             //localでテスト用
             student.setGno(40104);
             //ssoから取得用
-//            student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
+            //student.setGno(Integer.parseInt(person.get("mellon-email").substring(0, 5)));
             if(person.get("group").equals("学生")) {
-                return "redirect:/jobportal/student/" + student.getGno();
+                return "redirect:/student/" + student.getGno();
             }
-            else return "redirect:/jobportal/teacher/";
+            else return "redirect:/teacher/";
     }
 
     /*
@@ -112,7 +102,7 @@ public class StudentController {
         }else {
             service.insertDesired(studentId, business, occupation);
         }
-        return "redirect:/jobportal/student/{studentId}";
+        return "redirect:/student/{studentId}";
     }
 
     /*
@@ -129,7 +119,7 @@ public class StudentController {
         model.addAttribute("mode", "create");
         Student student = (Student) request.getAttribute("student");
         //学校で使う用
-        //Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
+        Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
@@ -145,8 +135,9 @@ public class StudentController {
      * 時間割と例外授業に関する処理はshowForm↑と同じ。
      * */
     @GetMapping("/student/{studentId}/OAList/{OAId}/OAEditForm")
-    public String showEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
+    public String showEditForm(HttpServletRequest request, @PathVariable("studentId") Integer studentId, @PathVariable("OAId") Integer OAId, Model model){
         OAMainInfoEntity mainInfoEntity = service.findMainInfo(OAId);
+        if (mainInfoEntity.OAStatus().equals(acceptance)) return "redirect:/student/{studentId}";
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(OAId);
         Map<String, List<String>> OAPeriods = service.toOAPeriods(dateInfoEntities);
         //公欠日時をMapにする
@@ -182,6 +173,8 @@ public class StudentController {
         model.addAttribute("OAId", mainInfoDTO.officialAbsenceId());
         model.addAttribute("mode", "edit");
         List<ExceptionDateEntity> exceptionDates = service.getExceptionDates();
+        Student student = (Student) request.getAttribute("student");
+        Subject[][] subjects = service.getSubjectArr(service.setClassification(student));
         model.addAttribute("subjects", subjects);
         model.addAttribute("exceptionDates", exceptionDates);
         model.addAttribute("OAPeriods", OAPeriods);
@@ -287,7 +280,7 @@ public class StudentController {
     @DeleteMapping("/student/{studentId}/OAList/{OAId}")
     public String deleteOA(@PathVariable("OAId")Integer OAId, @PathVariable("studentId") String studentId){
         service.deleteOA(OAId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
 
     /*
@@ -402,6 +395,7 @@ public class StudentController {
     @PostMapping("/student/{studentId}/report/{reportId}/reportEditForm")
     public String showReportEditForm(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, Model model){
         ReportInfoEntity mainInfo = service.getReportInfo(reportId);
+        if (mainInfo.getStatus().equals(acceptance)) return "redirect:/student/{studentId}";
         model.addAttribute("mainInfo", mainInfo);
         List<OADateInfoEntity> dateInfoEntities = service.findDateInfo(mainInfo.getOfficialAbsenceId());
         model.addAttribute("OADate",dateInfoEntities);
@@ -434,6 +428,8 @@ public class StudentController {
             case seminar -> {
                 List<ReportSeminarEntity> seminarEntities = service.getSeminarEntity(reportId);
                 form = service.toReportForm(mainInfo, seminarEntities);
+                SeminarEntity seminar = service.findSeminarInfo(mainInfo.getOfficialAbsenceId());
+                model.addAttribute("seminar", seminar);
             }
         }
         if(!mainInfo.getReason().equals(seminar)){
@@ -495,52 +491,52 @@ public class StudentController {
     public String repostReportBriefing(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId,@Validated(briefingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                        BindingResult bindingResult,
                                        Model model){
-        return service.repostReport(reportId, form, bindingResult);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
     //試験報告書再提出
     @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "test")
     public String repostReportTest(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(testGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                    BindingResult bindingResult,
                                    Model model){
-        return service.repostReport(reportId, form, bindingResult);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
     //面接報告書再提出
     @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "jobInterview")
     public String repostReportJobInterview(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(interviewGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                            BindingResult bindingResult,
                                            Model model){
-        return service.repostReport(reportId, form, bindingResult);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
     //内定式報告書再提出
     @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "informalCeremony")
     public String repostReportInformalCeremony(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(informalCeremonyGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                                BindingResult bindingResult,
                                                Model model){
-        return service.repostReport(reportId, form, bindingResult);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
     //研修報告書再提出
     @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "training")
     public String repostReportTraining(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(trainingGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                        BindingResult bindingResult,
                                        Model model){
-        return service.repostReport(reportId, form, bindingResult);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
     //その他報告書再提出
     @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "other")
     public String repostReportJobOther(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(reportOtherGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                        BindingResult bindingResult,
                                        Model model){
-        return service.repostReport(reportId, form, bindingResult);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
     //セミナー報告書再提出
-    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "seminar")
+    @PostMapping(value = "/sutdent/{studentId}/report/{reportId}", params = "reportSeminar")
     public String repostReportSeminar(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId, @Validated(reportSeminarGroup.class) @ModelAttribute("ReportForm") ReportForm form,
                                       BindingResult bindingResult,
                                       Model model){
-        if(bindingResult.hasErrors()){
-            return "reportForm";
-        }
-        return service.repostReport(reportId, form, bindingResult);
+        Integer OAId = service.getOAId(reportId);
+        SeminarEntity seminar = service.findSeminarInfo(OAId);
+        model.addAttribute("seminar", seminar);
+        return service.repostReport(reportId, form, bindingResult, model);
     }
 
     /*
@@ -589,7 +585,7 @@ public class StudentController {
     @DeleteMapping("/student/{studentId}/report/{reportId}")
     public String deleteReport(@PathVariable("studentId") Integer studentId, @PathVariable("reportId") Integer reportId){
         service.deleteReports(reportId);
-        return "redirect:/jobportal/student/{studentId}/OAList";
+        return "redirect:/student/{studentId}/OAList";
     }
     /*
     * 報告書一覧ページ(会社検索)

@@ -6,9 +6,13 @@ services:
     image: springboot:latest
     ports:
       - "80:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/JobPortalDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: JobPortal
     depends_on:
       - db
-    command: ["/app/wait-for-it.sh", "db:5432", "--", "java", "-jar", "/app/app.jar"]
+    command: ["/app/wait-for-it.sh", "db:5432", "--", "java", "-jar", "/app/JobPortal-0.9.jar"]
     volumes:
       - ./build:/app/build
 

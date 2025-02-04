@@ -11,12 +11,14 @@
 <section layout:fragment="content">
     <h1>時間割入力フォーム</h1>
     <h5 class="m-3">
+    第 [[${classification.year}]] 期<br>
     学年 : [[${classification.grade}]]<br>
     クラス : [[${classification.classroom}]]<br>
     コース : [[${classification.course}]]<br>
     <span th:text="${classification.semester == 'first'}?'前期':'後期'"><br></span>
     </h5>
     <form th:action="@{/jobportal/teacher/timeTable}" th:method="post">
+        <input type="hidden" name="year" th:value="${classification.year}">
         <input type="hidden" name="grade" th:value="${classification.grade}">
         <input type="hidden" name="classroom" th:value="${classification.classroom}">
         <input type="hidden" name="course" th:value="${classification.course}">

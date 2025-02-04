@@ -9,7 +9,9 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script th:src="@{/js/reportLogs.js}" type="text/javascript"></script>
     <title>報告書閲覧</title>
+
 </head>
 <body>
 <section layout:fragment="content">
@@ -23,7 +25,7 @@
         </form>
         <th:block th:if="${maxSize == 0}" class="ms-5">
             <h2>検索結果が見つかりませんでした</h2><br>
-            <h5 class="ms-5">ヒント : カタカナ ↔ 英語
+            <h5 class="ms-5">ヒント : 英語 ↔ カタカナ
                 <div class="ms-5">(company　↔　カンパニー)</div>
                 <div class="ms-5">(ABC ↔ エービーシー)</div>
             </h5>
@@ -46,24 +48,62 @@
             </nav>
         </th:block>
     </th:block>
-    <form th:action="@{/jobportal/teacher/reportApproval}" method="post" th:object="${reportApprovalForm}">
-    <div th:each="entity, stat : ${logEntities}" class="accordion w-75 mx-auto" id="reportLogAccordion">
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${stat.index}" aria-expanded="false" aria-controls="collapseThree">
-                    <i class="bi bi-person me-1"></i> 第 [[${entity.studentId}]] 期生
-                    <th:block th:if="${entity.reason.toString() != 'seminar'}"><div class="ms-5"><i class="bi bi-building me-1"></i> [[${entity.companyName}]]</div></th:block>
-                    <div class="ms-5">[[${entity.reason.getJapaneseName()}]]</div>
+    <form th:action="@{/jobportal/teacher/reportApproval}" method="post" th:object="${reportApprovalForm}" class="mt-3">
+        <div th:each="entity, stat : ${logEntities}" class="accordion w-75 mx-auto" id="reportLogAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
                     <th:block th:if="${mode == 'reportApproval'}">
-                        <div class=>
-                            <input type="checkbox" class="btn-check" th:id="btn-check-outlined + ${stat.index}" autocomplete="off" th:name="reportApproval[]" th:value="${entity.getReportId()}">
-                            <label class="btn btn-outline-primary" th:for="btn-check-outlined + ${stat.index}" >選択</label><br>
+                        <div class="row">
+                            <div class="col-10 me-0 pe-0">
+                                <button class="accordion-button collapsed" type="button"
+                                    th:data-bs-target="'#collapse' + ${stat.index}"
+                                    data-bs-toggle="collapse"
+                                    aria-expanded="false">
+                                    <i class="bi bi-person me-1 ms-5"></i>
+                                    <th:block th:if="${mode == 'reportApproval'}">
+                                        [[${entity.studentId}]]
+                                    </th:block>
+                                    <th:block th:unless="${mode == 'reportApproval'}">
+                                        第 [[${entity.studentId}]] 期生
+                                    </th:block>
+                                    <th:block th:if="${entity.reason.toString() != 'seminar'}">
+                                        <div class="ms-5"><i class="bi bi-building me-1"></i> [[${entity.companyName}]]</div>
+                                    </th:block>
+                                    <div class="ms-5">[[${entity.reason.getJapaneseName()}]]</div>
+                                </button>
+                            </div>
+                            <div class="col-2 m-0 p-0">
+                                <input type="checkbox" class="btn-check approvalCheckBox"
+                                       style="text-align: right"
+                                       th:id="'btn-check-outlined-' + ${stat.index}"
+                                       autocomplete="off"
+                                       th:name="reportApproval[]"
+                                       th:value="${entity.getReportId()}">
+                                <label class="approvalCheckBox btn btn-outline-primary btn-lg px-3"
+                                       th:for="'btn-check-outlined-' + ${stat.index}">承認</label><br>
+                            </div>
                         </div>
                     </th:block>
-                </button>
-
-            </h2>
-            <div th:id="collapse + ${stat.index}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <th:block th:unless="${mode == 'reportApproval'}">
+                        <button class="accordion-button collapsed" type="button"
+                                th:data-bs-target="'#collapse' + ${stat.index}"
+                                data-bs-toggle="collapse"
+                                aria-expanded="false">
+                            <i class="bi bi-person me-1 ms-5"></i>
+                            <th:block th:if="${mode == 'reportApproval'}">
+                                [[${entity.studentId}]]
+                            </th:block>
+                            <th:block th:unless="${mode == 'reportApproval'}">
+                                第 [[${entity.studentId}]] 期生
+                            </th:block>
+                            <th:block th:if="${entity.reason.toString() != 'seminar'}">
+                                <div class="ms-5"><i class="bi bi-building me-1"></i> [[${entity.companyName}]]</div>
+                            </th:block>
+                            <div class="ms-5">[[${entity.reason.getJapaneseName()}]]</div>
+                        </button>
+                    </th:block>
+                </h2>
+            <div th:id="collapse + ${stat.index}" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     <th:block th:switch="${entity.reason.toString()}">
                         <span th:case="jobInterview">
@@ -71,6 +111,12 @@
                             タイプ : [[${entity.interviewType.getJapaneseName()}]]<br>
                             内容 : [[${entity.interviewContent}]]<br>
                             感想 : [[${entity.interviewImpressions}]]<br>
+                            <th:block th:if="${mode == 'reportApproval'}">
+                                今後の受験 : [[${entity.isSelection.getJapaneseName()}]]<br>
+                                <th:block th:if="${entity.nextAction != null}">
+                                    次のアクション : [[${entity.nextAction}]]<br>
+                                </th:block>
+                            </th:block>
                         </span>
                         <span th:case="briefing">
                             内容 : [[${entity.briefingContent}]]<br>
@@ -181,12 +227,15 @@
         </div>
     </div>
     <th:block th:if="${mode == 'reportApproval' && not #lists.isEmpty(logEntities)}">
-        <input class="btn btn-primary" type="submit">
+        <div class="submitbtn">
+            <input class="btn btn-primary btn-lg" type="submit">
+        </div>
     </th:block>
     <th:block th:if="${mode == 'reportApproval' && #lists.isEmpty(logEntities)}">
         <h3 class="text-center">全て承認済みです</h3>
     </th:block>
     </form>
+    <br><br><br><br><br>
 </section>
 </body>
 </html>

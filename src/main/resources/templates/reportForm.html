@@ -4,26 +4,24 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <script th:src="@{/reportForm.js}"></script>
+    <script th:src="@{/jobportal/js/reportForm.js}"></script>
     <meta charset="UTF-8">
-    <link rel="stylesheet" th:href="@{/style.css}">
-    <title>createReport</title>
+    <title th:text="${mode == 'create' ? '報告書作成' : '報告書再提出'}"></title>
 </head>
 <body>
     <section layout:fragment="content">
-        [[${mode}]]
         <form th:action="${mode == 'create'} ?
             @{/jobportal/student/{studentId}/reportCreationForm/{oaId} (studentId=${studentId},oaId=${oaId})} :
             @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
         th:method="post" th:object="${ReportForm}">
-            [[${reason}]]
             <div th:class="mt-3">
                 <th:block th:if="${reason != 'seminar'}">
                 <h1><label>訪問企業:</label><label th:text="${jobSearch.companyName}"></label></h1>
+                    <input type="hidden" name="companyName" th:value="${jobSearch.companyName}">
                 <h4><label>訪問日:</label><label th:text="${OADate[0].officialAbsenceDate}"></label></h4>
-                    <span th:errors="${ReportForm.activityTime}"></span>
                     <div class="container">
                         <div class="row">
+                            <span th:errors="${ReportForm.activityTime}"></span>
                             <div class="col-1">
                                 <h5><label class="mt-4">活動時間</label></h5>
                             </div>
@@ -44,6 +42,7 @@
                             <div class="briefing">
                             <input type="hidden" name="reason" value="briefing">
                                 <div class="form-group mt-3">
+                                    <span th:errors="${ReportForm.briefingContent}"></span>
                                     <h3><label class="form-label" for="briefingContent">説明会内容</label></h3>
                                     <textarea  class="form-control"
                                                type="text"
@@ -53,6 +52,7 @@
                                         [[${ReportForm.briefingContent}]]</textarea>
                                 </div>
                                 <div class="form-group mt-3">
+                                    <span th:errors="${ReportForm.briefingImpressions}"></span>
                                     <h3><label class="form-label" for="briefingImpressions">感想</label></h3>
                                     <textarea name="briefingImpressions"
                                               id="briefingImpressions"
@@ -62,7 +62,7 @@
                                     </textarea>
                                 </div>
                                 <div class="fixed_btn">
-                                    <button type="submit" class="btn btn-primary" name="briefing">説明会</button>
+                                    <button type="submit" class="btn btn-primary" name="briefing">提出</button>
                                 </div>
                             </div>
                         </span>
@@ -234,7 +234,7 @@
                                             </h5></div>
                                             <div class="col-9"><h6>
                                                 <label class="form-label">内容</label>
-                                                <input class="form-control" type="text" name="expertiseType" th:value="${ReportForm.expertiseType}">
+                                                <input class="form-control" type="text" name="others" th:value="${ReportForm.others}">
                                             </h6></div>
                                         </div>
                                     </div>
@@ -249,7 +249,7 @@
                                     </div>
                                 </div>
                             <div class="fixed_btn">
-                                <button type="submit" class="btn btn-primary" name="test" >試験</button>
+                                <button type="submit" class="btn btn-primary" name="test" >提出</button>
                             </div>
                         </span>
                         <span th:case="jobInterview">
@@ -257,6 +257,7 @@
                                 <div class="Interview">
                                     <div class="container">
                                         <div class="row mt-3">
+                                            <span th:errors="${ReportForm.interviewerNumber}"></span>
                                             <div class="col-1">
                                                 <h5><label class="mt-1" for="Interviewer">面接官</label></h5>
                                             </div>
@@ -304,15 +305,15 @@
                                         </div>
                                     </div>
                                     <div class="form-group mt-2">
-                                        <h3><label class="form-label">面接内容</label></h3>
+                                        <h3><label class="form-label">面接内容</label></h3><span th:errors="${ReportForm.interviewContent}"></span>
                                         <textarea class="form-control" name="interviewContent">[[${ReportForm.interviewContent}]]</textarea>
                                     </div>
                                     <div class="form-group mt-3">
-                                        <h3><label class="form-label">感想</label></h3>
+                                        <h3><label class="form-label">感想</label></h3><span th:errors="${ReportForm.interviewImpressions}"></span>
                                         <textarea class="form-control" name="interviewImpressions" placeholder="感想">[[${ReportForm.interviewImpressions}]]</textarea>
                                     </div>
                                     <div class="fixed_btn">
-                                        <button type="submit" class="btn btn-primary" name="jobInterview">面接</button>
+                                        <button type="submit" class="btn btn-primary" name="jobInterview">提出</button>
                                     </div>
                                 </div>
                         </span>
@@ -323,7 +324,7 @@
                                 <textarea class="form-control" id="informalCeremony" name="informalCeremonyImpressions" placeholder="感想">[[${ReportForm.informalCeremonyImpressions}]]</textarea>
                             </div>
                             <div class="fixed_btn">
-                                <button type="submit" class="btn btn-primary" name="informalCeremony">内定式</button>
+                                <button type="submit" class="btn btn-primary" name="informalCeremony">提出</button>
                             </div>
                         </span>
                         <span th:case="training">
@@ -333,7 +334,7 @@
                                 <textarea class="form-control" name="trainingImpressions" placeholder="感想">[[${ReportForm.trainingImpressions}]]</textarea>
                             </div>
                             <div class="fixed_btn">
-                                <button type="submit" class="btn btn-primary" name="training">研修</button>
+                                <button type="submit" class="btn btn-primary" name="training">提出</button>
                             </div>
                         </span>
                     <span th:case="jobOther">
@@ -349,11 +350,11 @@
                             <textarea class="form-control" name="otherImpressions" placeholder="感想">[[${ReportForm.othersImpressions}]]</textarea>
                         </div>
                         <div class="fixed_btn">
-                            <button type="submit" class="btn btn-primary" name="jobOther">その他</button>
+                            <button type="submit" class="btn btn-primary" name="jobOther">提出</button>
                         </div>
                     </span>
                     </th:block>
-                    <div id="isSelection">
+                    <div id="employmentIntention">
                         <div class="form-group mt-3">
                             <h5 class="ms-3">
                                 <label class="form-check-label" for="selectDoNot">
@@ -429,19 +430,21 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-primary mt-2" onclick="addElement()">企業を追加</button>
+                    <span th:errors="${ReportForm.seminarForms}"></span>
                     <div class="mt-3" id="visitedCompany">
                     </div>
-                    <button type="submit" class="btn btn-primary position-fixed" name="reportSeminar" style="position: absolute;right: 120px;bottom: 87px;">セミナー</button>
+                    <button type="submit" class="btn btn-primary position-fixed" name="reportSeminar" style="position: absolute;right: 120px;bottom: 87px;">提出</button>
                 </th:block>
             </div>
 
             <div class="d-flex justify-content-between">
                 <a type="button" th:href="${mode == 'create'} ?
                 @{/jobportal/student/{studentId}/OAList (studentId=${studentId})} :
-                @{/jobportal/sutdent/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
+                @{/jobportal/student/{studentId}/report/{reportId} (studentId=${studentId},reportId=${reportId})}"
                    class="btn btn-danger">中止</a>
             </div>
         </form>
+        <br><br><br>
     </section>
 </body>
 </html>

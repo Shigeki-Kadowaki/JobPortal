@@ -1,7 +1,7 @@
 
 window.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('firstCheck').checked = true;
-    if(document.getElementById('takingExam').checked === true) visibleNextAction();
+    if(document.getElementById('selectTakingExam').checked === true) visibleNextAction();
 });
 
 let cnt = 0;

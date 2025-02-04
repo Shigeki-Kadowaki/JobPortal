@@ -5,16 +5,16 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Teacher_OAList</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
-    <script th:src="@{/list.js}"></script>
+    <title>公欠届一覧</title>
+
+    <script th:src="@{/jobportal/js/list.js}"></script>
 </head>
 <body>
 <section layout:fragment="content">
     <th:block th:if="${mode == 'list'}">
         <a type="button" th:href="@{/jobportal/teacher}" class="btn btn-primary">戻る</a><br>
     </th:block>
-    <script th:src="@{/list.js}"></script>
+    <script th:src="@{/jobportal/js/list.js}"></script>
     <th:block th:if="${mode == 'approval'}">
         <a type="button" th:href="@{/jobportal/teacher/OAList}" class="btn btn-primary">戻る</a><br>
     </th:block>
@@ -92,8 +92,13 @@
     <th:block th:if="${maxSize != 0 and mode == 'list'}">
         <div class="text-center my-3">
             <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=teacher}">担任承認モード</a>
-            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
-            <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/reportApproval}">キャリア報告書承認モード</a>
+            <span class="border-end border-2 border-dark border-opacity-75 pe-4">
+                <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/approvalMode?teacherType=career}">キャリア承認モード</a>
+            </span>
+            <span class="ps-4">
+                <a class="btn btn-success btn-lg" th:href="@{/jobportal/teacher/reportApproval}">報告書承認モード</a>
+            </span>
+
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination pagination-lg d-flex justify-content-center">
@@ -132,7 +137,7 @@
                         <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
                             <h4 class="my-1">就活</h4>
                         </li>
-                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
+                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center px-0">
                             <h4 class="my-1">[[${value.jobSearchVisitStartHour}]] : [[${value.jobSearchVisitStartMinute}]] ~</h4>
                         </li>
                     </th:block>
@@ -140,7 +145,7 @@
                         <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
                             <h4 class="my-1">合説</h4>
                         </li>
-                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center">
+                        <li class="list-group-item col-1 text-center d-flex align-items-center justify-content-center px-0">
                             <h4 class="my-1">[[${value.seminarVisitStartHour}]] : [[${value.seminarVisitStartMinute}]] ~</h4>
                         </li>
                     </th:block>
@@ -151,7 +156,7 @@
                     </th:block>
                 </th:block>
                 <th:block th:if="${value.startDate} == ${value.endDate}">
-                    <li class="list-group-item col-3 text-center d-flex align-items-center justify-content-center ">
+                    <li class="list-group-item col-3 text-center d-flex align-items-center justify-content-center px-0">
                         <h5  class="my-1">
                             <span>[[*{startDate}]]</span>
                             <span th:each="lesson, iterStat : ${value.lessons}" th:object="${lesson}">
