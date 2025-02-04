@@ -50,7 +50,7 @@ dependencies {
 }
 
 jar.archiveBaseName = 'JobPortal'
-version = '0.0.1'
+version = '0.9'
 
 tasks.named('test') {
 	useJUnitPlatform()

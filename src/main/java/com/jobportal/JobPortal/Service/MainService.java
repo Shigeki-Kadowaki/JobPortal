@@ -966,6 +966,7 @@ public class MainService {
                 repository.insertBriefingReport(form, reportId);
             }
             case test -> {
+                System.out.println(form.getExpertiseType());
                 repository.insertExamReport(form, reportId);
             }
             case informalCeremony -> {
@@ -994,8 +995,11 @@ public class MainService {
     * */
     public void updateReportStatus(Integer reportId, String status){
         repository.updateReportStatus(reportId, status);
-        Integer OAId = repository.selectOAId(reportId);
+        Integer OAId = getOAId(reportId);
         checkOAAndReportCondition(OAId, reportId);
+    }
+    public Integer getOAId(Integer reportId){
+        return repository.selectOAId(reportId);
     }
     /*
     * 公欠届と報告書のステータスをチェックするメソッド
@@ -1130,7 +1134,14 @@ public class MainService {
     * セミナーはセミナーテーブルに就職希望が含まれている。
     * */
     @Transactional
-    public String repostReport(Integer reportId, ReportForm form, BindingResult bindingResult) {
+    public String repostReport(Integer reportId, ReportForm form, BindingResult bindingResult, Model model) {
+        Integer OAId = getOAId(reportId);
+        List<OADateInfoEntity> dateInfoEntities = findDateInfo(OAId);
+        model.addAttribute("OADate",dateInfoEntities);
+        JobSearchEntity jobSearch = findJobSearchInfo(OAId);
+        model.addAttribute("jobSearch",jobSearch);
+        model.addAttribute("ReportForm",form);
+        model.addAttribute("reason", form.getReason());
         if(bindingResult.hasErrors()){
             return "reportForm";
         }
